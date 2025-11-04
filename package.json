@@ -22,7 +22,7 @@
   "homepage": "https://pdf-tool.vercel.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/fusepdf.git"
+    "url": "https://github.com/shifanhusen/fusepdf.git"
   },
   "license": "MIT",
   "scripts": {

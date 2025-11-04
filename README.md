@@ -2,8 +2,8 @@
 
 **A completely free, privacy-first, browser-based PDF tool for splitting, merging, and compressing PDF files.**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/fusepdf)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/yourusername/fusepdf)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shifanhusen/fusepdf)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/shifanhusen/fusepdf)
 
 ## ✨ Features
 
@@ -44,7 +44,7 @@ Visit [https://pdf-tool.vercel.app](https://pdf-tool.vercel.app) and start using
 1. Fork this repository
 2. Enable GitHub Pages in repository settings
 3. Choose "Deploy from a branch" and select `main` branch
-4. Your site will be available at `https://yourusername.github.io/fusepdf`
+4. Your site will be available at `https://shifanhusen.github.io/fusepdf`
 
 ## 🛠️ Local Development
 
@@ -56,7 +56,7 @@ Visit [https://pdf-tool.vercel.app](https://pdf-tool.vercel.app) and start using
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/fusepdf.git
+git clone https://github.com/shifanhusen/fusepdf.git
 cd fusepdf
 ```
 
