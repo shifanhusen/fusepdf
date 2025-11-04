@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Disallow certain file types for security
+Disallow: /*.json$
+Disallow: /*.log$
+Disallow: /*.env$
+Disallow: /.git/
+
+# Allow PDF files and common web assets
+Allow: /*.pdf$
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
+Allow: /*.webp$
+
+# Sitemap location
+Sitemap: https://pdf-tool.vercel.app/sitemap.xml
+
+# Crawl delay (optional - be respectful to crawlers)
+Crawl-delay: 1

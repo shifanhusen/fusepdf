@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Free Online PDF Split Merge Compress Tool – No Upload Required | FusePDF</title>
+    <meta name="description" content="Free online PDF tool to split, merge, and compress PDF files directly in your browser. No uploads, 100% privacy, works offline. Split PDF pages, merge multiple PDFs, compress file size.">
+    <meta name="keywords" content="PDF split, PDF merge, PDF compress, online PDF tool, free PDF editor, no upload PDF, browser PDF tool">
+    <meta name="author" content="FusePDF">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Free Online PDF Split Merge Compress Tool – No Upload Required">
+    <meta property="og:description" content="Free online PDF tool to split, merge, and compress PDF files directly in your browser. No uploads, 100% privacy.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pdf-tool.vercel.app">
+    <meta property="og:image" content="https://pdf-tool.vercel.app/og-image.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Online PDF Split Merge Compress Tool">
+    <meta name="twitter:description" content="Split, merge, and compress PDFs in your browser. No uploads required.">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pdf-tool.vercel.app">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAB5ElEQVR4nO2Wv0oDQRDHP4gWgo1YWFhYWNhaWFhYWNhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhY">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google AdSense - Replace YOUR_ADSENSE_ID with your actual AdSense publisher ID -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script> -->
+    
+    <!-- Google Analytics 4 - Replace GA_MEASUREMENT_ID with your actual GA4 ID -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script> -->
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "FusePDF",
+        "description": "Free online PDF tool to split, merge, and compress PDF files directly in your browser",
+        "url": "https://pdf-tool.vercel.app",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Split PDF files",
+            "Merge PDF files", 
+            "Compress PDF files",
+            "No file upload required",
+            "Browser-based processing"
+        ]
+    }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🔗 FusePDF</h1>
+            <nav class="nav">
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Privacy Banner -->
+    <div class="privacy-banner">
+        <div class="container">
+            <p>🔒 <strong>100% Private:</strong> Files are processed locally in your browser. No data uploaded to servers.</p>
+        </div>
+    </div>
+
+    <!-- Top AdSense Banner -->
+    <div class="ad-banner ad-top">
+        <!-- AdSense Banner Ad - Replace with actual ad code -->
+        <div class="ad-placeholder">
+            <p>Advertisement Space</p>
+            <!-- Example AdSense code (uncomment and replace with your publisher ID):
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                 data-ad-slot="BANNER_SLOT_ID"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h2>Free PDF Tools - Split, Merge & Compress</h2>
+                <p>Process your PDF files directly in your browser. No uploads, no registration, completely free.</p>
+            </section>
+
+            <!-- Tool Tabs -->
+            <section class="tool-section">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="split">Split PDF</button>
+                    <button class="tab-btn" data-tab="merge">Merge PDFs</button>
+                    <button class="tab-btn" data-tab="compress">Compress PDF</button>
+                </div>
+
+                <!-- Split PDF Tab -->
+                <div class="tab-content active" id="split">
+                    <div class="tool-card">
+                        <h3>Split PDF</h3>
+                        <p>Extract specific pages or ranges from your PDF file.</p>
+                        
+                        <div class="file-upload-area" id="splitUpload">
+                            <div class="upload-icon">📄</div>
+                            <p>Drag & drop PDF file here or <button class="upload-btn">Browse Files</button></p>
+                            <input type="file" accept=".pdf" hidden>
+                        </div>
+                        
+                        <div class="split-options" id="splitOptions" style="display: none;">
+                            <div class="page-info">
+                                <span id="pageCount">Total pages: 0</span>
+                            </div>
+                            <div class="range-inputs">
+                                <label>
+                                    Start Page:
+                                    <input type="number" id="startPage" min="1" value="1">
+                                </label>
+                                <label>
+                                    End Page:
+                                    <input type="number" id="endPage" min="1" value="1">
+                                </label>
+                            </div>
+                            <button class="process-btn" id="splitBtn">Split PDF</button>
+                        </div>
+                        
+                        <div class="progress-bar" id="splitProgress" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Merge PDFs Tab -->
+                <div class="tab-content" id="merge">
+                    <div class="tool-card">
+                        <h3>Merge PDFs</h3>
+                        <p>Combine multiple PDF files into one document.</p>
+                        
+                        <div class="file-upload-area" id="mergeUpload">
+                            <div class="upload-icon">📄📄</div>
+                            <p>Drag & drop multiple PDF files here or <button class="upload-btn">Browse Files</button></p>
+                            <input type="file" accept=".pdf" multiple hidden>
+                        </div>
+                        
+                        <div class="file-list" id="mergeFileList" style="display: none;">
+                            <h4>Files to merge:</h4>
+                            <div class="files-container" id="filesContainer"></div>
+                            <button class="process-btn" id="mergeBtn">Merge PDFs</button>
+                        </div>
+                        
+                        <div class="progress-bar" id="mergeProgress" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compress PDF Tab -->
+                <div class="tab-content" id="compress">
+                    <div class="tool-card">
+                        <h3>Compress PDF</h3>
+                        <p>Reduce PDF file size while maintaining quality.</p>
+                        
+                        <div class="file-upload-area" id="compressUpload">
+                            <div class="upload-icon">🗜️</div>
+                            <p>Drag & drop PDF file here or <button class="upload-btn">Browse Files</button></p>
+                            <input type="file" accept=".pdf" hidden>
+                        </div>
+                        
+                        <div class="compress-options" id="compressOptions" style="display: none;">
+                            <div class="file-size-info">
+                                <span id="originalSize">Original size: 0 KB</span>
+                            </div>
+                            <div class="quality-selector">
+                                <label>
+                                    Compression Level:
+                                    <select id="compressionLevel">
+                                        <option value="low">Low (Better Quality)</option>
+                                        <option value="medium" selected>Medium (Balanced)</option>
+                                        <option value="high">High (Smaller Size)</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <button class="process-btn" id="compressBtn">Compress PDF</button>
+                        </div>
+                        
+                        <div class="progress-bar" id="compressProgress" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <h3>✅ Processing Complete!</h3>
+                    <div class="result-info">
+                        <span id="resultInfo"></span>
+                    </div>
+                    <button class="download-btn" id="downloadBtn">📥 Download Result</button>
+                    <button class="reset-btn" id="resetBtn">🔄 Process Another File</button>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="faq-section">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-item">
+                    <h3>Is FusePDF really free?</h3>
+                    <p>Yes! FusePDF is completely free to use with no hidden costs, registration, or limitations on file processing.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Are my files uploaded to your servers?</h3>
+                    <p>No. All PDF processing happens directly in your browser. Your files never leave your device, ensuring complete privacy.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What file size limits exist?</h3>
+                    <p>Processing is limited by your device's memory. Most devices can handle PDFs up to 100MB without issues.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I use this offline?</h3>
+                    <p>Yes! Once the page loads, you can use FusePDF without an internet connection.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What browsers are supported?</h3>
+                    <p>FusePDF works on all modern browsers including Chrome, Firefox, Safari, and Edge.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom AdSense Banner -->
+    <div class="ad-banner ad-bottom">
+        <div class="ad-placeholder">
+            <p>Advertisement Space</p>
+            <!-- Example AdSense code (uncomment and replace with your publisher ID):
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                 data-ad-slot="BOTTOM_SLOT_ID"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FusePDF</h4>
+                    <p>Free PDF tools for everyone. Privacy-first, browser-based PDF processing.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Tools</h4>
+                    <ul>
+                        <li>Split PDF</li>
+                        <li>Merge PDFs</li>
+                        <li>Compress PDF</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p>
+                        <a href="mailto:support@fusepdf.com">Contact Support</a><br>
+                        <!-- Optional: Buy Me a Coffee link -->
+                        <a href="#" class="donate-link">☕ Buy me a coffee</a>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FusePDF. Made with ❤️ for the PDF community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- PDF-lib library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    
+    <!-- Main application script -->
+    <script src="js/app.js"></script>
+</body>
+</html>

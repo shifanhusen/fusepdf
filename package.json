@@ -1,0 +1,51 @@
+{
+  "name": "fusepdf",
+  "version": "1.0.0",
+  "description": "Free online PDF tools - Split, merge, and compress PDFs in your browser",
+  "keywords": [
+    "pdf",
+    "split",
+    "merge",
+    "compress",
+    "online",
+    "free",
+    "browser",
+    "privacy",
+    "no-upload",
+    "pdf-tools"
+  ],
+  "author": {
+    "name": "FusePDF Team",
+    "email": "contact@fusepdf.com",
+    "url": "https://pdf-tool.vercel.app"
+  },
+  "homepage": "https://pdf-tool.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/fusepdf.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "serve": "npx http-server -p 8000",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod",
+    "validate": "echo 'Running validation checks...' && node -e 'console.log(\"HTML/CSS/JS validation would go here\")'",
+    "lighthouse": "lighthouse --chrome-flags='--headless' https://pdf-tool.vercel.app",
+    "seo-check": "echo 'SEO validation - check sitemap.xml and robots.txt'"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "lighthouse": "^11.2.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie <= 11"
+  ]
+}
