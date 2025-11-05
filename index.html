@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">n">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +20,7 @@
     <meta property="og:description" content="Free online PDF tool to split, merge, and compress PDF files directly in your browser. No uploads, 100% privacy.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://fusepdf.vercel.app">
-    <meta property="og:image" content="https://fusepdf.vercel.app/og-image.png">
+    <meta property="og:image" content="https://fusepdf.vercel.app/assets/images/logo.png">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +31,15 @@
     <link rel="canonical" href="https://fusepdf.vercel.app">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAB5ElEQVR4nO2Wv0oDQRDHP4gWgo1YWFhYWNhaWFhYWNhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhY">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="apple-touch-icon" href="assets/images/logo.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="FusePDF">
     
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -73,7 +85,9 @@
     <!-- Header -->
     <header class="header">
         <div class="container">
-            <h1 class="logo">🔗 FusePDF</h1>
+            <div class="logo">
+                <img src="assets/images/logo.png" alt="FusePDF Logo" class="logo-img">
+            </div>
             <nav class="nav">
                 <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
             </nav>
@@ -132,16 +146,63 @@
                             <div class="page-info">
                                 <span id="pageCount">Total pages: 0</span>
                             </div>
-                            <div class="range-inputs">
-                                <label>
-                                    Start Page:
-                                    <input type="number" id="startPage" min="1" value="1">
-                                </label>
-                                <label>
-                                    End Page:
-                                    <input type="number" id="endPage" min="1" value="1">
-                                </label>
+                            
+                            <!-- Page Thumbnails Preview -->
+                            <div class="thumbnails-container" id="thumbnailsContainer" style="display: none;">
+                                <h4>Select Pages:</h4>
+                                <div class="thumbnails-grid" id="thumbnailsGrid"></div>
                             </div>
+                            
+                            <!-- Split Options Tabs -->
+                            <div class="split-mode-tabs">
+                                <button class="split-mode-btn active" data-mode="range">Page Range</button>
+                                <button class="split-mode-btn" data-mode="selection">Select Pages</button>
+                                <button class="split-mode-btn" data-mode="advanced">Advanced</button>
+                            </div>
+                            
+                            <!-- Range Mode -->
+                            <div class="split-mode-content active" id="rangeMode">
+                                <div class="range-inputs">
+                                    <label>
+                                        Start Page:
+                                        <input type="number" id="startPage" min="1" value="1">
+                                    </label>
+                                    <label>
+                                        End Page:
+                                        <input type="number" id="endPage" min="1" value="1">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Selection Mode -->
+                            <div class="split-mode-content" id="selectionMode">
+                                <div class="page-selection-info">
+                                    <span id="selectedPages">No pages selected</span>
+                                    <button class="clear-selection" id="clearSelection">Clear All</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Advanced Mode -->
+                            <div class="split-mode-content" id="advancedMode">
+                                <div class="advanced-options">
+                                    <label>
+                                        Split Type:
+                                        <select id="advancedSplitType">
+                                            <option value="pages">Every N Pages</option>
+                                            <option value="size">Max File Size</option>
+                                            <option value="odd-even">Odd/Even Pages</option>
+                                            <option value="equal">Equal Parts</option>
+                                        </select>
+                                    </label>
+                                    <div class="advanced-input" id="advancedInput">
+                                        <label>
+                                            <span id="advancedLabel">Pages per file:</span>
+                                            <input type="number" id="advancedValue" min="1" value="1">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <button class="process-btn" id="splitBtn">Split PDF</button>
                         </div>
                         
@@ -271,6 +332,13 @@
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
+    <!-- Keyboard Shortcuts Info -->
+    <div class="shortcuts-info" id="shortcutsInfo">
+        <strong>⌨️ Shortcuts:</strong><br>
+        <kbd>Ctrl+1</kbd> Split • <kbd>Ctrl+2</kbd> Merge • <kbd>Ctrl+3</kbd> Compress<br>
+        <kbd>Ctrl+Enter</kbd> Process • <kbd>Esc</kbd> Reset
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -303,6 +371,9 @@
     </footer>
 
     <!-- Scripts -->
+    <!-- PDF.js library for rendering thumbnails -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
     <!-- PDF-lib library from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     

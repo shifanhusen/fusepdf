@@ -8,6 +8,15 @@ class FusePDF {
         this.currentFiles = [];
         this.currentTab = 'split';
         this.isProcessing = false;
+        this.selectedPages = new Set();
+        this.currentPdfDoc = null;
+        this.splitMode = 'range';
+        this.processingHistory = this.loadHistory();
+        
+        // Initialize PDF.js worker
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
         
         // Initialize the application
         this.init();
@@ -65,6 +74,9 @@ class FusePDF {
         // File input handlers
         this.initFileInputs();
         
+        // Split mode switching
+        this.initSplitModes();
+        
         // Process buttons
         document.getElementById('splitBtn').addEventListener('click', () => this.handleSplit());
         document.getElementById('mergeBtn').addEventListener('click', () => this.handleMerge());
@@ -72,6 +84,21 @@ class FusePDF {
         
         // Result buttons
         document.getElementById('resetBtn').addEventListener('click', () => this.resetAll());
+        
+        // Keyboard shortcuts
+        this.initKeyboardShortcuts();
+        
+        // Advanced split type change
+        const advancedSplitType = document.getElementById('advancedSplitType');
+        if (advancedSplitType) {
+            advancedSplitType.addEventListener('change', (e) => this.updateAdvancedInput(e.target.value));
+        }
+        
+        // Clear selection
+        const clearSelection = document.getElementById('clearSelection');
+        if (clearSelection) {
+            clearSelection.addEventListener('click', () => this.clearPageSelection());
+        }
     }
 
     /**
@@ -174,6 +201,9 @@ class FusePDF {
             const arrayBuffer = await file.arrayBuffer();
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
             const pageCount = pdfDoc.getPageCount();
+            
+            // Store for thumbnail generation
+            this.currentPdfDoc = pdfDoc;
 
             document.getElementById('pageCount').textContent = `Total pages: ${pageCount}`;
             document.getElementById('endPage').max = pageCount;
@@ -181,9 +211,260 @@ class FusePDF {
             document.getElementById('splitOptions').style.display = 'block';
 
             this.currentFiles = [file];
+            
+            // Generate thumbnails
+            await this.generateThumbnails(file);
+            
+            // Add to recent files
+            this.addToRecentFiles(file.name, 'split');
+            
         } catch (error) {
             this.showError('Error reading PDF file. Please ensure it\'s a valid PDF.');
             console.error(error);
+        }
+    }
+    
+    /**
+     * Generate PDF page thumbnails
+     */
+    async generateThumbnails(file) {
+        if (!window.pdfjsLib) {
+            console.warn('PDF.js not loaded, thumbnails disabled');
+            return;
+        }
+        
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
+            const pdf = await loadingTask.promise;
+            
+            const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+            const thumbnailsGrid = document.getElementById('thumbnailsGrid');
+            
+            // Clear existing thumbnails
+            thumbnailsGrid.innerHTML = '';
+            
+            // Generate thumbnails for each page
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const viewport = page.getViewport({scale: 0.3});
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                
+                // Create thumbnail item
+                const thumbnailItem = document.createElement('div');
+                thumbnailItem.className = 'thumbnail-item';
+                thumbnailItem.dataset.page = pageNum;
+                
+                const thumbnailCanvas = canvas.cloneNode();
+                thumbnailCanvas.className = 'thumbnail-canvas';
+                thumbnailCanvas.getContext('2d').drawImage(canvas, 0, 0);
+                
+                const label = document.createElement('div');
+                label.className = 'thumbnail-label';
+                label.textContent = `Page ${pageNum}`;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'thumbnail-checkbox';
+                checkbox.dataset.page = pageNum;
+                
+                thumbnailItem.appendChild(thumbnailCanvas);
+                thumbnailItem.appendChild(label);
+                thumbnailItem.appendChild(checkbox);
+                
+                // Add click handler
+                thumbnailItem.addEventListener('click', (e) => {
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    this.togglePageSelection(pageNum, checkbox.checked);
+                });
+                
+                checkbox.addEventListener('change', (e) => {
+                    this.togglePageSelection(pageNum, e.target.checked);
+                });
+                
+                thumbnailsGrid.appendChild(thumbnailItem);
+            }
+            
+            thumbnailsContainer.style.display = 'block';
+            
+        } catch (error) {
+            console.error('Error generating thumbnails:', error);
+            this.showError('Could not generate page thumbnails');
+        }
+    }
+    
+    /**
+     * Initialize split mode switching
+     */
+    initSplitModes() {
+        const modeBtns = document.querySelectorAll('.split-mode-btn');
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.target.dataset.mode;
+                this.switchSplitMode(mode);
+            });
+        });
+    }
+    
+    /**
+     * Switch split mode
+     */
+    switchSplitMode(mode) {
+        this.splitMode = mode;
+        
+        // Update active button
+        document.querySelectorAll('.split-mode-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+        
+        // Update active content
+        document.querySelectorAll('.split-mode-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(`${mode}Mode`).classList.add('active');
+        
+        // Show/hide thumbnails based on mode
+        const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+        if (mode === 'selection') {
+            thumbnailsContainer.style.display = 'block';
+        } else if (mode === 'range' && this.currentFiles.length > 0) {
+            thumbnailsContainer.style.display = 'block';
+        }
+    }
+    
+    /**
+     * Toggle page selection
+     */
+    togglePageSelection(pageNum, selected) {
+        const thumbnailItem = document.querySelector(`[data-page="${pageNum}"]`);
+        
+        if (selected) {
+            this.selectedPages.add(pageNum);
+            thumbnailItem.classList.add('selected');
+        } else {
+            this.selectedPages.delete(pageNum);
+            thumbnailItem.classList.remove('selected');
+        }
+        
+        this.updateSelectedPagesDisplay();
+    }
+    
+    /**
+     * Update selected pages display
+     */
+    updateSelectedPagesDisplay() {
+        const selectedPagesElement = document.getElementById('selectedPages');
+        if (this.selectedPages.size === 0) {
+            selectedPagesElement.textContent = 'No pages selected';
+        } else {
+            const sortedPages = Array.from(this.selectedPages).sort((a, b) => a - b);
+            selectedPagesElement.textContent = `Selected pages: ${sortedPages.join(', ')}`;
+        }
+    }
+    
+    /**
+     * Clear page selection
+     */
+    clearPageSelection() {
+        this.selectedPages.clear();
+        document.querySelectorAll('.thumbnail-checkbox').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('selected'));
+        this.updateSelectedPagesDisplay();
+    }
+    
+    /**
+     * Update advanced input based on split type
+     */
+    updateAdvancedInput(type) {
+        const advancedInput = document.getElementById('advancedInput');
+        const advancedLabel = document.getElementById('advancedLabel');
+        const advancedValue = document.getElementById('advancedValue');
+        
+        switch (type) {
+            case 'pages':
+                advancedLabel.textContent = 'Pages per file:';
+                advancedValue.style.display = 'block';
+                advancedValue.min = 1;
+                advancedValue.value = 1;
+                break;
+            case 'size':
+                advancedLabel.textContent = 'Max file size (MB):';
+                advancedValue.style.display = 'block';
+                advancedValue.min = 1;
+                advancedValue.value = 10;
+                break;
+            case 'equal':
+                advancedLabel.textContent = 'Number of parts:';
+                advancedValue.style.display = 'block';
+                advancedValue.min = 2;
+                advancedValue.value = 2;
+                break;
+            case 'odd-even':
+                advancedInput.style.display = 'none';
+                break;
+        }
+    }
+    
+    /**
+     * Initialize keyboard shortcuts
+     */
+    initKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts when not typing in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case '1':
+                        e.preventDefault();
+                        this.switchTab('split');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        this.switchTab('merge');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        this.switchTab('compress');
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        this.handleCurrentTabProcess();
+                        break;
+                }
+            }
+            
+            // ESC to reset
+            if (e.key === 'Escape') {
+                this.resetAll();
+            }
+        });
+    }
+    
+    /**
+     * Handle process for current tab
+     */
+    handleCurrentTabProcess() {
+        switch (this.currentTab) {
+            case 'split':
+                this.handleSplit();
+                break;
+            case 'merge':
+                this.handleMerge();
+                break;
+            case 'compress':
+                this.handleCompress();
+                break;
         }
     }
 
@@ -275,23 +556,188 @@ class FusePDF {
             return;
         }
 
-        const startPage = parseInt(document.getElementById('startPage').value);
-        const endPage = parseInt(document.getElementById('endPage').value);
-
-        if (startPage > endPage || startPage < 1) {
-            this.showError('Invalid page range.');
-            return;
-        }
-
         try {
             this.setProcessing(true, 'splitProgress');
-            const result = await this.splitPDF(this.currentFiles[0], startPage, endPage);
-            this.showResult(`Extracted pages ${startPage}-${endPage}`, result.size, result.blob);
+            let results = [];
+            
+            switch (this.splitMode) {
+                case 'range':
+                    results = await this.splitByRange();
+                    break;
+                case 'selection':
+                    results = await this.splitBySelection();
+                    break;
+                case 'advanced':
+                    results = await this.splitByAdvanced();
+                    break;
+            }
+            
+            if (results.length === 1) {
+                this.showResult(results[0].message, results[0].size, results[0].blob);
+            } else {
+                this.showMultipleResults(results);
+            }
+            
         } catch (error) {
             this.showError('Error splitting PDF: ' + error.message);
         } finally {
             this.setProcessing(false, 'splitProgress');
         }
+    }
+    
+    /**
+     * Split by page range
+     */
+    async splitByRange() {
+        const startPage = parseInt(document.getElementById('startPage').value);
+        const endPage = parseInt(document.getElementById('endPage').value);
+
+        if (startPage > endPage || startPage < 1) {
+            throw new Error('Invalid page range.');
+        }
+        
+        const result = await this.splitPDF(this.currentFiles[0], startPage, endPage);
+        return [{
+            message: `Extracted pages ${startPage}-${endPage}`,
+            size: result.size,
+            blob: result.blob,
+            filename: `pages-${startPage}-${endPage}.pdf`
+        }];
+    }
+    
+    /**
+     * Split by page selection
+     */
+    async splitBySelection() {
+        if (this.selectedPages.size === 0) {
+            throw new Error('Please select at least one page.');
+        }
+        
+        const sortedPages = Array.from(this.selectedPages).sort((a, b) => a - b);
+        const result = await this.splitPDFByPages(this.currentFiles[0], sortedPages);
+        
+        return [{
+            message: `Extracted ${sortedPages.length} selected pages`,
+            size: result.size,
+            blob: result.blob,
+            filename: `selected-pages.pdf`
+        }];
+    }
+    
+    /**
+     * Split by advanced options
+     */
+    async splitByAdvanced() {
+        const advancedType = document.getElementById('advancedSplitType').value;
+        const advancedValue = parseInt(document.getElementById('advancedValue').value);
+        const totalPages = this.currentPdfDoc.getPageCount();
+        
+        switch (advancedType) {
+            case 'pages':
+                return await this.splitEveryNPages(advancedValue);
+            case 'equal':
+                return await this.splitIntoEqualParts(advancedValue);
+            case 'odd-even':
+                return await this.splitOddEvenPages();
+            case 'size':
+                // For size-based splitting, we'll use a simple page-based approximation
+                return await this.splitByApproximateSize(advancedValue);
+        }
+    }
+    
+    /**
+     * Split every N pages
+     */
+    async splitEveryNPages(pagesPerFile) {
+        const totalPages = this.currentPdfDoc.getPageCount();
+        const results = [];
+        
+        for (let start = 1; start <= totalPages; start += pagesPerFile) {
+            const end = Math.min(start + pagesPerFile - 1, totalPages);
+            const result = await this.splitPDF(this.currentFiles[0], start, end);
+            results.push({
+                message: `Part ${Math.ceil(start / pagesPerFile)} (pages ${start}-${end})`,
+                size: result.size,
+                blob: result.blob,
+                filename: `part-${Math.ceil(start / pagesPerFile)}.pdf`
+            });
+        }
+        
+        return results;
+    }
+    
+    /**
+     * Split into equal parts
+     */
+    async splitIntoEqualParts(numParts) {
+        const totalPages = this.currentPdfDoc.getPageCount();
+        const pagesPerPart = Math.ceil(totalPages / numParts);
+        
+        return await this.splitEveryNPages(pagesPerPart);
+    }
+    
+    /**
+     * Split odd and even pages
+     */
+    async splitOddEvenPages() {
+        const totalPages = this.currentPdfDoc.getPageCount();
+        const oddPages = [];
+        const evenPages = [];
+        
+        for (let i = 1; i <= totalPages; i++) {
+            if (i % 2 === 1) {
+                oddPages.push(i);
+            } else {
+                evenPages.push(i);
+            }
+        }
+        
+        const results = [];
+        
+        if (oddPages.length > 0) {
+            const oddResult = await this.splitPDFByPages(this.currentFiles[0], oddPages);
+            results.push({
+                message: `Odd pages (${oddPages.length} pages)`,
+                size: oddResult.size,
+                blob: oddResult.blob,
+                filename: 'odd-pages.pdf'
+            });
+        }
+        
+        if (evenPages.length > 0) {
+            const evenResult = await this.splitPDFByPages(this.currentFiles[0], evenPages);
+            results.push({
+                message: `Even pages (${evenPages.length} pages)`,
+                size: evenResult.size,
+                blob: evenResult.blob,
+                filename: 'even-pages.pdf'
+            });
+        }
+        
+        return results;
+    }
+    
+    /**
+     * Split PDF by specific pages
+     */
+    async splitPDFByPages(file, pages) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        const newPdfDoc = await PDFLib.PDFDocument.create();
+
+        // Copy selected pages (PDF-lib uses 0-based indexing)
+        const indices = pages.map(page => page - 1);
+        const copiedPages = await newPdfDoc.copyPages(pdfDoc, indices);
+        
+        copiedPages.forEach(page => newPdfDoc.addPage(page));
+
+        const pdfBytes = await newPdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        
+        return {
+            blob: blob,
+            size: blob.size
+        };
     }
 
     /**
@@ -502,16 +948,129 @@ class FusePDF {
     }
 
     /**
+     * Load processing history from localStorage
+     */
+    loadHistory() {
+        try {
+            return JSON.parse(localStorage.getItem('fusepdf_history') || '[]');
+        } catch {
+            return [];
+        }
+    }
+    
+    /**
+     * Save processing history to localStorage
+     */
+    saveHistory() {
+        try {
+            localStorage.setItem('fusepdf_history', JSON.stringify(this.processingHistory));
+        } catch (error) {
+            console.warn('Could not save history to localStorage:', error);
+        }
+    }
+    
+    /**
+     * Add file to recent files
+     */
+    addToRecentFiles(filename, operation) {
+        const historyItem = {
+            filename,
+            operation,
+            timestamp: new Date().toISOString(),
+            id: Date.now()
+        };
+        
+        this.processingHistory.unshift(historyItem);
+        
+        // Keep only last 10 items
+        if (this.processingHistory.length > 10) {
+            this.processingHistory = this.processingHistory.slice(0, 10);
+        }
+        
+        this.saveHistory();
+    }
+    
+    /**
+     * Show multiple results for batch operations
+     */
+    showMultipleResults(results) {
+        const resultSection = document.getElementById('resultSection');
+        const resultInfo = document.getElementById('resultInfo');
+        
+        let totalSize = results.reduce((sum, result) => sum + result.size, 0);
+        resultInfo.innerHTML = `
+            <div>Generated ${results.length} files • Total size: ${this.formatFileSize(totalSize)}</div>
+            <div class="multiple-downloads">
+                ${results.map((result, index) => 
+                    `<button class="download-btn small" onclick="fusePDF.downloadSpecificResult(${index})">${result.filename}</button>`
+                ).join('')}
+            </div>
+        `;
+        
+        // Store results for download
+        this.currentResults = results;
+        
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    /**
+     * Download specific result
+     */
+    downloadSpecificResult(index) {
+        const result = this.currentResults[index];
+        if (result) {
+            this.downloadBlob(result.blob, result.filename);
+        }
+    }
+    
+    /**
+     * Enhanced error messages with suggestions
+     */
+    showError(message, suggestion = null) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--danger-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            max-width: 350px;
+            box-shadow: var(--shadow-lg);
+        `;
+        
+        let content = `<strong>Error:</strong> ${message}`;
+        if (suggestion) {
+            content += `<br><small><strong>Suggestion:</strong> ${suggestion}</small>`;
+        }
+        
+        toast.innerHTML = content;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 7000);
+    }
+    
+    /**
      * Reset all forms and states
      */
     resetAll() {
         this.currentFiles = [];
+        this.selectedPages.clear();
+        this.currentPdfDoc = null;
+        this.currentResults = null;
         
         // Hide all option sections
         document.getElementById('splitOptions').style.display = 'none';
         document.getElementById('mergeFileList').style.display = 'none';
         document.getElementById('compressOptions').style.display = 'none';
         document.getElementById('resultSection').style.display = 'none';
+        document.getElementById('thumbnailsContainer').style.display = 'none';
         
         // Reset form inputs
         document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
@@ -519,8 +1078,15 @@ class FusePDF {
         document.getElementById('endPage').value = 1;
         document.getElementById('compressionLevel').value = 'medium';
         
+        // Reset split mode
+        this.switchSplitMode('range');
+        
         // Reset file containers
         document.getElementById('filesContainer').innerHTML = '';
+        document.getElementById('thumbnailsGrid').innerHTML = '';
+        
+        // Clear page selection
+        this.clearPageSelection();
         
         // Remove dragover classes
         document.querySelectorAll('.file-upload-area').forEach(area => {
