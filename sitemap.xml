@@ -6,32 +6,32 @@
     
     <!-- Main page -->
     <url>
-        <loc>https://pdf-tool.vercel.app/</loc>
-        <lastmod>2025-11-04</lastmod>
+        <loc>https://fusepdf.vercel.app/</loc>
+        <lastmod>2025-11-05</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     
     <!-- Split PDF Tool -->
     <url>
-        <loc>https://pdf-tool.vercel.app/#split</loc>
-        <lastmod>2025-11-04</lastmod>
+        <loc>https://fusepdf.vercel.app/#split</loc>
+        <lastmod>2025-11-05</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <!-- Merge PDF Tool -->
     <url>
-        <loc>https://pdf-tool.vercel.app/#merge</loc>
-        <lastmod>2025-11-04</lastmod>
+        <loc>https://fusepdf.vercel.app/#merge</loc>
+        <lastmod>2025-11-05</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <!-- Compress PDF Tool -->
     <url>
-        <loc>https://pdf-tool.vercel.app/#compress</loc>
-        <lastmod>2025-11-04</lastmod>
+        <loc>https://fusepdf.vercel.app/#compress</loc>
+        <lastmod>2025-11-05</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

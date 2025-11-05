@@ -20,7 +20,7 @@ Allow: /*.ico$
 Allow: /*.webp$
 
 # Sitemap location
-Sitemap: https://pdf-tool.vercel.app/sitemap.xml
+Sitemap: https://fusepdf.vercel.app/sitemap.xml
 
 # Crawl delay (optional - be respectful to crawlers)
 Crawl-delay: 1

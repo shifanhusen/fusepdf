@@ -111,6 +111,13 @@ body {
     text-align: center;
 }
 
+.ad-banner.ad-inline {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+}
+
 .ad-placeholder {
     background: var(--bg-tertiary);
     border: 2px dashed var(--border-color);
