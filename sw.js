@@ -3,10 +3,10 @@
 
 const CACHE_NAME = 'fusepdf-v1.0.0';
 const urlsToCache = [
-    '/pdf-tools/',
-    '/pdf-tools/index.html',
-    '/pdf-tools/css/style.css',
-    '/pdf-tools/js/app.js',
+    '/',
+    '/index.html',
+    '/css/style.css',
+    '/js/app.js',
     'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'
 ];
 
