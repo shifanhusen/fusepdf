@@ -5,58 +5,33 @@
 
 class FusePDF {
     constructor() {
-        this.currentFiles = [];
-        this.currentTab = 'split';
-        this.isProcessing = false;
-        this.selectedPages = new Set();
-        this.currentPdfDoc = null;
-        this.splitMode = 'range';
-        this.processingHistory = this.loadHistory();
-        
-        // Initialize PDF.js worker
-        if (typeof pdfjsLib !== 'undefined') {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        // Initialize PDF-related properties if needed
+        if (document.querySelector('.pdf-tools')) {
+            this.currentFiles = [];
+            this.currentTab = 'split';
+            this.isProcessing = false;
+            this.selectedPages = new Set();
+            this.currentPdfDoc = null;
+            this.splitMode = 'range';
+            this.processingHistory = this.loadHistory();
+            
+            // Initialize PDF.js worker
+            if (typeof pdfjsLib !== 'undefined') {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+
+            // Initialize PDF features
+            this.initPDFFeatures();
         }
-        
-        // Initialize the application
-        this.init();
     }
 
     /**
-     * Initialize the application
+     * Initialize PDF features
      */
-    init() {
-        this.initTheme();
+    initPDFFeatures() {
         this.initEventListeners();
         this.initDragAndDrop();
-        
-        console.log('FusePDF initialized successfully');
-    }
-
-    /**
-     * Initialize theme system
-     */
-    initTheme() {
-        const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        
-        this.setTheme(savedTheme);
-        
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            this.setTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-    }
-
-    /**
-     * Set theme
-     */
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+        console.log('FusePDF PDF tools initialized successfully');
     }
 
     /**
@@ -81,6 +56,8 @@ class FusePDF {
         document.getElementById('splitBtn').addEventListener('click', () => this.handleSplit());
         document.getElementById('mergeBtn').addEventListener('click', () => this.handleMerge());
         document.getElementById('compressBtn').addEventListener('click', () => this.handleCompress());
+        document.getElementById('imagesToPdfBtn').addEventListener('click', () => this.handleImagesToPdf());
+        document.getElementById('extractBtn').addEventListener('click', () => this.handleExtractImages());
         
         // Result buttons
         document.getElementById('resetBtn').addEventListener('click', () => this.resetAll());
@@ -125,6 +102,20 @@ class FusePDF {
         
         compressUploadBtn.addEventListener('click', () => compressInput.click());
         compressInput.addEventListener('change', (e) => this.handleCompressFileSelect(e));
+
+        // Images to PDF file input
+        const imagesInput = document.querySelector('#imagesUpload input[type="file"]');
+        const imagesUploadBtn = document.querySelector('#imagesUpload .upload-btn');
+        
+        imagesUploadBtn.addEventListener('click', () => imagesInput.click());
+        imagesInput.addEventListener('change', (e) => this.handleImagesFileSelect(e));
+
+        // PDF to Images file input
+        const extractInput = document.querySelector('#extractUpload input[type="file"]');
+        const extractUploadBtn = document.querySelector('#extractUpload .upload-btn');
+        
+        extractUploadBtn.addEventListener('click', () => extractInput.click());
+        extractInput.addEventListener('change', (e) => this.handleExtractFileSelect(e));
     }
 
     /**
@@ -132,12 +123,14 @@ class FusePDF {
      */
     initDragAndDrop() {
         const dropAreas = [
-            { element: document.getElementById('splitUpload'), handler: (files) => this.handleSplitFiles(files) },
-            { element: document.getElementById('mergeUpload'), handler: (files) => this.handleMergeFiles(files) },
-            { element: document.getElementById('compressUpload'), handler: (files) => this.handleCompressFiles(files) }
+            { element: document.getElementById('splitUpload'), handler: (files) => this.handleSplitFiles(files), accept: ['application/pdf'] },
+            { element: document.getElementById('mergeUpload'), handler: (files) => this.handleMergeFiles(files), accept: ['application/pdf'] },
+            { element: document.getElementById('compressUpload'), handler: (files) => this.handleCompressFiles(files), accept: ['application/pdf'] },
+            { element: document.getElementById('imagesUpload'), handler: (files) => this.handleImagesFiles(files), accept: ['image/'] },
+            { element: document.getElementById('extractUpload'), handler: (files) => this.handleExtractFiles(files), accept: ['application/pdf'] }
         ];
 
-        dropAreas.forEach(({ element, handler }) => {
+        dropAreas.forEach(({ element, handler, accept }) => {
             element.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 element.classList.add('dragover');
@@ -151,11 +144,16 @@ class FusePDF {
             element.addEventListener('drop', (e) => {
                 e.preventDefault();
                 element.classList.remove('dragover');
-                const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
+                
+                const files = Array.from(e.dataTransfer.files).filter(file => {
+                    return accept.some(type => file.type.startsWith(type) || file.type === type);
+                });
+                
                 if (files.length > 0) {
                     handler(files);
                 } else {
-                    this.showError('Please drop PDF files only.');
+                    const expectedType = accept.includes('application/pdf') ? 'PDF' : 'image';
+                    this.showError(`Please drop ${expectedType} files only.`);
                 }
             });
         });
@@ -437,6 +435,14 @@ class FusePDF {
                         e.preventDefault();
                         this.switchTab('compress');
                         break;
+                    case '4':
+                        e.preventDefault();
+                        this.switchTab('images');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        this.switchTab('extract');
+                        break;
                     case 'Enter':
                         e.preventDefault();
                         this.handleCurrentTabProcess();
@@ -465,7 +471,324 @@ class FusePDF {
             case 'compress':
                 this.handleCompress();
                 break;
+            case 'images':
+                this.handleImagesToPdf();
+                break;
+            case 'extract':
+                this.handleExtractImages();
+                break;
         }
+    }
+
+    // ============ IMAGE CONVERSION METHODS ============
+
+    /**
+     * Handle images file selection
+     */
+    handleImagesFileSelect(e) {
+        const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+        this.handleImagesFiles(files);
+    }
+
+    /**
+     * Handle images files
+     */
+    handleImagesFiles(files) {
+        if (files.length === 0) {
+            this.showError('Please select at least one image file.');
+            return;
+        }
+
+        this.currentFiles = files;
+        this.displayImagePreviews();
+        document.getElementById('imagesOptions').style.display = 'block';
+    }
+
+    /**
+     * Display image previews
+     */
+    displayImagePreviews() {
+        const imagesGrid = document.getElementById('imagesGrid');
+        imagesGrid.innerHTML = '';
+
+        this.currentFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                previewItem.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                    <div class="image-preview-label">${file.name}</div>
+                    <button class="image-remove-btn" onclick="fusePDF.removeImageFile(${index})">×</button>
+                `;
+                imagesGrid.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Remove image file
+     */
+    removeImageFile(index) {
+        this.currentFiles.splice(index, 1);
+        if (this.currentFiles.length > 0) {
+            this.displayImagePreviews();
+        } else {
+            document.getElementById('imagesOptions').style.display = 'none';
+        }
+    }
+
+    /**
+     * Handle images to PDF conversion
+     */
+    async handleImagesToPdf() {
+        if (this.currentFiles.length === 0) {
+            this.showError('Please select at least one image file.');
+            return;
+        }
+
+        const pageSize = document.getElementById('pageSize').value;
+        const quality = document.getElementById('imageQuality').value;
+
+        try {
+            this.setProcessing(true, 'imagesProgress');
+            const result = await this.convertImagesToPdf(this.currentFiles, pageSize, quality);
+            this.showResult(`Created PDF from ${this.currentFiles.length} images`, result.size, result.blob);
+            this.addToRecentFiles(`${this.currentFiles.length} images`, 'images-to-pdf');
+        } catch (error) {
+            this.showError('Error converting images to PDF: ' + error.message);
+        } finally {
+            this.setProcessing(false, 'imagesProgress');
+        }
+    }
+
+    /**
+     * Convert images to PDF
+     */
+    async convertImagesToPdf(imageFiles, pageSize, quality) {
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        
+        for (const file of imageFiles) {
+            const arrayBuffer = await file.arrayBuffer();
+            let image;
+            
+            // Determine image type and embed accordingly
+            if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                image = await pdfDoc.embedJpg(arrayBuffer);
+            } else if (file.type === 'image/png') {
+                image = await pdfDoc.embedPng(arrayBuffer);
+            } else {
+                // Convert other formats to PNG using canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = URL.createObjectURL(file);
+                });
+                
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                const pngData = canvas.toDataURL('image/png');
+                const pngArrayBuffer = this.dataURLToArrayBuffer(pngData);
+                image = await pdfDoc.embedPng(pngArrayBuffer);
+                
+                URL.revokeObjectURL(img.src);
+            }
+            
+            let pageWidth, pageHeight;
+            
+            // Determine page dimensions
+            if (pageSize === 'auto') {
+                pageWidth = image.width;
+                pageHeight = image.height;
+            } else {
+                const dimensions = this.getPageDimensions(pageSize);
+                pageWidth = dimensions.width;
+                pageHeight = dimensions.height;
+            }
+            
+            const page = pdfDoc.addPage([pageWidth, pageHeight]);
+            
+            // Calculate scaling to fit image on page
+            const scaleX = pageWidth / image.width;
+            const scaleY = pageHeight / image.height;
+            const scale = Math.min(scaleX, scaleY);
+            
+            const scaledWidth = image.width * scale;
+            const scaledHeight = image.height * scale;
+            
+            // Center the image on the page
+            const x = (pageWidth - scaledWidth) / 2;
+            const y = (pageHeight - scaledHeight) / 2;
+            
+            page.drawImage(image, {
+                x: x,
+                y: y,
+                width: scaledWidth,
+                height: scaledHeight,
+            });
+        }
+        
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        
+        return {
+            blob: blob,
+            size: blob.size
+        };
+    }
+
+    /**
+     * Get page dimensions for standard page sizes
+     */
+    getPageDimensions(pageSize) {
+        const dimensions = {
+            'a4': { width: 595, height: 842 },
+            'letter': { width: 612, height: 792 },
+            'legal': { width: 612, height: 1008 }
+        };
+        return dimensions[pageSize] || dimensions.a4;
+    }
+
+    /**
+     * Convert data URL to array buffer
+     */
+    dataURLToArrayBuffer(dataURL) {
+        const base64 = dataURL.split(',')[1];
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
+    // ============ PDF TO IMAGES METHODS ============
+
+    /**
+     * Handle extract file selection
+     */
+    handleExtractFileSelect(e) {
+        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        this.handleExtractFiles(files);
+    }
+
+    /**
+     * Handle extract files
+     */
+    async handleExtractFiles(files) {
+        if (files.length !== 1) {
+            this.showError('Please select exactly one PDF file for image extraction.');
+            return;
+        }
+
+        try {
+            const file = files[0];
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            const pageCount = pdfDoc.getPageCount();
+
+            document.getElementById('extractPageCount').textContent = `Total pages: ${pageCount}`;
+            document.getElementById('extractEndPage').max = pageCount;
+            document.getElementById('extractEndPage').value = pageCount;
+            document.getElementById('extractOptions').style.display = 'block';
+
+            this.currentFiles = [file];
+            this.addToRecentFiles(file.name, 'pdf-to-images');
+        } catch (error) {
+            this.showError('Error reading PDF file. Please ensure it\'s a valid PDF.');
+        }
+    }
+
+    /**
+     * Handle extract images
+     */
+    async handleExtractImages() {
+        if (this.currentFiles.length === 0) {
+            this.showError('Please select a PDF file first.');
+            return;
+        }
+
+        const startPage = parseInt(document.getElementById('extractStartPage').value);
+        const endPage = parseInt(document.getElementById('extractEndPage').value);
+        const outputFormat = document.getElementById('outputFormat').value;
+        const resolution = parseFloat(document.getElementById('outputResolution').value);
+
+        if (startPage > endPage || startPage < 1) {
+            this.showError('Invalid page range.');
+            return;
+        }
+
+        try {
+            this.setProcessing(true, 'extractProgress');
+            const results = await this.extractPdfToImages(this.currentFiles[0], startPage, endPage, outputFormat, resolution);
+            
+            if (results.length === 1) {
+                this.showResult(`Extracted page ${startPage} as ${outputFormat.toUpperCase()}`, results[0].size, results[0].blob);
+            } else {
+                this.showMultipleResults(results);
+            }
+        } catch (error) {
+            this.showError('Error extracting images from PDF: ' + error.message);
+        } finally {
+            this.setProcessing(false, 'extractProgress');
+        }
+    }
+
+    /**
+     * Extract PDF pages to images
+     */
+    async extractPdfToImages(file, startPage, endPage, outputFormat, resolution) {
+        if (!window.pdfjsLib) {
+            throw new Error('PDF.js library not loaded');
+        }
+
+        const arrayBuffer = await file.arrayBuffer();
+        const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
+        const pdf = await loadingTask.promise;
+        
+        const results = [];
+        
+        for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({scale: resolution});
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            
+            await page.render(renderContext).promise;
+            
+            // Convert canvas to blob
+            const blob = await new Promise(resolve => {
+                if (outputFormat === 'png') {
+                    canvas.toBlob(resolve, 'image/png');
+                } else {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.95);
+                }
+            });
+            
+            results.push({
+                message: `Page ${pageNum}`,
+                size: blob.size,
+                blob: blob,
+                filename: `page-${pageNum}.${outputFormat}`
+            });
+        }
+        
+        return results;
     }
 
     /**
@@ -1069,6 +1392,8 @@ class FusePDF {
         document.getElementById('splitOptions').style.display = 'none';
         document.getElementById('mergeFileList').style.display = 'none';
         document.getElementById('compressOptions').style.display = 'none';
+        document.getElementById('imagesOptions').style.display = 'none';
+        document.getElementById('extractOptions').style.display = 'none';
         document.getElementById('resultSection').style.display = 'none';
         document.getElementById('thumbnailsContainer').style.display = 'none';
         
@@ -1084,6 +1409,7 @@ class FusePDF {
         // Reset file containers
         document.getElementById('filesContainer').innerHTML = '';
         document.getElementById('thumbnailsGrid').innerHTML = '';
+        document.getElementById('imagesGrid').innerHTML = '';
         
         // Clear page selection
         this.clearPageSelection();

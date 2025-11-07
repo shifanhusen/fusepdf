@@ -1,17 +1,13 @@
 <!DOCTYPE html>
-<html lang=    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
-    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">n">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
     <title>Free Online PDF Split Merge Compress Tool – No Upload Required | FusePDF</title>
-    <meta name="description" content="Free online PDF tool to split, merge, and compress PDF files directly in your browser. No uploads, 100% privacy, works offline. Split PDF pages, merge multiple PDFs, compress file size.">
-    <meta name="keywords" content="PDF split, PDF merge, PDF compress, online PDF tool, free PDF editor, no upload PDF, browser PDF tool">
+    <meta name="description" content="Complete free PDF toolkit: split, merge, compress PDFs, convert images to PDF, extract PDF pages as images. All processing in your browser - no uploads, 100% privacy.">
+    <meta name="keywords" content="PDF split, PDF merge, PDF compress, images to PDF, PDF to images, online PDF tool, free PDF editor, JPG to PDF, PNG to PDF, PDF converter, browser PDF tool">
     <meta name="author" content="FusePDF">
     <meta name="robots" content="index, follow">
     
@@ -19,8 +15,8 @@
     <meta property="og:title" content="Free Online PDF Split Merge Compress Tool – No Upload Required">
     <meta property="og:description" content="Free online PDF tool to split, merge, and compress PDF files directly in your browser. No uploads, 100% privacy.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://fusepdf.vercel.app">
-    <meta property="og:image" content="https://fusepdf.vercel.app/assets/images/logo.png">
+    <meta property="og:url" content="https://www.innovitecho.com/pdf-tools">
+    <meta property="og:image" content="https://www.innovitecho.com/pdf-tools/assets/images/logo.png">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -28,7 +24,7 @@
     <meta name="twitter:description" content="Split, merge, and compress PDFs in your browser. No uploads required.">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://fusepdf.vercel.app">
+    <link rel="canonical" href="https://www.innovitecho.com/pdf-tools">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/images/logo.png">
@@ -81,14 +77,21 @@
     }
     </script>
 </head>
-<body>
+<body class="pdf-tools">
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="logo">
                 <img src="assets/images/logo.png" alt="FusePDF Logo" class="logo-img">
+                <span class="logo-text">FusePDF</span>
             </div>
             <nav class="nav">
+                <a href="#" class="nav-link active">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="privacy-policy.html" class="nav-link">Privacy</a>
+                <a href="terms-of-service.html" class="nav-link">Terms</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <!-- <a href="admin.html" class="nav-link">📧 Admin</a> -->
                 <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
             </nav>
         </div>
@@ -103,13 +106,16 @@
 
     <!-- Top AdSense Banner -->
     <div class="ad-banner ad-top">
-        <!-- AdSense Banner Ad -->
-        <ins class="adsbygoogle"
-             style="display:block"
+        <!-- AdSense Banner Ad - Desktop -->
+        <ins class="adsbygoogle ad-desktop"
+             style="display:inline-block;width:728px;height:90px"
              data-ad-client="ca-pub-6491189589104119"
-             data-ad-slot="1234567890"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
+             data-ad-slot="1234567890"></ins>
+        <!-- AdSense Banner Ad - Mobile -->
+        <ins class="adsbygoogle ad-mobile"
+             style="display:inline-block;width:320px;height:100px"
+             data-ad-client="ca-pub-6491189589104119"
+             data-ad-slot="1234567891"></ins>
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
@@ -117,10 +123,39 @@
     <main class="main">
         <div class="container">
             <!-- Hero Section -->
-            <section class="hero">
-                <h2>Free PDF Tools - Split, Merge & Compress</h2>
-                <p>Process your PDF files directly in your browser. No uploads, no registration, completely free.</p>
+            <section class="hero compact">
+                <div class="hero-content">
+                    <div class="hero-icon">
+                        <span class="hero-emoji">📄</span>
+                    </div>
+                    <h1 class="hero-title">Complete PDF Toolkit</h1>
+                    <p class="hero-subtitle">Split, merge, compress PDFs, convert images, and extract pages - all in your browser</p>
+                    <!-- <div class="hero-features">
+                        <div class="feature-badge">
+                            <span class="feature-icon">🔒</span>
+                            <span>100% Private</span>
+                        </div>
+                        <div class="feature-badge">
+                            <span class="feature-icon">⚡</span>
+                            <span>Instant</span>
+                        </div>
+                        <div class="feature-badge">
+                            <span class="feature-icon">🆓</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="feature-badge">
+                            <span class="feature-icon">📱</span>
+                            <span>Offline</span>
+                        </div>
+                    </div> -->
+                </div>
             </section>
+
+            <!-- Tools CTA -->
+            <div class="tools-cta">
+                <h2>Choose Your Tool</h2>
+                <p>Select a PDF tool below to get started instantly</p>
+            </div>
 
             <!-- Tool Tabs -->
             <section class="tool-section">
@@ -128,6 +163,8 @@
                     <button class="tab-btn active" data-tab="split">Split PDF</button>
                     <button class="tab-btn" data-tab="merge">Merge PDFs</button>
                     <button class="tab-btn" data-tab="compress">Compress PDF</button>
+                    <button class="tab-btn" data-tab="images">Images to PDF</button>
+                    <button class="tab-btn" data-tab="extract">PDF to Images</button>
                 </div>
 
                 <!-- Split PDF Tab -->
@@ -271,6 +308,115 @@
                     </div>
                 </div>
 
+                <!-- Images to PDF Tab -->
+                <div class="tab-content" id="images">
+                    <div class="tool-card">
+                        <h3>Images to PDF</h3>
+                        <p>Convert JPG, PNG, and other images into a single PDF document.</p>
+                        
+                        <div class="file-upload-area" id="imagesUpload">
+                            <div class="upload-icon">🖼️</div>
+                            <p>Drag & drop image files here or <button class="upload-btn">Browse Files</button></p>
+                            <input type="file" accept="image/*" multiple hidden>
+                        </div>
+                        
+                        <div class="images-options" id="imagesOptions" style="display: none;">
+                            <div class="images-preview" id="imagesPreview">
+                                <h4>Images to convert:</h4>
+                                <div class="images-grid" id="imagesGrid"></div>
+                            </div>
+                            
+                            <div class="pdf-settings">
+                                <div class="setting-group">
+                                    <label>
+                                        Page Size:
+                                        <select id="pageSize">
+                                            <option value="auto">Auto (fit to image)</option>
+                                            <option value="a4">A4</option>
+                                            <option value="letter">Letter</option>
+                                            <option value="legal">Legal</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="setting-group">
+                                    <label>
+                                        Image Quality:
+                                        <select id="imageQuality">
+                                            <option value="high">High Quality</option>
+                                            <option value="medium" selected>Medium Quality</option>
+                                            <option value="low">Low Quality (Smaller file)</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="process-btn" id="imagesToPdfBtn">Create PDF</button>
+                        </div>
+                        
+                        <div class="progress-bar" id="imagesProgress" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDF to Images Tab -->
+                <div class="tab-content" id="extract">
+                    <div class="tool-card">
+                        <h3>PDF to Images</h3>
+                        <p>Extract pages from PDF as high-quality JPG or PNG images.</p>
+                        
+                        <div class="file-upload-area" id="extractUpload">
+                            <div class="upload-icon">📸</div>
+                            <p>Drag & drop PDF file here or <button class="upload-btn">Browse Files</button></p>
+                            <input type="file" accept=".pdf" hidden>
+                        </div>
+                        
+                        <div class="extract-options" id="extractOptions" style="display: none;">
+                            <div class="page-info">
+                                <span id="extractPageCount">Total pages: 0</span>
+                            </div>
+                            
+                            <div class="extract-settings">
+                                <div class="setting-group">
+                                    <label>
+                                        Output Format:
+                                        <select id="outputFormat">
+                                            <option value="png">PNG (Higher Quality)</option>
+                                            <option value="jpg" selected>JPG (Smaller Size)</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="setting-group">
+                                    <label>
+                                        Image Resolution:
+                                        <select id="outputResolution">
+                                            <option value="1">Standard (72 DPI)</option>
+                                            <option value="2" selected>High (144 DPI)</option>
+                                            <option value="3">Very High (216 DPI)</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="range-inputs">
+                                    <label>
+                                        Start Page:
+                                        <input type="number" id="extractStartPage" min="1" value="1">
+                                    </label>
+                                    <label>
+                                        End Page:
+                                        <input type="number" id="extractEndPage" min="1" value="1">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="process-btn" id="extractBtn">Extract Images</button>
+                        </div>
+                        
+                        <div class="progress-bar" id="extractProgress" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Result Section -->
                 <div class="result-section" id="resultSection" style="display: none;">
                     <h3>✅ Processing Complete!</h3>
@@ -279,6 +425,101 @@
                     </div>
                     <button class="download-btn" id="downloadBtn">📥 Download Result</button>
                     <button class="reset-btn" id="resetBtn">🔄 Process Another File</button>
+                </div>
+            </section>
+
+            <!-- What FusePDF Does Section -->
+            <section class="content-section">
+                <div class="content-wrapper">
+                    <h2>What FusePDF Does</h2>
+                    <p>FusePDF is a comprehensive, browser-based PDF toolkit that empowers you to handle all your PDF needs without compromising your privacy or requiring expensive software subscriptions. Our platform provides five essential PDF tools that work entirely within your browser, ensuring your documents never leave your device.</p>
+                    
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <h3>📄 Split PDFs</h3>
+                            <p>Extract specific pages, split by ranges, or separate large documents into smaller files with precision control and visual page previews.</p>
+                        </div>
+                        <div class="tool-card">
+                            <h3>🔗 Merge PDFs</h3>
+                            <p>Combine multiple PDF files into a single document with drag-and-drop reordering and custom page selection.</p>
+                        </div>
+                        <div class="tool-card">
+                            <h3>📦 Compress PDFs</h3>
+                            <p>Reduce file sizes while maintaining quality using advanced compression algorithms optimized for different document types.</p>
+                        </div>
+                        <div class="tool-card">
+                            <h3>🖼️ Images to PDF</h3>
+                            <p>Convert JPG, PNG, and other image formats into professional PDF documents with customizable layouts and sizing.</p>
+                        </div>
+                        <div class="tool-card">
+                            <h3>📸 PDF to Images</h3>
+                            <p>Extract individual pages as high-quality images in various formats for presentations, web use, or archival purposes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works Section -->
+            <section class="content-section alt-bg">
+                <div class="content-wrapper">
+                    <h2>How FusePDF Works</h2>
+                    <p>Our innovative approach to PDF processing ensures maximum privacy and efficiency by leveraging modern browser technologies to handle all operations locally on your device.</p>
+                    
+                    <div class="process-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h3>Upload Your Files</h3>
+                            <p>Select PDF files or images from your device. Files are loaded directly into your browser's memory without any server uploads.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h3>Choose Your Tool</h3>
+                            <p>Select from our five specialized tools: Split, Merge, Compress, Images→PDF, or PDF→Images based on your needs.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h3>Customize Settings</h3>
+                            <p>Use our intuitive interface to specify page ranges, compression levels, image quality, or merge order with visual previews.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <h3>Process & Download</h3>
+                            <p>Our JavaScript engine processes your files instantly using PDF-lib and PDF.js libraries, then provides immediate download links.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Choose FusePDF Section -->
+            <section class="content-section">
+                <div class="content-wrapper">
+                    <h2>Why Choose FusePDF</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <h3>🔐 Complete Privacy</h3>
+                            <p>Your documents never leave your device. All processing happens locally in your browser, ensuring absolute confidentiality for sensitive documents.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h3>⚡ Lightning Fast</h3>
+                            <p>No server uploads or downloads mean instant processing. Handle large PDF files in seconds without waiting for cloud processing.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h3>💰 Always Free</h3>
+                            <p>No subscriptions, hidden fees, or usage limits. Access all features permanently without any cost or registration requirements.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h3>🌐 Works Everywhere</h3>
+                            <p>Compatible with all modern browsers on desktop, tablet, and mobile devices. Works offline once loaded for ultimate convenience.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h3>🛡️ No Registration</h3>
+                            <p>Start using immediately without creating accounts, providing personal information, or agreeing to data collection policies.</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h3>🔄 Batch Processing</h3>
+                            <p>Handle multiple files simultaneously with our advanced batch processing capabilities for maximum productivity.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -316,6 +557,14 @@
                     <h3>What browsers are supported?</h3>
                     <p>FusePDF works on all modern browsers including Chrome, Firefox, Safari, and Edge.</p>
                 </div>
+                <div class="faq-item">
+                    <h3>What image formats can I convert to PDF?</h3>
+                    <p>You can convert JPG, PNG, GIF, WebP, and most other image formats to PDF. Multiple images can be combined into a single PDF document.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I extract specific pages as images?</h3>
+                    <p>Yes! You can extract any page range from a PDF as high-quality JPG or PNG images with customizable resolution.</p>
+                </div>
             </section>
         </div>
     </main>
@@ -336,6 +585,7 @@
     <div class="shortcuts-info" id="shortcutsInfo">
         <strong>⌨️ Shortcuts:</strong><br>
         <kbd>Ctrl+1</kbd> Split • <kbd>Ctrl+2</kbd> Merge • <kbd>Ctrl+3</kbd> Compress<br>
+        <kbd>Ctrl+4</kbd> Images→PDF • <kbd>Ctrl+5</kbd> PDF→Images<br>
         <kbd>Ctrl+Enter</kbd> Process • <kbd>Esc</kbd> Reset
     </div>
 
@@ -356,16 +606,26 @@
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Support</h4>
-                    <p>
-                        <a href="mailto:support@fusepdf.com">Contact Support</a><br>
-                        <!-- Optional: Buy Me a Coffee link -->
-                        <a href="#" class="donate-link">☕ Buy me a coffee</a>
-                    </p>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/pdf-tools/about.html">About Us</a></li>
+                        <li><a href="/pdf-tools/contact.html">Contact</a></li>
+                        <li><a href="/pdf-tools/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="/pdf-tools/terms-of-service.html">Terms of Service</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 FusePDF. Made with ❤️ for the PDF community.</p>
+                <div class="footer-links">
+                    <a href="/pdf-tools/privacy-policy.html">Privacy</a>
+                    <span>•</span>
+                    <a href="/pdf-tools/terms-of-service.html">Terms</a>
+                    <span>•</span>
+                    <a href="/pdf-tools/contact.html">Contact</a>
+                    <span>•</span>
+                    <a href="/pdf-tools/about.html">About</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -377,7 +637,15 @@
     <!-- PDF-lib library from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     
+    <!-- Theme script -->
+    <script src="js/theme.js"></script>
     <!-- Main application script -->
     <script src="js/app.js"></script>
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new FusePDF();
+        });
+    </script>
 </body>
 </html>

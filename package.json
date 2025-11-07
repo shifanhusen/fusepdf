@@ -25,6 +25,7 @@
     "url": "https://github.com/shifanhusen/fusepdf.git"
   },
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "python -m http.server 8000",
     "dev": "python -m http.server 8000",
@@ -34,6 +35,10 @@
     "validate": "echo 'Running validation checks...' && node -e 'console.log(\"HTML/CSS/JS validation would go here\")'",
     "lighthouse": "lighthouse --chrome-flags='--headless' https://pdf-tool.vercel.app",
     "seo-check": "echo 'SEO validation - check sitemap.xml and robots.txt'"
+  },
+  "dependencies": {
+    "@vercel/kv": "^1.0.0",
+    "@upstash/redis": "^1.28.4"
   },
   "devDependencies": {
     "http-server": "^14.1.1",
