@@ -3,63 +3,311 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InnoviTecho Tools</title>
-  <meta name="description" content="Explore InnoviTecho apps and tools" />
+  <title>InnoviTecho - Free Online Tools for Everyone</title>
+  <meta name="description" content="Discover powerful, privacy-focused online tools. PDF editing, image compression, QR codes, and more - all free and running in your browser." />
+  <meta name="keywords" content="online tools, PDF tools, image compression, QR code generator, URL shortener, free tools" />
   <link rel="icon" href="/assets/images/logo.png" type="image/png" />
   <link rel="stylesheet" href="/css/style.css" />
   <script src="/js/theme.js" defer></script>
   <style>
-    .apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2rem}
-    .app-card{background:var(--bg-secondary);border:2px solid var(--border-color);border-radius:12px;padding:1.25rem;transition:transform .15s ease,border-color .15s ease}
-    .app-card:hover{transform:translateY(-2px);border-color:var(--primary-color)}
-    .app-card h3{margin:0 0 .5rem 0}
-    .hero{padding:3rem 0}
-    .hero h1{font-size:2rem;margin-bottom:.5rem}
-    .container{max-width:1100px;margin:0 auto;padding:0 1rem}
-    .nav{display:flex;gap:1rem;align-items:center}
-    .header{border-bottom:2px solid var(--border-color)}
-    .logo-img{height:32px;width:32px}
-    .footer{margin-top:3rem;border-top:2px solid var(--border-color);padding:2rem 0}
+    /* Container */
+    .home-container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+    
+    /* Header Styles */
+    .home-header{background:var(--bg-secondary);border-bottom:1px solid var(--border-color);padding:1rem 0;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+    .home-header .home-container{display:flex;justify-content:space-between;align-items:center}
+    .home-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+    .home-logo-img{height:40px;width:40px;transition:transform 0.3s ease}
+    .home-logo-img:hover{transform:scale(1.05)}
+    .home-logo-text{font-size:1.5rem;font-weight:700;color:var(--text-primary);background:linear-gradient(135deg,var(--primary-color),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .home-nav{display:flex;align-items:center;gap:1.5rem}
+    .home-nav-link{color:var(--text-secondary);text-decoration:none;font-weight:500;padding:0.5rem 1rem;border-radius:0.5rem;transition:all 0.3s ease}
+    .home-nav-link:hover{color:var(--text-primary);background:var(--bg-tertiary)}
+    .home-nav-link.active{color:var(--primary-color);background:var(--bg-tertiary)}
+    
+    /* Hero Section */
+    .hero-section{padding:4rem 0 3rem;text-align:center}
+    .hero-badge{display:inline-block;padding:0.5rem 1rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:50px;font-size:0.875rem;color:var(--primary-color);margin-bottom:1.5rem;font-weight:600}
+    .hero-title{font-size:clamp(2.5rem,5vw,4rem);font-weight:800;margin:0 0 1rem;line-height:1.2;background:linear-gradient(135deg,var(--text-primary),var(--primary-color));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-subtitle{font-size:1.25rem;color:var(--text-secondary);max-width:700px;margin:0 auto 2rem;line-height:1.6}
+    .hero-cta{display:inline-flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+    .cta-primary{background:var(--primary-color);color:white;padding:0.875rem 2rem;border-radius:0.75rem;text-decoration:none;font-weight:600;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
+    .cta-primary:hover{background:var(--primary-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,0.4)}
+    .cta-secondary{background:var(--bg-secondary);color:var(--text-primary);padding:0.875rem 2rem;border-radius:0.75rem;text-decoration:none;font-weight:600;border:2px solid var(--border-color);transition:all 0.3s ease}
+    .cta-secondary:hover{border-color:var(--primary-color);transform:translateY(-2px)}
+    
+    /* Features Section */
+    .features-section{padding:3rem 0}
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:3rem}
+    .feature-card{background:var(--bg-secondary);padding:1.5rem;border-radius:1rem;border:1px solid var(--border-color);transition:all 0.3s ease}
+    .feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--primary-color)}
+    .feature-icon{font-size:2.5rem;margin-bottom:1rem;display:block}
+    .feature-title{font-size:1.125rem;font-weight:700;margin-bottom:0.5rem;color:var(--text-primary)}
+    .feature-desc{color:var(--text-secondary);font-size:0.95rem;line-height:1.5}
+    
+    /* Tools Grid */
+    .tools-section{padding:3rem 0}
+    .section-header{text-align:center;margin-bottom:3rem}
+    .section-title{font-size:2.5rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-primary)}
+    .section-subtitle{font-size:1.125rem;color:var(--text-secondary)}
+    .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem}
+    .tool-card{background:var(--bg-secondary);border:2px solid var(--border-color);border-radius:1rem;padding:2rem;text-decoration:none;color:inherit;transition:all 0.3s ease;position:relative;overflow:hidden}
+    .tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary-color),#7c3aed);transform:scaleX(0);transition:transform 0.3s ease}
+    .tool-card:hover::before{transform:scaleX(1)}
+    .tool-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--primary-color)}
+    .tool-icon-wrapper{width:60px;height:60px;background:linear-gradient(135deg,var(--primary-color),#7c3aed);border-radius:1rem;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:1.75rem}
+    .tool-title{font-size:1.5rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-primary)}
+    .tool-desc{color:var(--text-secondary);line-height:1.6;margin-bottom:1rem}
+    .tool-status{display:inline-block;padding:0.25rem 0.75rem;background:var(--success-color);color:white;border-radius:50px;font-size:0.75rem;font-weight:600;text-transform:uppercase}
+    .tool-status.coming-soon{background:var(--warning-color)}
+    
+    /* Stats Section */
+    .stats-section{padding:3rem 0;background:var(--bg-secondary);border-radius:1.5rem;margin:3rem 0;border:1px solid var(--border-color)}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;text-align:center}
+    .stat-item{padding:1rem}
+    .stat-number{font-size:2.5rem;font-weight:800;color:var(--primary-color);margin-bottom:0.5rem}
+    .stat-label{color:var(--text-secondary);font-weight:500}
+    
+    /* Footer */
+    .home-footer{margin-top:4rem;padding:2rem 0;border-top:1px solid var(--border-color);text-align:center;color:var(--text-secondary)}
+    .footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;flex-wrap:wrap}
+    .footer-link{color:var(--text-secondary);text-decoration:none;transition:color 0.3s ease}
+    .footer-link:hover{color:var(--primary-color)}
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .home-nav{display:none}
+      .hero-title{font-size:2rem}
+      .hero-subtitle{font-size:1rem}
+      .tools-grid{grid-template-columns:1fr}
+      .features-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+    }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <img src="/assets/images/logo.png" alt="InnoviTecho" class="logo-img" />
-        <span class="logo-text">InnoviTecho</span>
-      </div>
-      <nav class="nav">
-        <a class="nav-link active" href="/">Home</a>
-        <a class="nav-link" href="/pdf-tools/">PDF Tools</a>
+  <!-- Header -->
+  <header class="home-header">
+    <div class="home-container">
+      <a href="/" class="home-logo">
+        <img src="/assets/images/logo.png" alt="InnoviTecho" class="home-logo-img" />
+        <span class="home-logo-text">InnoviTecho</span>
+      </a>
+      <nav class="home-nav">
+        <a class="home-nav-link active" href="/">Home</a>
+        <a class="home-nav-link" href="#tools">Tools</a>
+        <a class="home-nav-link" href="#about">About</a>
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
       </nav>
     </div>
   </header>
 
-  <main class="main">
-    <div class="container">
-      <section class="hero">
-        <h1>Welcome to InnoviTecho</h1>
-        <p>Explore our apps and tools:</p>
-      </section>
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="home-container">
+        <div class="hero-badge">✨ Privacy-First Tools</div>
+        <h1 class="hero-title">Powerful Tools for Your Everyday Needs</h1>
+        <p class="hero-subtitle">
+          Free, fast, and secure online tools that work entirely in your browser. 
+          No uploads, no tracking, no hassle. Your data stays private.
+        </p>
+        <div class="hero-cta">
+          <a href="#tools" class="cta-primary">Explore Tools</a>
+          <a href="#about" class="cta-secondary">Learn More</a>
+        </div>
+      </div>
+    </section>
 
-      <section class="apps-grid">
-        <a class="app-card" href="/pdf-tools/">
-          <h3>FusePDF</h3>
-          <p>Split, merge, compress PDFs in your browser. Private, fast, free.</p>
-        </a>
-      </section>
-    </div>
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="home-container">
+        <div class="features-grid">
+          <div class="feature-card">
+            <span class="feature-icon">🔒</span>
+            <h3 class="feature-title">Privacy First</h3>
+            <p class="feature-desc">All processing happens in your browser. Your files never leave your device.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3 class="feature-title">Lightning Fast</h3>
+            <p class="feature-desc">No server delays. Everything runs locally for instant results.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">🆓</span>
+            <h3 class="feature-title">100% Free</h3>
+            <p class="feature-desc">No subscriptions, no hidden fees. All tools are completely free forever.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">🌐</span>
+            <h3 class="feature-title">Works Offline</h3>
+            <p class="feature-desc">Once loaded, most tools work without an internet connection.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="home-container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">1+</div>
+            <div class="stat-label">Tools Available</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Privacy Protected</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Data Collection</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Free Usage</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools-section" id="tools">
+      <div class="home-container">
+        <div class="section-header">
+          <h2 class="section-title">Our Tools</h2>
+          <p class="section-subtitle">A growing collection of essential utilities for your workflow</p>
+        </div>
+        
+        <div class="tools-grid">
+          <!-- PDF Tools -->
+          <a href="/pdf-tools/" class="tool-card">
+            <div class="tool-icon-wrapper">📄</div>
+            <h3 class="tool-title">FusePDF</h3>
+            <p class="tool-desc">
+              Complete PDF toolkit - merge, split, compress, and manipulate PDF files 
+              right in your browser. No uploads required.
+            </p>
+            <span class="tool-status">Available</span>
+          </a>
+
+          <!-- JSON Converter -->
+          <a href="#" class="tool-card" style="opacity:0.8">
+            <div class="tool-icon-wrapper">{ }</div>
+            <h3 class="tool-title">JSON Converter</h3>
+            <p class="tool-desc">
+              Convert between JSON, XML, YAML, CSV and other data formats. 
+              Format, validate, and beautify with ease.
+            </p>
+            <span class="tool-status coming-soon">Coming Soon</span>
+          </a>
+
+          <!-- Image Compress -->
+          <a href="#" class="tool-card" style="opacity:0.8">
+            <div class="tool-icon-wrapper">🖼️</div>
+            <h3 class="tool-title">Image Compress</h3>
+            <p class="tool-desc">
+              Reduce image file sizes without losing quality. Supports JPG, PNG, WebP, 
+              and more formats.
+            </p>
+            <span class="tool-status coming-soon">Coming Soon</span>
+          </a>
+
+          <!-- QR Code Generator -->
+          <a href="#" class="tool-card" style="opacity:0.8">
+            <div class="tool-icon-wrapper">📱</div>
+            <h3 class="tool-title">QR Code Generator</h3>
+            <p class="tool-desc">
+              Create custom QR codes for URLs, text, WiFi, contacts, and more. 
+              Download in multiple formats.
+            </p>
+            <span class="tool-status coming-soon">Coming Soon</span>
+          </a>
+
+          <!-- URL Shortener -->
+          <a href="#" class="tool-card" style="opacity:0.8">
+            <div class="tool-icon-wrapper">🔗</div>
+            <h3 class="tool-title">Short URL</h3>
+            <p class="tool-desc">
+              Shorten long URLs and create memorable links. Track clicks and 
+              manage your shortened links.
+            </p>
+            <span class="tool-status coming-soon">Coming Soon</span>
+          </a>
+
+          <!-- More Coming -->
+          <div class="tool-card" style="opacity:0.6;cursor:default">
+            <div class="tool-icon-wrapper">✨</div>
+            <h3 class="tool-title">More Tools</h3>
+            <p class="tool-desc">
+              We're constantly adding new tools based on user feedback. 
+              Have a suggestion? Let us know!
+            </p>
+            <span class="tool-status coming-soon">In Development</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="features-section" id="about" style="padding-top:4rem">
+      <div class="home-container">
+        <div class="section-header">
+          <h2 class="section-title">Why Choose InnoviTecho?</h2>
+          <p class="section-subtitle">Built with privacy, performance, and user experience in mind</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <span class="feature-icon">🛡️</span>
+            <h3 class="feature-title">Your Privacy Matters</h3>
+            <p class="feature-desc">We believe your data is yours. All our tools are designed to work locally in your browser without any server uploads.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">🎨</span>
+            <h3 class="feature-title">Beautiful Design</h3>
+            <p class="feature-desc">Intuitive, modern interfaces that work seamlessly across all devices. Dark mode included.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">🚀</span>
+            <h3 class="feature-title">Always Improving</h3>
+            <p class="feature-desc">Regular updates with new features and tools based on what you need most.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">💻</span>
+            <h3 class="feature-title">Open Source</h3>
+            <p class="feature-desc">Transparency is key. Our code is open for review, contributions, and community feedback.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; <span id="year"></span> InnoviTecho</p>
+  <!-- Footer -->
+  <footer class="home-footer">
+    <div class="home-container">
+      <div class="footer-links">
+        <a href="/pdf-tools/about.html" class="footer-link">About</a>
+        <a href="/pdf-tools/contact.html" class="footer-link">Contact</a>
+        <a href="/pdf-tools/privacy-policy.html" class="footer-link">Privacy Policy</a>
+        <a href="/pdf-tools/terms-of-service.html" class="footer-link">Terms of Service</a>
+      </div>
+      <p>&copy; <span id="year"></span> InnoviTecho. All rights reserved. Built with ❤️ for privacy.</p>
     </div>
   </footer>
+  
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   </script>
 </body>
 </html>
