@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InnoviTecho Tools</title>
+  <meta name="description" content="Explore InnoviTecho apps and tools" />
+  <link rel="icon" href="/assets/images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="/js/theme.js" defer></script>
+  <style>
+    .apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2rem}
+    .app-card{background:var(--bg-secondary);border:2px solid var(--border-color);border-radius:12px;padding:1.25rem;transition:transform .15s ease,border-color .15s ease}
+    .app-card:hover{transform:translateY(-2px);border-color:var(--primary-color)}
+    .app-card h3{margin:0 0 .5rem 0}
+    .hero{padding:3rem 0}
+    .hero h1{font-size:2rem;margin-bottom:.5rem}
+    .container{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .nav{display:flex;gap:1rem;align-items:center}
+    .header{border-bottom:2px solid var(--border-color)}
+    .logo-img{height:32px;width:32px}
+    .footer{margin-top:3rem;border-top:2px solid var(--border-color);padding:2rem 0}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <img src="/assets/images/logo.png" alt="InnoviTecho" class="logo-img" />
+        <span class="logo-text">InnoviTecho</span>
+      </div>
+      <nav class="nav">
+        <a class="nav-link active" href="/">Home</a>
+        <a class="nav-link" href="/pdf-tools/">PDF Tools</a>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="hero">
+        <h1>Welcome to InnoviTecho</h1>
+        <p>Explore our apps and tools:</p>
+      </section>
+
+      <section class="apps-grid">
+        <a class="app-card" href="/pdf-tools/">
+          <h3>FusePDF</h3>
+          <p>Split, merge, compress PDFs in your browser. Private, fast, free.</p>
+        </a>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> InnoviTecho</p>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
