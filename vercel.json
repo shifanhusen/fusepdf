@@ -1,9 +1,9 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/home.html" },
     { "source": "/pdf-tools", "destination": "/index.html" },
     { "source": "/pdf-tools/", "destination": "/index.html" },
-    { "source": "/pdf-tools/:path*", "destination": "/:path*" }
+    { "source": "/pdf-tools/:path*", "destination": "/:path*" },
+    { "source": "/", "destination": "/home.html" }
   ],
   "headers": [
     {
