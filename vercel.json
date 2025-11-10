@@ -1,12 +1,8 @@
 {
-  "redirects": [
-    { "source": "/index.html", "destination": "/pdf-tools/" }
-  ],
   "rewrites": [
-    { "source": "/pdf-tools", "destination": "/index.html" },
-    { "source": "/pdf-tools/", "destination": "/index.html" },
-    { "source": "/pdf-tools/:path*", "destination": "/:path*" },
-    { "source": "/((?!pdf-tools|css|js|assets|api|sw\\.js|home\\.html|manifest\\.json|ads\\.txt).*)", "destination": "/home.html" }
+    { "source": "/pdf-tools", "destination": "/app.html" },
+    { "source": "/pdf-tools/", "destination": "/app.html" },
+    { "source": "/pdf-tools/:path*", "destination": "/:path*" }
   ],
   "headers": [
     {
