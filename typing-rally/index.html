@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/typing-rally/">
+    <title>TurboType Rally - Multiplayer Typing Race Game</title>
+    <meta name="description" content="Race against friends in this real-time multiplayer typing game. Type faster to win!">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- Lobby Screen -->
+    <section id="lobbyScreen" class="screen active">
+        <div class="container">
+            <div class="game-header">
+                <h1 class="game-title">🏎️ TurboType Rally</h1>
+                <p class="game-subtitle">Race your friends by typing faster!</p>
+            </div>
+
+            <div class="lobby-options">
+                <div class="option-card">
+                    <h2>Create Race</h2>
+                    <p>Start a new race room and invite friends</p>
+                    <button id="createRoomBtn" class="btn btn-primary">Create Room</button>
+                </div>
+
+                <div class="option-card">
+                    <h2>Join Race</h2>
+                    <p>Enter a room code to join an existing race</p>
+                    <input type="text" id="roomCodeInput" placeholder="Enter room code (e.g., ABC123)" maxlength="6">
+                    <button id="joinRoomBtn" class="btn btn-secondary">Join Room</button>
+                </div>
+            </div>
+
+            <div class="name-input-container">
+                <label for="playerNameInput">Your Name:</label>
+                <input type="text" id="playerNameInput" placeholder="Enter your name" maxlength="20" value="Player">
+            </div>
+
+            <div class="back-home">
+                <a href="/" class="home-link">← Back to InnoviTecho Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waiting Room Screen -->
+    <section id="waitingScreen" class="screen">
+        <div class="container">
+            <div class="game-header">
+                <h1 class="game-title">🏎️ TurboType Rally</h1>
+                <div class="room-info">
+                    <h2>Room Code: <span id="roomCodeDisplay" class="room-code">------</span></h2>
+                    <p class="share-text">Share this code with friends to join!</p>
+                </div>
+            </div>
+
+            <div class="waiting-container">
+                <h3>Players in Room (<span id="playerCount">0</span>/4)</h3>
+                <div id="playersList" class="players-list"></div>
+                
+                <div class="waiting-controls">
+                    <button id="startRaceBtn" class="btn btn-primary" disabled>Start Race</button>
+                    <button id="leaveRoomBtn" class="btn btn-danger">Leave Room</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown Screen -->
+    <section id="countdownScreen" class="screen">
+        <div class="container">
+            <div class="countdown-display">
+                <div id="countdownNumber" class="countdown-number">3</div>
+                <p class="countdown-text">Get Ready!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Racing Screen -->
+    <section id="racingScreen" class="screen">
+        <div class="container-fluid">
+            <div class="race-header">
+                <h2>🏎️ TurboType Rally</h2>
+                <div class="race-stats">
+                    <span id="raceTimer">0:00</span>
+                    <span id="currentWPM">0 WPM</span>
+                    <span id="wordsTyped">0 words</span>
+                </div>
+            </div>
+
+            <!-- Racing Track -->
+            <div id="raceTrack" class="race-track">
+                <!-- Lanes will be generated dynamically -->
+            </div>
+
+            <!-- Typing Area -->
+            <div class="typing-area">
+                <div class="word-display">
+                    <span id="currentWord" class="current-word">loading</span>
+                </div>
+                <input type="text" id="typingInput" class="typing-input" placeholder="Start typing..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <div class="typing-feedback">
+                    <span id="typingFeedback"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Screen -->
+    <section id="resultsScreen" class="screen">
+        <div class="container">
+            <div class="game-header">
+                <h1 class="game-title">🏁 Race Results</h1>
+            </div>
+
+            <div class="results-container">
+                <div id="resultsList" class="results-list"></div>
+                
+                <div class="results-controls">
+                    <button id="playAgainBtn" class="btn btn-primary">Play Again</button>
+                    <button id="backToLobbyBtn" class="btn btn-secondary">Back to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Load Firebase and App Script -->
+    <script type="module" src="./app.js"></script>
+</body>
+</html>
