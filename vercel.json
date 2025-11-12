@@ -3,7 +3,9 @@
     { "source": "/pdf-tools", "destination": "/pdf-tools/index.html" },
     { "source": "/pdf-tools/", "destination": "/pdf-tools/index.html" },
     { "source": "/typing-rally", "destination": "/typing-rally/index.html" },
-    { "source": "/typing-rally/", "destination": "/typing-rally/index.html" }
+    { "source": "/typing-rally/", "destination": "/typing-rally/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" }
   ],
   "headers": [
     {

@@ -121,33 +121,51 @@
                         </div>
                     </div>
                 </section>
-                <script>
-                // Contact form submission to backend
+                <script type="module">
+                // Import Firebase configuration
+                import { firestore } from '../shared/firebase-config.js';
+                import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+                // Contact form submission to Firestore
                 const contactForm = document.getElementById('contactForm');
                 const formStatus = document.getElementById('form-status');
+                
                 contactForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
+                    
+                    // Show loading state
                     formStatus.style.display = 'block';
                     formStatus.className = 'form-status info';
                     formStatus.textContent = 'Submitting...';
+                    
+                    // Get form data
                     const formData = new FormData(contactForm);
-                    const payload = Object.fromEntries(formData.entries());
+                    const submission = {
+                        project: 'PDF Tools',
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        subject: formData.get('subject'),
+                        message: formData.get('message'),
+                        submittedAt: serverTimestamp(),
+                        userAgent: navigator.userAgent,
+                        url: window.location.href
+                    };
+                    
                     try {
-                        const res = await fetch('/api/contact', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        if (!res.ok) {
-                            const err = await res.json().catch(()=>({error:'Unknown error'}));
-                            throw new Error(err.error || 'Submission failed');
-                        }
+                        // Save to Firestore
+                        const docRef = await addDoc(collection(firestore, 'contactSubmissions'), submission);
+                        
+                        // Show success message
                         formStatus.className = 'form-status success';
-                        formStatus.textContent = 'Message received successfully!';
+                        formStatus.textContent = 'Message received successfully! We\'ll get back to you soon.';
                         contactForm.reset();
-                    } catch (err) {
+                        
+                        console.log('Contact form submitted with ID: ', docRef.id);
+                        
+                    } catch (error) {
+                        console.error('Error submitting contact form: ', error);
                         formStatus.className = 'form-status error';
-                        formStatus.textContent = err.message;
+                        formStatus.textContent = 'Sorry, there was an error submitting your message. Please try again.';
                     }
                 });
                 </script>
