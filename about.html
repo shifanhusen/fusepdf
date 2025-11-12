@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Innovitech Platform</title>
+    <meta name="description" content="Learn about Innovitech Platform - free online productivity tools including PDF processing, typing games, and more innovative web applications">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/icons/logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/icons/logo.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6491189589104119"
+            crossorigin="anonymous"></script>
+    
+    <style>
+        .about-page {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            line-height: 1.8;
+        }
+        
+        .about-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0;
+        }
+        
+        .about-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .about-subtitle {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        
+        .about-mission {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .mission-text {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            font-style: italic;
+        }
+        
+        .about-section {
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #3b82f6;
+            text-align: center;
+        }
+        
+        .section-content {
+            color: #cbd5e1;
+        }
+        
+        .section-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .tool-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .tool-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+        
+        .tool-description {
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tool-status {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-coming {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 0.75rem;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+        }
+        
+        .feature-content h4 {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .feature-content p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .team-section {
+            text-align: center;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin: 2rem 0;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin: 4rem 0;
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border-radius: 1rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .cta-button {
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background: #2563eb;
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .cta-button.secondary:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .about-title {
+                font-size: 2.5rem;
+            }
+            
+            .about-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="about-page">
+        <div class="about-header">
+            <h1 class="about-title">About Innovitech</h1>
+            <p class="about-subtitle">Empowering productivity through innovative, free online tools</p>
+            
+            <div class="about-mission">
+                <p class="mission-text">"Making powerful digital tools accessible to everyone, with privacy and simplicity at the core of everything we build."</p>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">← Back to Innovitech Home</a>
+
+        <section class="about-section">
+            <h2 class="section-title">🚀 Our Story</h2>
+            <div class="section-content">
+                <p>Innovitech was born from a simple belief: powerful digital tools shouldn't be locked behind paywalls or compromise your privacy. In an age where online services often collect excessive data or charge premium fees for basic functionality, we saw an opportunity to do things differently.</p>
+                
+                <p>Our platform started with FusePDF, addressing the common frustration of expensive PDF processing tools. By leveraging modern web technologies, we created a solution that processes files entirely in your browser - meaning your documents never leave your device, ensuring complete privacy.</p>
+                
+                <p>Today, Innovitech has grown into a comprehensive platform of productivity tools, each designed with the same core principles: free access, privacy protection, and user-friendly design.</p>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2 class="section-title">🛠️ Our Tools</h2>
+            
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <span class="tool-icon">📄</span>
+                    <h3 class="tool-name">FusePDF</h3>
+                    <p class="tool-description">Complete PDF processing suite with merge, split, compress, and conversion tools. All processing happens locally in your browser for maximum privacy.</p>
+                    <span class="tool-status status-available">Available Now</span>
+                </div>
+                
+                <div class="tool-card">
+                    <span class="tool-icon">⚡</span>
+                    <h3 class="tool-name">TurboType Rally</h3>
+                    <p class="tool-description">Multiplayer typing speed game with real-time competition, practice modes, and detailed performance analytics. Race against friends or improve solo.</p>
+                    <span class="tool-status status-available">Available Now</span>
+                </div>
+                
+                <div class="tool-card">
+                    <span class="tool-icon">🔧</span>
+                    <h3 class="tool-name">JSON Converter</h3>
+                    <p class="tool-description">Convert, format, and validate JSON data with ease. Transform between JSON, CSV, XML, and other data formats instantly.</p>
+                    <span class="tool-status status-coming">Coming Soon</span>
+                </div>
+                
+                <div class="tool-card">
+                    <span class="tool-icon">📸</span>
+                    <h3 class="tool-name">Image Compressor</h3>
+                    <p class="tool-description">Reduce image file sizes while maintaining quality. Support for JPEG, PNG, WebP with customizable compression settings.</p>
+                    <span class="tool-status status-coming">Coming Soon</span>
+                </div>
+                
+                <div class="tool-card">
+                    <span class="tool-icon">📱</span>
+                    <h3 class="tool-name">QR Code Generator</h3>
+                    <p class="tool-description">Create custom QR codes for URLs, text, contact info, and more. Multiple formats and styling options available.</p>
+                    <span class="tool-status status-coming">Coming Soon</span>
+                </div>
+                
+                <div class="tool-card">
+                    <span class="tool-icon">🔗</span>
+                    <h3 class="tool-name">URL Shortener</h3>
+                    <p class="tool-description">Create short, memorable links with analytics tracking. Perfect for social media, email campaigns, and link management.</p>
+                    <span class="tool-status status-coming">Coming Soon</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2 class="section-title">✨ Why Choose Innovitech?</h2>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-icon">🆓</span>
+                    <div class="feature-content">
+                        <h4>Completely Free</h4>
+                        <p>All tools are free to use with no hidden fees, subscriptions, or premium tiers. Supported by ethical advertising.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">🔒</span>
+                    <div class="feature-content">
+                        <h4>Privacy First</h4>
+                        <p>Your data stays with you. Most processing happens locally in your browser, ensuring maximum privacy and security.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-content">
+                        <h4>Lightning Fast</h4>
+                        <p>Modern web technologies deliver instant results. No waiting for uploads or downloads - just immediate processing.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">📱</span>
+                    <div class="feature-content">
+                        <h4>Works Everywhere</h4>
+                        <p>Access all tools from any device with a web browser. No downloads, installations, or account creation required.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">🎨</span>
+                    <div class="feature-content">
+                        <h4>Beautiful Design</h4>
+                        <p>Clean, intuitive interfaces that make complex tasks simple. Dark and light themes for comfortable use anytime.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-icon">🔄</span>
+                    <div class="feature-content">
+                        <h4>Always Improving</h4>
+                        <p>Regular updates with new features, performance improvements, and user-requested enhancements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2 class="section-title">📊 Platform Statistics</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">2+</span>
+                    <div class="stat-label">Active Tools</div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number">6+</span>
+                    <div class="stat-label">Tools Planned</div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <div class="stat-label">Privacy Focused</div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <div class="stat-label">Cost to Users</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section team-section">
+            <h2 class="section-title">👥 Our Mission</h2>
+            <div class="section-content">
+                <p>We believe that productivity tools should be accessible to everyone, regardless of budget or technical expertise. Our team is dedicated to creating tools that respect your privacy, work reliably, and solve real problems.</p>
+                
+                <p>Every tool we build is tested extensively to ensure it meets our high standards for performance, security, and user experience. We listen to our community and continuously improve based on feedback and usage patterns.</p>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2 class="section-title">🔮 Looking Ahead</h2>
+            <div class="section-content">
+                <p>The future of Innovitech is bright and full of possibilities. We're constantly working on new tools and features to expand our platform:</p>
+                
+                <ul style="color: #cbd5e1; margin: 1.5rem 0; padding-left: 2rem;">
+                    <li><strong>AI Integration:</strong> Smart features to enhance existing tools</li>
+                    <li><strong>Collaboration Tools:</strong> Real-time sharing and editing capabilities</li>
+                    <li><strong>Mobile Apps:</strong> Native mobile applications for iOS and Android</li>
+                    <li><strong>API Access:</strong> Developer APIs for integration with other services</li>
+                    <li><strong>Custom Workflows:</strong> Chain multiple tools together for complex tasks</li>
+                </ul>
+                
+                <p>Our roadmap is driven by user feedback and emerging needs in the digital productivity space. If you have ideas for new tools or features, we'd love to hear from you!</p>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h2 class="section-title">🎯 Start Using Innovitech Today</h2>
+            <p style="color: #cbd5e1; font-size: 1.1rem; margin-bottom: 0;">Join thousands of users who trust Innovitech for their daily productivity needs.</p>
+            
+            <div class="cta-buttons">
+                <a href="/pdf-tools/" class="cta-button">Try FusePDF Tools</a>
+                <a href="/typing-rally/" class="cta-button">Play TurboType Rally</a>
+                <a href="/contact.html" class="cta-button secondary">Contact Us</a>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">← Back to Innovitech Home</a>
+    </div>
+</body>
+</html>
