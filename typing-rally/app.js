@@ -656,7 +656,10 @@ const practiceState = {
 function startPracticeMode() {
     // Select random paragraph
     const randomIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+    gameState.currentParagraph = PARAGRAPHS[randomIndex];
     practiceState.currentParagraph = PARAGRAPHS[randomIndex];
+    gameState.correctChars = 0;
+    gameState.incorrectChars = 0;
     practiceState.correctChars = 0;
     practiceState.incorrectChars = 0;
     practiceState.startTime = null;
