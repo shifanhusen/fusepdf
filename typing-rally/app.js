@@ -1,17 +1,17 @@
 // =============================================================================
 // FIREBASE CONFIGURATION
 // =============================================================================
-// Replace these with your own Firebase project credentials from:
-// Firebase Console > Project Settings > General > Your apps > Web app
+// Firebase project: innovitech-tools
+// Configured for TurboType Rally game
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY_HERE",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDYHmMD0BQHxxPR4Anzx4ZmZpFTgcs6RBQ",
+    authDomain: "innovitech-tools.firebaseapp.com",
+    databaseURL: "https://innovitech-tools-default-rtdb.firebaseio.com",
+    projectId: "innovitech-tools",
+    storageBucket: "innovitech-tools.firebasestorage.app",
+    messagingSenderId: "229701728021",
+    appId: "1:229701728021:web:614906807f7ee0dcf1db1c"
 };
 
 // =============================================================================
