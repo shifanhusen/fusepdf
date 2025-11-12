@@ -348,9 +348,9 @@ input[type="text"]:focus {
     background: var(--bg-secondary);
     border: 2px solid var(--border-color);
     border-radius: 1rem;
-    padding: 2rem 1rem;
-    margin-bottom: 1rem;
-    min-height: 400px;
+    padding: 1rem 1rem;
+    margin: 0.5rem 0;
+    min-height: auto;
     position: relative;
 }
 
@@ -403,6 +403,24 @@ input[type="text"]:focus {
     box-shadow: var(--shadow);
 }
 
+/* Solo mode race car - larger and more visible */
+.race-car {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 50px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: left 0.2s ease;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid rgba(46, 213, 115, 0.5);
+}
+
 .racer-name {
     position: absolute;
     top: -25px;
@@ -444,16 +462,21 @@ input[type="text"]:focus {
 }
 
 .current-word {
-    font-size: 3rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--primary-color);
     font-family: 'Courier New', monospace;
-    letter-spacing: 0.1em;
-    line-height: 1.6;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
     word-wrap: break-word;
     white-space: pre-wrap;
     max-width: 100%;
     overflow-wrap: break-word;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem;
+    background: rgba(37, 99, 235, 0.05);
+    border-radius: 0.5rem;
+    border-left: 3px solid var(--primary-color);
 }
 
 /* Character-by-character highlighting */

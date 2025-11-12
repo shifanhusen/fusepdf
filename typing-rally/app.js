@@ -759,8 +759,8 @@ function handlePracticeCharacterTyping(event) {
         raceCar.style.left = `${progress}%`;
     }
     
-    // Check if paragraph is complete
-    if (typed.length === paragraph.length && practiceState.correctChars === paragraph.length) {
+    // Check if paragraph is complete (typed entire length, not necessarily all correct)
+    if (typed.length === paragraph.length) {
         finishPractice();
     }
 }
