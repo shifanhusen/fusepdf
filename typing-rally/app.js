@@ -7,7 +7,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyDYHmMD0BQHxxPR4Anzx4ZmZpFTgcs6RBQ",
     authDomain: "innovitech-tools.firebaseapp.com",
-    databaseURL: "https://innovitech-tools-default-rtdb.firebaseio.com",
+    databaseURL: "https://innovitech-tools-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "innovitech-tools",
     storageBucket: "innovitech-tools.firebasestorage.app",
     messagingSenderId: "229701728021",
@@ -52,19 +52,24 @@ const gameState = {
 };
 
 // =============================================================================
-// WORD BANK
+// PARAGRAPH BANK - Random paragraphs for typing practice
 // =============================================================================
-const WORDS = [
-    'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'it',
-    'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this',
-    'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or',
-    'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so',
-    'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when',
-    'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'people',
-    'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than',
-    'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back',
-    'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even',
-    'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'is'
+const PARAGRAPHS = [
+    "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the English alphabet. It is often used for testing typewriters and computer keyboards, displaying examples of fonts, and other applications involving text.",
+    "Technology has revolutionized the way we communicate. From smartphones to social media, the digital world connects billions of people instantly. Yet despite this connectivity, many struggle with genuine human connection and meaningful relationships.",
+    "Learning to type quickly and accurately is an essential skill in today's digital world. Many jobs require proficiency with keyboards and computers. Practice and dedication are key to improving your typing speed and accuracy over time.",
+    "The ocean covers more than seventy percent of Earth's surface. It is home to an incredible diversity of life, from microscopic plankton to massive whales. Marine ecosystems play a crucial role in regulating our planet's climate and weather patterns.",
+    "Coffee is one of the most popular beverages in the world. Millions of people enjoy a cup of coffee every single day. Whether hot or cold, black or with cream, coffee brings comfort and energy to people's mornings and afternoons.",
+    "Reading opens doors to infinite worlds and possibilities. Books transport us to different times, places, and perspectives. Through reading, we can learn, grow, and understand ourselves and others in profound and meaningful ways.",
+    "Music has the power to evoke emotions and memories. Whether classical, pop, rock, or jazz, music resonates with the human soul. Throughout history, music has been an integral part of culture, celebration, and expression across all civilizations.",
+    "Traveling abroad expands our horizons and enriches our lives. Meeting new people and experiencing different cultures broadens our perspectives. Every journey teaches us something new about the world and ourselves in unexpected and wonderful ways.",
+    "The rise of artificial intelligence is transforming industries and societies. Machine learning algorithms can now recognize faces, understand language, and make decisions. As this technology advances, we must consider both its tremendous potential and ethical implications.",
+    "Healthy eating habits contribute to overall well-being and longevity. Consuming balanced meals with fruits, vegetables, and proteins provides essential nutrients. Regular exercise combined with good nutrition creates a foundation for a healthier, happier life ahead.",
+    "The stars have fascinated humans since ancient times. Astronomers study distant galaxies to understand our universe. Space exploration reveals the vastness of creation and inspires wonder about our place in the cosmos and beyond.",
+    "Art and creativity are fundamental to human expression and culture. Painters, musicians, and writers communicate ideas and emotions through their work. Creativity fosters innovation and helps us see the world from fresh and interesting perspectives.",
+    "Climate change poses unprecedented challenges to our planet. Rising temperatures affect weather patterns, sea levels, and ecosystems worldwide. Collective action and sustainable practices are essential to protect our environment for future generations.",
+    "Friendship is one of life's greatest treasures and blessings. True friends support us through difficulties and celebrate our successes. The bonds we form with others add meaning, joy, and richness to our existence throughout our lives.",
+    "Innovation drives progress and shapes the future of humanity. From medicine to transportation, new ideas improve our quality of life. Entrepreneurs and inventors take risks to create solutions that benefit society in countless ways."
 ];
 
 // Player colors
@@ -78,7 +83,8 @@ const screens = {
     waiting: document.getElementById('waitingScreen'),
     countdown: document.getElementById('countdownScreen'),
     racing: document.getElementById('racingScreen'),
-    results: document.getElementById('resultsScreen')
+    results: document.getElementById('resultsScreen'),
+    practiceResults: document.getElementById('practiceResultsScreen')
 };
 
 const elements = {
@@ -87,6 +93,7 @@ const elements = {
     createRoomBtn: document.getElementById('createRoomBtn'),
     joinRoomBtn: document.getElementById('joinRoomBtn'),
     roomCodeInput: document.getElementById('roomCodeInput'),
+    practiceBtn: document.getElementById('practiceBtn'),
     
     // Waiting Room
     roomCodeDisplay: document.getElementById('roomCodeDisplay'),
@@ -111,6 +118,14 @@ const elements = {
     resultsList: document.getElementById('resultsList'),
     playAgainBtn: document.getElementById('playAgainBtn'),
     backToLobbyBtn: document.getElementById('backToLobbyBtn'),
+    
+    // Practice Results
+    practiceWPM: document.getElementById('practiceWPM'),
+    practiceAccuracy: document.getElementById('practiceAccuracy'),
+    practiceTime: document.getElementById('practiceTime'),
+    personalBest: document.getElementById('personalBest'),
+    practiceAgainBtn: document.getElementById('practiceAgainBtn'),
+    backToLobbyFromPracticeBtn: document.getElementById('backToLobbyFromPracticeBtn'),
     
     // Toast
     toast: document.getElementById('toast')
@@ -395,14 +410,18 @@ function startCountdown() {
 
 function startRace() {
     gameState.raceStartTime = Date.now();
-    gameState.currentWordIndex = 0;
-    gameState.correctWords = 0;
+    gameState.currentParagraphIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+    gameState.currentParagraph = PARAGRAPHS[gameState.currentParagraphIndex];
+    gameState.correctChars = 0;
+    gameState.incorrectChars = 0;
+    gameState.totalChars = gameState.currentParagraph.length;
     
-    // Show first word
-    showNextWord();
+    // Display paragraph with character spans
+    displayParagraphWithCharacters();
     
     // Focus input
     elements.typingInput.value = '';
+    elements.typingInput.addEventListener('input', handleCharacterTyping);
     elements.typingInput.focus();
     
     // Setup race track
@@ -455,63 +474,87 @@ function startRaceTimer() {
     }, 100);
 }
 
-function showNextWord() {
-    gameState.currentWordIndex = Math.floor(Math.random() * WORDS.length);
-    elements.currentWord.textContent = WORDS[gameState.currentWordIndex];
+function displayParagraphWithCharacters() {
+    // Clear previous content
+    elements.currentWord.innerHTML = '';
+    
+    // Create spans for each character
+    const paragraph = gameState.currentParagraph;
+    for (let i = 0; i < paragraph.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'char-span pending';
+        span.textContent = paragraph[i];
+        span.id = `char-${i}`;
+        elements.currentWord.appendChild(span);
+    }
 }
 
-async function handleTyping(event) {
-    const typedWord = elements.typingInput.value.trim().toLowerCase();
-    const currentWord = WORDS[gameState.currentWordIndex].toLowerCase();
+async function handleCharacterTyping(event) {
+    const typed = elements.typingInput.value;
+    const paragraph = gameState.currentParagraph;
     
-    if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
+    // Reset counters
+    gameState.correctChars = 0;
+    gameState.incorrectChars = 0;
+    
+    // Update character highlighting
+    for (let i = 0; i < paragraph.length; i++) {
+        const charSpan = document.getElementById(`char-${i}`);
         
-        if (typedWord === currentWord) {
-            // Correct word
-            gameState.correctWords++;
-            elements.typingFeedback.textContent = '✓ Correct!';
-            elements.typingFeedback.className = 'typing-feedback correct';
-            
-            // Calculate progress (100 words = 100%)
-            const progress = Math.min((gameState.correctWords / 100) * 100, 100);
-            
-            // Calculate WPM
-            const elapsedMinutes = (Date.now() - gameState.raceStartTime) / 60000;
-            const wpm = Math.round(gameState.correctWords / elapsedMinutes) || 0;
-            
-            // Update UI
-            elements.wordsTyped.textContent = `${gameState.correctWords} words`;
-            elements.currentWPM.textContent = `${wpm} WPM`;
-            
-            // Update Firebase
-            const playerRef = ref(database, `rooms/${gameState.roomId}/players/${gameState.playerId}`);
-            await update(playerRef, {
-                progress: progress,
-                wpm: wpm,
-                finished: progress >= 100
-            });
-            
-            // Check if finished
-            if (progress >= 100) {
-                await handleRaceFinish();
+        if (i < typed.length) {
+            if (typed[i] === paragraph[i]) {
+                // Correct character - green
+                charSpan.classList.remove('pending', 'incorrect');
+                charSpan.classList.add('correct');
+                gameState.correctChars++;
             } else {
-                showNextWord();
-                elements.typingInput.value = '';
+                // Incorrect character - red
+                charSpan.classList.remove('pending', 'correct');
+                charSpan.classList.add('incorrect');
+                gameState.incorrectChars++;
             }
-            
-            setTimeout(() => {
-                elements.typingFeedback.textContent = '';
-            }, 500);
-        } else if (typedWord.length > 0) {
-            // Incorrect word
-            elements.typingFeedback.textContent = '✗ Try again';
-            elements.typingFeedback.className = 'typing-feedback incorrect';
-            
-            setTimeout(() => {
-                elements.typingFeedback.textContent = '';
-            }, 500);
+        } else {
+            // Not yet typed
+            charSpan.classList.remove('correct', 'incorrect');
+            charSpan.classList.add('pending');
         }
+    }
+    
+    // Calculate progress (percentage of paragraph typed correctly)
+    const progress = Math.min((gameState.correctChars / gameState.totalChars) * 100, 100);
+    
+    // Calculate WPM based on characters (standard: 5 chars = 1 word)
+    const elapsedMinutes = (Date.now() - gameState.raceStartTime) / 60000;
+    const wpm = Math.round((gameState.correctChars / 5) / elapsedMinutes) || 0;
+    
+    // Calculate accuracy
+    const accuracy = typed.length > 0 
+        ? Math.round((gameState.correctChars / typed.length) * 100) 
+        : 100;
+    
+    // Update UI
+    elements.wordsTyped.textContent = `${gameState.correctChars}/${gameState.totalChars} chars`;
+    elements.currentWPM.textContent = `${wpm} WPM`;
+    
+    // Update accuracy display (if you have an accuracy element)
+    if (elements.accuracyDisplay) {
+        elements.accuracyDisplay.textContent = `${accuracy}% accuracy`;
+    }
+    
+    // Update Firebase for multiplayer
+    if (gameState.roomId) {
+        const playerRef = ref(database, `rooms/${gameState.roomId}/players/${gameState.playerId}`);
+        await update(playerRef, {
+            progress: progress,
+            wpm: wpm,
+            accuracy: accuracy,
+            finished: progress >= 100
+        });
+    }
+    
+    // Check if paragraph is complete
+    if (typed.length === paragraph.length && gameState.correctChars === gameState.totalChars) {
+        await handleRaceFinish();
     }
 }
 
@@ -599,6 +642,194 @@ function displayResults(players) {
 }
 
 // =============================================================================
+// PRACTICE MODE
+// =============================================================================
+
+const practiceState = {
+    currentParagraph: '',
+    correctChars: 0,
+    incorrectChars: 0,
+    startTime: null,
+    isPracticing: false
+};
+
+function startPracticeMode() {
+    // Select random paragraph
+    const randomIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+    practiceState.currentParagraph = PARAGRAPHS[randomIndex];
+    practiceState.correctChars = 0;
+    practiceState.incorrectChars = 0;
+    practiceState.startTime = null;
+    practiceState.isPracticing = true;
+    
+    // Show racing screen
+    showScreen('racing');
+    
+    // Display paragraph with character spans
+    displayParagraphWithCharacters();
+    
+    // Clear race track and show solo player
+    elements.raceTrack.innerHTML = '';
+    const playerName = elements.playerNameInput.value.trim() || 'You';
+    const laneSolo = document.createElement('div');
+    laneSolo.className = 'race-lane';
+    laneSolo.innerHTML = `
+        <div class="lane-label">${playerName}</div>
+        <div class="lane-track">
+            <div class="finish-line"></div>
+            <div class="race-car" style="background: #2ed573">
+                🏎️
+            </div>
+        </div>
+        <div class="lane-stats">
+            <span class="lane-wpm">0 WPM</span>
+        </div>
+    `;
+    elements.raceTrack.appendChild(laneSolo);
+    
+    // Reset stats display
+    elements.raceTimer.textContent = '0:00';
+    elements.currentWPM.textContent = '0 WPM';
+    elements.wordsTyped.textContent = '0/0 chars';
+    
+    // Clear and setup input
+    elements.typingInput.value = '';
+    elements.typingInput.disabled = false;
+    elements.typingInput.removeEventListener('input', handleCharacterTyping);
+    elements.typingInput.addEventListener('input', handlePracticeCharacterTyping);
+    elements.typingInput.focus();
+    
+    showToast('Start typing to begin practice mode!', 'success');
+}
+
+function handlePracticeCharacterTyping(event) {
+    const typed = elements.typingInput.value;
+    const paragraph = practiceState.currentParagraph;
+    
+    // Start timer on first keypress
+    if (!practiceState.startTime) {
+        practiceState.startTime = Date.now();
+        updatePracticeTimer();
+    }
+    
+    // Reset counters
+    practiceState.correctChars = 0;
+    practiceState.incorrectChars = 0;
+    
+    // Update character highlighting
+    for (let i = 0; i < paragraph.length; i++) {
+        const charSpan = document.getElementById(`char-${i}`);
+        
+        if (i < typed.length) {
+            if (typed[i] === paragraph[i]) {
+                // Correct character - green
+                charSpan.classList.remove('pending', 'incorrect');
+                charSpan.classList.add('correct');
+                practiceState.correctChars++;
+            } else {
+                // Incorrect character - red
+                charSpan.classList.remove('pending', 'correct');
+                charSpan.classList.add('incorrect');
+                practiceState.incorrectChars++;
+            }
+        } else {
+            // Not yet typed
+            charSpan.classList.remove('correct', 'incorrect');
+            charSpan.classList.add('pending');
+        }
+    }
+    
+    // Calculate progress
+    const progress = Math.min((practiceState.correctChars / paragraph.length) * 100, 100);
+    
+    // Calculate WPM
+    const elapsedMinutes = (Date.now() - practiceState.startTime) / 60000;
+    const wpm = Math.round((practiceState.correctChars / 5) / elapsedMinutes) || 0;
+    
+    // Update UI
+    elements.wordsTyped.textContent = `${practiceState.correctChars}/${paragraph.length} chars`;
+    elements.currentWPM.textContent = `${wpm} WPM`;
+    
+    // Update car progress
+    const raceCar = document.querySelector('.race-car');
+    if (raceCar) {
+        raceCar.style.left = `${progress}%`;
+    }
+    
+    // Check if paragraph is complete
+    if (typed.length === paragraph.length && practiceState.correctChars === paragraph.length) {
+        finishPractice();
+    }
+}
+
+function updatePracticeTimer() {
+    if (!practiceState.startTime || !practiceState.isPracticing) return;
+    
+    const timerInterval = setInterval(() => {
+        if (!practiceState.isPracticing) {
+            clearInterval(timerInterval);
+            return;
+        }
+        
+        const elapsed = Date.now() - practiceState.startTime;
+        const seconds = Math.floor(elapsed / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        
+        elements.raceTimer.textContent = 
+            `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }, 100);
+}
+
+function finishPractice() {
+    practiceState.isPracticing = false;
+    elements.typingInput.disabled = true;
+    
+    const elapsed = (Date.now() - practiceState.startTime) / 1000;
+    const elapsedMinutes = elapsed / 60;
+    const wpm = Math.round((practiceState.correctChars / 5) / elapsedMinutes) || 0;
+    const accuracy = Math.round((practiceState.correctChars / practiceState.currentParagraph.length) * 100);
+    const errors = practiceState.incorrectChars;
+    
+    // Display practice results
+    elements.resultsList.innerHTML = `
+        <div class="practice-results-card">
+            <h3>Practice Session Complete!</h3>
+            <div class="results-grid">
+                <div class="result-stat">
+                    <div class="stat-label">WPM</div>
+                    <div class="stat-value">${wpm}</div>
+                </div>
+                <div class="result-stat">
+                    <div class="stat-label">Accuracy</div>
+                    <div class="stat-value">${accuracy}%</div>
+                </div>
+                <div class="result-stat">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value">${elapsed.toFixed(1)}s</div>
+                </div>
+                <div class="result-stat">
+                    <div class="stat-label">Errors</div>
+                    <div class="stat-value">${errors}</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    showScreen('results');
+    showToast('Practice complete! Great job!', 'success');
+}
+
+async function updatePracticeProgress() {
+    // Placeholder for updating progress bar
+    const raceCar = document.querySelector('.race-car');
+    if (raceCar) {
+        const progress = (practiceState.currentIndex / practiceState.words.length) * 100;
+        raceCar.style.left = progress + '%';
+    }
+}
+
+// =============================================================================
 // EVENT LISTENERS
 // =============================================================================
 
@@ -606,7 +837,21 @@ elements.createRoomBtn.addEventListener('click', createRoom);
 elements.joinRoomBtn.addEventListener('click', joinRoom);
 elements.leaveRoomBtn.addEventListener('click', leaveRoom);
 elements.startRaceBtn.addEventListener('click', startRaceAsHost);
-elements.typingInput.addEventListener('keydown', handleTyping);
+elements.typingInput.addEventListener('keydown', (e) => {
+    if (practiceState.isPracticing) {
+        handlePracticeTyping(e);
+    } else {
+        handleTyping(e);
+    }
+});
+
+// Practice mode buttons
+elements.practiceBtn.addEventListener('click', startPracticeMode);
+elements.practiceAgainBtn.addEventListener('click', startPracticeMode);
+elements.backToLobbyFromPracticeBtn.addEventListener('click', () => {
+    practiceState.isPracticing = false;
+    showScreen('lobby');
+});
 
 elements.playAgainBtn.addEventListener('click', () => {
     leaveRoom();

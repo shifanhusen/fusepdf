@@ -19,6 +19,12 @@
 
             <div class="lobby-options">
                 <div class="option-card">
+                    <h2>Practice Mode</h2>
+                    <p>Race solo to improve your typing speed</p>
+                    <button id="practiceBtn" class="btn btn-practice">Practice Solo</button>
+                </div>
+
+                <div class="option-card">
                     <h2>Create Race</h2>
                     <p>Start a new race room and invite friends</p>
                     <button id="createRoomBtn" class="btn btn-primary">Create Room</button>
@@ -119,6 +125,45 @@
                 <div class="results-controls">
                     <button id="playAgainBtn" class="btn btn-primary">Play Again</button>
                     <button id="backToLobbyBtn" class="btn btn-secondary">Back to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Practice Results Screen -->
+    <section id="practiceResultsScreen" class="screen">
+        <div class="container">
+            <div class="game-header">
+                <h1 class="game-title">🏁 Practice Results</h1>
+            </div>
+
+            <div class="results-container">
+                <div class="practice-stats">
+                    <div class="stat-card">
+                        <h3>Your Speed</h3>
+                        <p class="stat-value" id="practiceWPM">0</p>
+                        <p class="stat-label">WPM</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Accuracy</h3>
+                        <p class="stat-value" id="practiceAccuracy">0</p>
+                        <p class="stat-label">%</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Time</h3>
+                        <p class="stat-value" id="practiceTime">0</p>
+                        <p class="stat-label">seconds</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Personal Best</h3>
+                        <p class="stat-value" id="personalBest">0</p>
+                        <p class="stat-label">WPM</p>
+                    </div>
+                </div>
+                
+                <div class="results-controls">
+                    <button id="practiceAgainBtn" class="btn btn-primary">Practice Again</button>
+                    <button id="backToLobbyFromPracticeBtn" class="btn btn-secondary">Back to Lobby</button>
                 </div>
             </div>
         </div>

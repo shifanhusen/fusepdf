@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Connection Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .status {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 2px solid #475569;
+        }
+        .success { background: rgba(16, 185, 129, 0.1); border-color: #10b981; }
+        .error { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.1); border-color: #3b82f6; }
+        pre { 
+            background: #1e293b; 
+            padding: 1rem; 
+            border-radius: 4px; 
+            overflow-x: auto;
+        }
+        h1 { color: #3b82f6; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+        }
+        button:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Connection Test - TurboType Rally</h1>
+    
+    <div id="status" class="status info">
+        <h3>Testing Firebase Connection...</h3>
+        <p>Please wait...</p>
+    </div>
+
+    <div id="results"></div>
+
+    <div style="margin-top: 2rem;">
+        <button onclick="testWrite()">Test Write Data</button>
+        <button onclick="testRead()">Test Read Data</button>
+        <button onclick="testCreateRoom()">Test Create Room</button>
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getDatabase, 
+            ref, 
+            set, 
+            get, 
+            onValue,
+            serverTimestamp 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYHmMD0BQHxxPR4Anzx4ZmZpFTgcs6RBQ",
+            authDomain: "innovitech-tools.firebaseapp.com",
+            databaseURL: "https://innovitech-tools-default-rtdb.firebaseio.com",
+            projectId: "innovitech-tools",
+            storageBucket: "innovitech-tools.firebasestorage.app",
+            messagingSenderId: "229701728021",
+            appId: "1:229701728021:web:614906807f7ee0dcf1db1c"
+        };
+
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+
+        function addLog(message, type = 'info') {
+            const log = document.createElement('div');
+            log.className = `status ${type}`;
+            log.innerHTML = `<p>${new Date().toLocaleTimeString()}: ${message}</p>`;
+            resultsDiv.appendChild(log);
+            console.log(message);
+        }
+
+        // Test Firebase Initialization
+        try {
+            addLog('🔧 Initializing Firebase...', 'info');
+            const app = initializeApp(firebaseConfig);
+            addLog('✅ Firebase App initialized successfully!', 'success');
+            
+            const database = getDatabase(app);
+            addLog('✅ Firebase Database instance created!', 'success');
+
+            statusDiv.className = 'status success';
+            statusDiv.innerHTML = `
+                <h3>✅ Firebase Connected Successfully!</h3>
+                <p>Database URL: ${firebaseConfig.databaseURL}</p>
+                <p>Project ID: ${firebaseConfig.projectId}</p>
+            `;
+
+            // Make database globally accessible for button tests
+            window.testDatabase = database;
+
+        } catch (error) {
+            addLog(`❌ Firebase initialization failed: ${error.message}`, 'error');
+            statusDiv.className = 'status error';
+            statusDiv.innerHTML = `
+                <h3>❌ Connection Failed</h3>
+                <p>Error: ${error.message}</p>
+                <pre>${error.stack}</pre>
+            `;
+        }
+
+        // Test Write Function
+        window.testWrite = async function() {
+            addLog('📝 Testing write operation...', 'info');
+            try {
+                const testRef = ref(window.testDatabase, 'test/connection');
+                await set(testRef, {
+                    message: 'Firebase connection test',
+                    timestamp: Date.now(),
+                    status: 'working'
+                });
+                addLog('✅ Write test successful!', 'success');
+            } catch (error) {
+                addLog(`❌ Write failed: ${error.message}`, 'error');
+            }
+        };
+
+        // Test Read Function
+        window.testRead = async function() {
+            addLog('📖 Testing read operation...', 'info');
+            try {
+                const testRef = ref(window.testDatabase, 'test/connection');
+                const snapshot = await get(testRef);
+                if (snapshot.exists()) {
+                    addLog('✅ Read test successful!', 'success');
+                    addLog(`Data: <pre>${JSON.stringify(snapshot.val(), null, 2)}</pre>`, 'info');
+                } else {
+                    addLog('⚠️  No data found. Try "Test Write Data" first.', 'info');
+                }
+            } catch (error) {
+                addLog(`❌ Read failed: ${error.message}`, 'error');
+            }
+        };
+
+        // Test Create Room Function
+        window.testCreateRoom = async function() {
+            addLog('🏎️ Testing room creation (like in the game)...', 'info');
+            try {
+                const roomCode = 'TEST' + Math.random().toString(36).substr(2, 2).toUpperCase();
+                const roomRef = ref(window.testDatabase, `rooms/${roomCode}`);
+                
+                await set(roomRef, {
+                    status: 'waiting',
+                    hostId: 'test_player_123',
+                    createdAt: Date.now(),
+                    players: {
+                        'test_player_123': {
+                            name: 'Test Player',
+                            color: '#ff4757',
+                            progress: 0,
+                            wpm: 0,
+                            finished: false,
+                            joinedAt: Date.now()
+                        }
+                    }
+                });
+                
+                addLog(`✅ Room created successfully! Room code: ${roomCode}`, 'success');
+                addLog(`Check Firebase Console: <a href="https://console.firebase.google.com/project/innovitech-tools/database/innovitech-tools-default-rtdb/data/~2Frooms~2F${roomCode}" target="_blank" style="color: #3b82f6;">View Room</a>`, 'success');
+                
+                // Listen for changes
+                onValue(roomRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        addLog(`🔄 Room data updated: <pre>${JSON.stringify(snapshot.val(), null, 2)}</pre>`, 'info');
+                    }
+                });
+                
+            } catch (error) {
+                addLog(`❌ Room creation failed: ${error.message}`, 'error');
+            }
+        };
+
+        // Auto-run basic tests
+        setTimeout(() => {
+            addLog('🚀 Running automatic tests...', 'info');
+            testWrite().then(() => {
+                return testRead();
+            });
+        }, 1000);
+
+    </script>
+</body>
+</html>

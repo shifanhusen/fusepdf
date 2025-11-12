@@ -150,6 +150,17 @@ body {
     transform: translateY(-2px);
 }
 
+.btn-practice {
+    background: var(--success-color);
+    color: white;
+}
+
+.btn-practice:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
 .btn-danger {
     background: var(--danger-color);
     color: white;
@@ -438,6 +449,35 @@ input[type="text"]:focus {
     color: var(--primary-color);
     font-family: 'Courier New', monospace;
     letter-spacing: 0.1em;
+    line-height: 1.6;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+/* Character-by-character highlighting */
+.char-span {
+    transition: color 0.1s ease, background-color 0.1s ease;
+    position: relative;
+}
+
+.char-span.pending {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.char-span.correct {
+    color: var(--success-color);
+    font-weight: 600;
+    opacity: 1;
+}
+
+.char-span.incorrect {
+    color: var(--danger-color);
+    font-weight: 600;
+    opacity: 1;
+    background-color: rgba(239, 68, 68, 0.2);
 }
 
 .typing-input {
@@ -530,6 +570,45 @@ input[type="text"]:focus {
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+/* Practice Results */
+.practice-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 /* Toast Notifications */
