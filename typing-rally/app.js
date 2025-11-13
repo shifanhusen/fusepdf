@@ -495,8 +495,8 @@ function updateRaceTrack(players) {
         const carImg = document.createElement('img');
         carImg.src = getPlayerCar(index);
         carImg.alt = 'Race Car';
-        carImg.style.width = '40px';
-        carImg.style.height = '24px';
+        carImg.style.width = '60px';
+        carImg.style.height = 'auto';
         
         const racerName = document.createElement('div');
         racerName.className = 'racer-name';
@@ -750,8 +750,8 @@ function startPracticeMode() {
     const carImg = document.createElement('img');
     carImg.src = getRandomCar();
     carImg.alt = 'Race Car';
-    carImg.style.width = '40px';
-    carImg.style.height = '24px';
+    carImg.style.width = '60px';
+    carImg.style.height = 'auto';
     
     raceCar.appendChild(carImg);
     laneTrack.appendChild(finishLine);

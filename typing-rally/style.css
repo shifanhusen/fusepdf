@@ -408,8 +408,6 @@ input[type="text"]:focus {
     align-items: center;
     justify-content: center;
     transition: left 0.2s ease;
-    border: 3px solid rgba(46, 213, 115, 0.8);
-    background: linear-gradient(135deg, #2ed573 0%, #26d067 100%);
 }
 
 /* Lane components for solo mode */
