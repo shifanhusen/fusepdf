@@ -4,36 +4,76 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     
-    <!-- Main page -->
+    <!-- Main Website -->
     <url>
-        <loc>https://fusepdf.vercel.app/</loc>
-        <lastmod>2025-11-05</lastmod>
+        <loc>https://innovitecho.com/</loc>
+        <lastmod>2025-11-13</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     
-    <!-- Split PDF Tool -->
+    <!-- PDF Tools -->
     <url>
-        <loc>https://fusepdf.vercel.app/#split</loc>
-        <lastmod>2025-11-05</lastmod>
+        <loc>https://innovitecho.com/pdf-tools/</loc>
+        <lastmod>2025-11-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
     
-    <!-- Merge PDF Tool -->
+    <!-- TurboType Rally -->
     <url>
-        <loc>https://fusepdf.vercel.app/#merge</loc>
-        <lastmod>2025-11-05</lastmod>
+        <loc>https://innovitecho.com/typing-rally/</loc>
+        <lastmod>2025-11-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
     
-    <!-- Compress PDF Tool -->
+    <!-- Contact -->
     <url>
-        <loc>https://fusepdf.vercel.app/#compress</loc>
-        <lastmod>2025-11-05</lastmod>
+        <loc>https://innovitecho.com/contact.html</loc>
+        <lastmod>2025-11-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- About -->
+    <url>
+        <loc>https://innovitecho.com/about.html</loc>
+        <lastmod>2025-11-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Privacy Policy -->
+    <url>
+        <loc>https://innovitecho.com/privacy-policy.html</loc>
+        <lastmod>2025-11-13</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Terms of Service -->
+    <url>
+        <loc>https://innovitecho.com/terms-of-service.html</loc>
+        <lastmod>2025-11-13</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Help -->
+    <url>
+        <loc>https://innovitecho.com/help.html</loc>
+        <lastmod>2025-11-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Blog -->
+    <url>
+        <loc>https://innovitecho.com/blog.html</loc>
+        <lastmod>2025-11-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
     </url>
 
 </urlset>
