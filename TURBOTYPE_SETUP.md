@@ -1,4 +1,4 @@
-# 🏎️ TurboType Rally - Quick Setup Guide
+# ![TurboType Rally](typing-rally/assets/images/typing-Rally.png) TurboType Rally - Quick Setup Guide
 
 ## ✅ What's Been Done
 

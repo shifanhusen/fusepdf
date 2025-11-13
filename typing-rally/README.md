@@ -1,4 +1,4 @@
-# 🏎️ TurboType Rally
+# ![TurboType Rally](assets/images/typing-Rally.png) TurboType Rally
 
 A real-time multiplayer typing race game where players compete by typing words as fast as possible. Built with vanilla JavaScript and Firebase Realtime Database.
 

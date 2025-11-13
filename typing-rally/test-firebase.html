@@ -156,7 +156,7 @@
 
         // Test Create Room Function
         window.testCreateRoom = async function() {
-            addLog('🏎️ Testing room creation (like in the game)...', 'info');
+            addLog('� Testing room creation (like in the game)...', 'info');
             try {
                 const roomCode = 'TEST' + Math.random().toString(36).substr(2, 2).toUpperCase();
                 const roomRef = ref(window.testDatabase, `rooms/${roomCode}`);

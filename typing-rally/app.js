@@ -955,7 +955,7 @@ elements.roomCodeInput.addEventListener('keypress', (e) => {
 // INITIALIZATION
 // =============================================================================
 
-console.log('🏎️ TurboType Rally initialized!');
+console.log('� TurboType Rally initialized!');
 console.log('⚠️  Remember to add your Firebase config at the top of app.js');
 
 // Show lobby screen on load
