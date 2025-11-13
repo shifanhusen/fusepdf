@@ -48,8 +48,33 @@ const gameState = {
     correctWords: 0,
     startTime: null,
     raceStartTime: null,
-    playerColor: null
+    playerColor: null,
+    playerCar: null
 };
+
+// =============================================================================
+// CAR SYSTEM - Available car images for players
+// =============================================================================
+const AVAILABLE_CARS = [
+    'blueCar.png',
+    'redCar.png', 
+    'greenCar.png',
+    'yellowCar.png',
+    'orangeCar.png',
+    'whiteCar.png'
+];
+
+// Get a random car for solo mode or assign different cars for multiplayer
+function getRandomCar() {
+    const randomIndex = Math.floor(Math.random() * AVAILABLE_CARS.length);
+    return `assets/images/${AVAILABLE_CARS[randomIndex]}`;
+}
+
+function getPlayerCar(playerIndex) {
+    // Cycle through available cars for different players
+    const carIndex = playerIndex % AVAILABLE_CARS.length;
+    return `assets/images/${AVAILABLE_CARS[carIndex]}`;
+}
 
 // =============================================================================
 // PARAGRAPH BANK - Random paragraphs for typing practice
@@ -312,7 +337,7 @@ function listenToRoom(roomCode) {
         } else if (roomData.status === 'racing') {
             if (!screens.racing.classList.contains('active')) {
                 showScreen('racing');
-                startRace();
+                startRace(roomData.paragraphIndex);
             }
             updateRaceTrack(players);
         } else if (roomData.status === 'finished') {
@@ -376,10 +401,14 @@ function resetGameState() {
 async function startRaceAsHost() {
     if (!gameState.isHost) return;
     
+    // Host selects paragraph for all players
+    const paragraphIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+    
     const roomRef = ref(database, `rooms/${gameState.roomId}`);
     await update(roomRef, {
         status: 'countdown',
-        countdownStartedAt: Date.now()
+        countdownStartedAt: Date.now(),
+        paragraphIndex: paragraphIndex
     });
 }
 
@@ -408,9 +437,16 @@ function startCountdown() {
     }, 1000);
 }
 
-function startRace() {
+function startRace(paragraphIndex = null) {
     gameState.raceStartTime = Date.now();
-    gameState.currentParagraphIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+    
+    // Use provided paragraph index (for multiplayer) or random (for solo)
+    if (paragraphIndex !== null) {
+        gameState.currentParagraphIndex = paragraphIndex;
+    } else {
+        gameState.currentParagraphIndex = Math.floor(Math.random() * PARAGRAPHS.length);
+    }
+    
     gameState.currentParagraph = PARAGRAPHS[gameState.currentParagraphIndex];
     gameState.correctChars = 0;
     gameState.incorrectChars = 0;
@@ -447,15 +483,35 @@ function updateRaceTrack(players) {
         
         const lane = document.createElement('div');
         lane.className = 'race-lane';
-        lane.innerHTML = `
-            <div class="finish-line"></div>
-            <div class="racer ${player.finished ? 'finished' : ''}" 
-                 style="background: ${player.color}; left: ${player.progress}%">
-                🏎️
-                <div class="racer-name">${player.name}</div>
-                <div class="racer-progress">${Math.round(player.progress)}%</div>
-            </div>
-        `;
+        
+        const finishLine = document.createElement('div');
+        finishLine.className = 'finish-line';
+        
+        const racer = document.createElement('div');
+        racer.className = `racer ${player.finished ? 'finished' : ''}`;
+        racer.style.left = `${player.progress}%`;
+        
+        // Create car image instead of emoji
+        const carImg = document.createElement('img');
+        carImg.src = getPlayerCar(index);
+        carImg.alt = 'Race Car';
+        carImg.style.width = '40px';
+        carImg.style.height = '24px';
+        
+        const racerName = document.createElement('div');
+        racerName.className = 'racer-name';
+        racerName.textContent = player.name;
+        
+        const racerProgress = document.createElement('div');
+        racerProgress.className = 'racer-progress';
+        racerProgress.textContent = `${Math.round(player.progress)}%`;
+        
+        racer.appendChild(carImg);
+        racer.appendChild(racerName);
+        racer.appendChild(racerProgress);
+        
+        lane.appendChild(finishLine);
+        lane.appendChild(racer);
         elements.raceTrack.appendChild(lane);
     });
 }
@@ -676,18 +732,41 @@ function startPracticeMode() {
     const playerName = elements.playerNameInput.value.trim() || 'You';
     const laneSolo = document.createElement('div');
     laneSolo.className = 'race-lane';
-    laneSolo.innerHTML = `
-        <div class="lane-label">${playerName}</div>
-        <div class="lane-track">
-            <div class="finish-line"></div>
-            <div class="race-car" style="background: #2ed573">
-                🏎️
-            </div>
-        </div>
-        <div class="lane-stats">
-            <span class="lane-wpm">0 WPM</span>
-        </div>
-    `;
+    
+    const laneLabel = document.createElement('div');
+    laneLabel.className = 'lane-label';
+    laneLabel.textContent = playerName;
+    
+    const laneTrack = document.createElement('div');
+    laneTrack.className = 'lane-track';
+    
+    const finishLine = document.createElement('div');
+    finishLine.className = 'finish-line';
+    
+    const raceCar = document.createElement('div');
+    raceCar.className = 'race-car';
+    
+    // Create car image instead of emoji
+    const carImg = document.createElement('img');
+    carImg.src = getRandomCar();
+    carImg.alt = 'Race Car';
+    carImg.style.width = '40px';
+    carImg.style.height = '24px';
+    
+    raceCar.appendChild(carImg);
+    laneTrack.appendChild(finishLine);
+    laneTrack.appendChild(raceCar);
+    
+    const laneStats = document.createElement('div');
+    laneStats.className = 'lane-stats';
+    const laneWpm = document.createElement('span');
+    laneWpm.className = 'lane-wpm';
+    laneWpm.textContent = '0 WPM';
+    laneStats.appendChild(laneWpm);
+    
+    laneSolo.appendChild(laneLabel);
+    laneSolo.appendChild(laneTrack);
+    laneSolo.appendChild(laneStats);
     elements.raceTrack.appendChild(laneSolo);
     
     // Reset stats display
