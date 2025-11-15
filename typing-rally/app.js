@@ -538,32 +538,51 @@ function startRaceTimer() {
 function displayParagraphWithCharacters() {
     // Initialize the advanced paragraph display
     updateParagraphDisplay();
+    
+    // Also ensure legacy display works if new elements aren't found
+    if (!elements.completedText && elements.currentWord) {
+        // Clear previous content
+        elements.currentWord.innerHTML = '';
+        
+        // Create spans for each character (legacy fallback)
+        const paragraph = gameState.currentParagraph;
+        for (let i = 0; i < paragraph.length; i++) {
+            const span = document.createElement('span');
+            span.className = 'char-span pending';
+            span.textContent = paragraph[i];
+            span.id = `char-${i}`;
+            elements.currentWord.appendChild(span);
+        }
+    }
 }
 
 function updateParagraphDisplay() {
     const paragraph = gameState.currentParagraph;
     const currentPos = gameState.correctChars;
     
-    // Split text into completed, current character, and remaining
-    const completed = paragraph.substring(0, currentPos);
-    const currentChar = paragraph.charAt(currentPos);
-    const remaining = paragraph.substring(currentPos + 1);
-    
-    // Update display elements
-    elements.completedText.textContent = completed;
-    elements.currentChar.textContent = currentChar;
-    elements.remainingText.textContent = remaining;
-    
-    // Auto-scroll logic: keep only last 30 characters of completed text visible
-    if (completed.length > 30) {
-        const visibleCompleted = '...' + completed.substring(completed.length - 27);
-        elements.completedText.textContent = visibleCompleted;
-    }
-    
-    // Show only next 100 characters of remaining text to limit display
-    if (remaining.length > 100) {
-        const visibleRemaining = remaining.substring(0, 100) + '...';
-        elements.remainingText.textContent = visibleRemaining;
+    // Check if new paragraph display elements exist
+    if (elements.completedText && elements.currentChar && elements.remainingText) {
+        // Split text into completed, current character, and remaining
+        const completed = paragraph.substring(0, currentPos);
+        const currentChar = paragraph.charAt(currentPos);
+        const remaining = paragraph.substring(currentPos + 1);
+        
+        // Update display elements
+        elements.completedText.textContent = completed;
+        elements.currentChar.textContent = currentChar || '';
+        elements.remainingText.textContent = remaining;
+        
+        // Auto-scroll logic: keep only last 30 characters of completed text visible
+        if (completed.length > 30) {
+            const visibleCompleted = '...' + completed.substring(completed.length - 27);
+            elements.completedText.textContent = visibleCompleted;
+        }
+        
+        // Show only next 100 characters of remaining text to limit display
+        if (remaining.length > 100) {
+            const visibleRemaining = remaining.substring(0, 100) + '...';
+            elements.remainingText.textContent = visibleRemaining;
+        }
     }
     
     // Fallback for legacy word display (if elements exist)
