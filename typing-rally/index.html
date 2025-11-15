@@ -22,9 +22,9 @@
 
             <div class="lobby-options">
                 <div class="option-card">
-                    <h2>Typing Speed Test</h2>
+                    <h2>Solo Game</h2>
                     <p>Practice solo to check your WPM and improve typing accuracy</p>
-                    <button id="practiceBtn" class="btn btn-practice">Start WPM Test</button>
+                    <button id="practiceBtn" class="btn btn-practice">Start Solo Game</button>
                 </div>
 
                 <div class="option-card">
@@ -38,6 +38,12 @@
                     <p>Enter room code to join live typing speed competition</p>
                     <input type="text" id="roomCodeInput" placeholder="Enter room code (e.g., ABC123)" maxlength="6">
                     <button id="joinRoomBtn" class="btn btn-secondary">Join Room</button>
+                </div>
+
+                <div class="option-card">
+                    <h2>Leaderboard</h2>
+                    <p>View top typing speeds and compete for the best WPM scores</p>
+                    <button id="leaderboardBtn" class="btn btn-info">View Rankings</button>
                 </div>
             </div>
 
@@ -104,8 +110,13 @@
 
             <!-- Typing Area -->
             <div class="typing-area">
-                <div class="word-display">
-                    <span id="currentWord" class="current-word">loading</span>
+                <div class="paragraph-display">
+                    <div id="paragraphContainer" class="paragraph-container">
+                        <div id="completedText" class="completed-text"></div>
+                        <div id="currentText" class="current-text">
+                            <span id="currentChar" class="current-char"></span><span id="remainingText" class="remaining-text"></span>
+                        </div>
+                    </div>
                 </div>
                 <input type="text" id="typingInput" class="typing-input" placeholder="Start typing..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <div class="typing-feedback">

@@ -132,6 +132,11 @@ const elements = {
     
     // Racing
     raceTrack: document.getElementById('raceTrack'),
+    paragraphContainer: document.getElementById('paragraphContainer'),
+    completedText: document.getElementById('completedText'),
+    currentText: document.getElementById('currentText'),
+    currentChar: document.getElementById('currentChar'),
+    remainingText: document.getElementById('remainingText'),
     currentWord: document.getElementById('currentWord'),
     typingInput: document.getElementById('typingInput'),
     typingFeedback: document.getElementById('typingFeedback'),
@@ -531,17 +536,54 @@ function startRaceTimer() {
 }
 
 function displayParagraphWithCharacters() {
-    // Clear previous content
-    elements.currentWord.innerHTML = '';
-    
-    // Create spans for each character
+    // Initialize the advanced paragraph display
+    updateParagraphDisplay();
+}
+
+function updateParagraphDisplay() {
     const paragraph = gameState.currentParagraph;
-    for (let i = 0; i < paragraph.length; i++) {
-        const span = document.createElement('span');
-        span.className = 'char-span pending';
-        span.textContent = paragraph[i];
-        span.id = `char-${i}`;
-        elements.currentWord.appendChild(span);
+    const currentPos = gameState.correctChars;
+    
+    // Split text into completed, current character, and remaining
+    const completed = paragraph.substring(0, currentPos);
+    const currentChar = paragraph.charAt(currentPos);
+    const remaining = paragraph.substring(currentPos + 1);
+    
+    // Update display elements
+    elements.completedText.textContent = completed;
+    elements.currentChar.textContent = currentChar;
+    elements.remainingText.textContent = remaining;
+    
+    // Auto-scroll logic: keep only last 30 characters of completed text visible
+    if (completed.length > 30) {
+        const visibleCompleted = '...' + completed.substring(completed.length - 27);
+        elements.completedText.textContent = visibleCompleted;
+    }
+    
+    // Show only next 100 characters of remaining text to limit display
+    if (remaining.length > 100) {
+        const visibleRemaining = remaining.substring(0, 100) + '...';
+        elements.remainingText.textContent = visibleRemaining;
+    }
+    
+    // Fallback for legacy word display (if elements exist)
+    if (elements.currentWord) {
+        elements.currentWord.innerHTML = '';
+        
+        // Create spans for each character (legacy compatibility)
+        for (let i = 0; i < paragraph.length; i++) {
+            const span = document.createElement('span');
+            if (i < currentPos) {
+                span.className = 'char-span correct';
+            } else if (i === currentPos) {
+                span.className = 'char-span current';
+            } else {
+                span.className = 'char-span pending';
+            }
+            span.textContent = paragraph[i];
+            span.id = `char-${i}`;
+            elements.currentWord.appendChild(span);
+        }
     }
 }
 
@@ -575,6 +617,9 @@ async function handleCharacterTyping(event) {
             charSpan.classList.add('pending');
         }
     }
+    
+    // Update the scrolling paragraph display
+    updateParagraphDisplay();
     
     // Calculate progress (percentage of paragraph typed correctly)
     const progress = Math.min((gameState.correctChars / gameState.totalChars) * 100, 100);
@@ -950,6 +995,69 @@ elements.roomCodeInput.addEventListener('keypress', (e) => {
         joinRoom();
     }
 });
+
+// Leaderboard button functionality
+document.getElementById('leaderboardBtn')?.addEventListener('click', () => {
+    showLeaderboard();
+});
+
+// =============================================================================
+// LEADERBOARD FUNCTIONALITY
+// =============================================================================
+
+function showLeaderboard() {
+    // Create a simple modal-style leaderboard display
+    const modal = document.createElement('div');
+    modal.className = 'leaderboard-modal';
+    modal.innerHTML = `
+        <div class="leaderboard-content">
+            <h2>🏆 Top Typing Speeds</h2>
+            <div class="leaderboard-list">
+                <div class="leaderboard-item">
+                    <span class="rank">1.</span>
+                    <span class="name">SpeedTyper</span>
+                    <span class="score">120 WPM</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">2.</span>
+                    <span class="name">FastFingers</span>
+                    <span class="score">115 WPM</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">3.</span>
+                    <span class="name">QuickType</span>
+                    <span class="score">108 WPM</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">4.</span>
+                    <span class="name">TypeMaster</span>
+                    <span class="score">95 WPM</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">5.</span>
+                    <span class="name">KeyboardNinja</span>
+                    <span class="score">88 WPM</span>
+                </div>
+            </div>
+            <p class="leaderboard-note">Complete a solo game to submit your score!</p>
+            <button id="closeLeaderboard" class="btn btn-secondary">Close</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close leaderboard functionality
+    document.getElementById('closeLeaderboard').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // Click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
 
 // =============================================================================
 // INITIALIZATION
