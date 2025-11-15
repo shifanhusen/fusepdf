@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free QR Code Generator – Create Stylish & Graphical QR Codes | InnoviTecho</title>
+    <meta name="description" content="Generate free QR codes online. Create standard or graphical QR codes with gradients, colors, logos, and rounded styles. Download as PNG, SVG, or PDF.">
+    <meta name="keywords" content="qr code generator, graphical qr, qr with logo, gradient qr, free qr tool, online qr generator, custom qr code, qr code maker">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Free QR Code Generator – Create Stylish QR Codes">
+    <meta property="og:description" content="Generate free QR codes online with gradients, logos, and custom styles. Download as PNG, SVG, or PDF.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://innovitecho.com/qr-tools">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "InnoviQR - QR Code Generator",
+        "description": "Advanced online QR code generator with styling options",
+        "url": "https://innovitecho.com/qr-tools",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        }
+    }
+    </script>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="/favicon.png" alt="InnoviTecho" class="logo-img">
+                    <h1 class="logo-text">InnoviQR</h1>
+                </div>
+                <nav class="nav">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/pdf-tools/" class="nav-link">PDF Tools</a>
+                    <a href="/typing-rally/" class="nav-link">Typing Rally</a>
+                    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Advanced QR Code Generator</h1>
+                <p class="hero-subtitle">Create stunning QR codes with gradients, logos, and custom styling. Download as PNG, SVG, or PDF.</p>
+                <div class="hero-features">
+                    <span class="feature-tag">✨ Graphical QR Codes</span>
+                    <span class="feature-tag">🎨 Custom Colors & Gradients</span>
+                    <span class="feature-tag">📷 Logo Integration</span>
+                    <span class="feature-tag">📱 Mobile Responsive</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="qr-generator">
+                <!-- Settings Panel -->
+                <div class="settings-panel">
+                    <div class="panel-header">
+                        <h2>QR Code Settings</h2>
+                        <div class="mode-toggle">
+                            <button id="basicMode" class="mode-btn active">Basic</button>
+                            <button id="advancedMode" class="mode-btn">Advanced</button>
+                        </div>
+                    </div>
+
+                    <!-- Content Type Selection -->
+                    <div class="settings-section">
+                        <label class="settings-label">Content Type</label>
+                        <select id="contentType" class="settings-select">
+                            <option value="text">Plain Text</option>
+                            <option value="url">Website URL</option>
+                            <option value="email">Email Address</option>
+                            <option value="phone">Phone Number</option>
+                            <option value="wifi">WiFi Network</option>
+                            <option value="whatsapp">WhatsApp Message</option>
+                            <option value="vcard">Contact Card</option>
+                        </select>
+                    </div>
+
+                    <!-- Dynamic Content Input -->
+                    <div class="settings-section" id="contentInput">
+                        <!-- Content will be dynamically generated based on type -->
+                    </div>
+
+                    <!-- Basic Settings -->
+                    <div class="settings-section">
+                        <label class="settings-label">Size</label>
+                        <div class="size-controls">
+                            <input type="range" id="qrSize" min="200" max="800" value="300" class="settings-slider">
+                            <span id="sizeValue" class="size-value">300px</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <label class="settings-label">Error Correction</label>
+                        <select id="errorCorrection" class="settings-select">
+                            <option value="L">Low (7%)</option>
+                            <option value="M" selected>Medium (15%)</option>
+                            <option value="Q">Quartile (25%)</option>
+                            <option value="H">High (30%)</option>
+                        </select>
+                    </div>
+
+                    <!-- Advanced Settings (Hidden by default) -->
+                    <div id="advancedSettings" class="advanced-settings hidden">
+                        <!-- Colors -->
+                        <div class="settings-section">
+                            <label class="settings-label">QR Color</label>
+                            <div class="color-controls">
+                                <div class="color-input-group">
+                                    <input type="color" id="qrColor" value="#000000" class="color-picker">
+                                    <button id="gradientToggle" class="gradient-btn">Gradient</button>
+                                </div>
+                                <div id="gradientControls" class="gradient-controls hidden">
+                                    <input type="color" id="qrColor2" value="#0082FF" class="color-picker">
+                                    <select id="gradientType" class="gradient-select">
+                                        <option value="linear">Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <label class="settings-label">Background Color</label>
+                            <div class="color-controls">
+                                <input type="color" id="bgColor" value="#ffffff" class="color-picker">
+                                <button id="transparentBg" class="transparent-btn">Transparent</button>
+                            </div>
+                        </div>
+
+                        <!-- Dot Style -->
+                        <div class="settings-section">
+                            <label class="settings-label">Dot Style</label>
+                            <select id="dotStyle" class="settings-select">
+                                <option value="square">Square</option>
+                                <option value="dots">Dots</option>
+                                <option value="rounded">Rounded</option>
+                                <option value="extra-rounded">Extra Rounded</option>
+                                <option value="classy">Classy</option>
+                                <option value="classy-rounded">Classy Rounded</option>
+                            </select>
+                        </div>
+
+                        <!-- Corner Style -->
+                        <div class="settings-section">
+                            <label class="settings-label">Corner Style</label>
+                            <select id="cornerSquareStyle" class="settings-select">
+                                <option value="square">Square</option>
+                                <option value="dot">Dot</option>
+                                <option value="extra-rounded">Extra Rounded</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-section">
+                            <label class="settings-label">Corner Dot Style</label>
+                            <select id="cornerDotStyle" class="settings-select">
+                                <option value="square">Square</option>
+                                <option value="dot">Dot</option>
+                            </select>
+                        </div>
+
+                        <!-- Logo Upload -->
+                        <div class="settings-section">
+                            <label class="settings-label">Logo</label>
+                            <div class="logo-controls">
+                                <input type="file" id="logoUpload" accept="image/*" class="file-input">
+                                <div class="logo-settings hidden" id="logoSettings">
+                                    <label class="settings-sublabel">Logo Size</label>
+                                    <input type="range" id="logoSize" min="0.1" max="0.5" step="0.05" value="0.2" class="settings-slider">
+                                    <span id="logoSizeValue">20%</span>
+                                    
+                                    <label class="settings-sublabel">Logo Margin</label>
+                                    <input type="range" id="logoMargin" min="0" max="20" value="5" class="settings-slider">
+                                    <span id="logoMarginValue">5px</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <h3>Live Preview</h3>
+                        <div class="preview-info">
+                            <span id="qrInfo" class="qr-info">Ready to generate</span>
+                        </div>
+                    </div>
+
+                    <div class="qr-preview">
+                        <div id="qrCodeContainer" class="qr-container">
+                            <div class="qr-placeholder">
+                                <div class="placeholder-icon">📱</div>
+                                <p>Enter content to generate QR code</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="download-section">
+                        <h4>Download Options</h4>
+                        <div class="download-buttons">
+                            <button id="downloadPNG" class="download-btn png-btn" disabled>
+                                <span class="btn-icon">🖼️</span>
+                                PNG
+                            </button>
+                            <button id="downloadSVG" class="download-btn svg-btn" disabled>
+                                <span class="btn-icon">📐</span>
+                                SVG
+                            </button>
+                            <button id="downloadPDF" class="download-btn pdf-btn" disabled>
+                                <span class="btn-icon">📄</span>
+                                PDF
+                            </button>
+                        </div>
+                        
+                        <div class="download-size">
+                            <label>Download Size:</label>
+                            <select id="downloadSize">
+                                <option value="256">256x256</option>
+                                <option value="512" selected>512x512</option>
+                                <option value="1024">1024x1024</option>
+                                <option value="2048">2048x2048</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>InnoviTecho Tools</h4>
+                    <p>Explore more tools at InnoviTecho – PDF Tools, JSON Converters, Image Compressor, Typing Rally, and more.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/pdf-tools/" class="footer-link">PDF Tools</a>
+                    <a href="/json-tools/" class="footer-link">JSON Tools</a>
+                    <a href="/typing-rally/" class="footer-link">Typing Rally</a>
+                    <a href="/qr-tools/" class="footer-link">QR Generator</a>
+                </div>
+                <div class="footer-social">
+                    <p>&copy; 2024 InnoviTecho. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
