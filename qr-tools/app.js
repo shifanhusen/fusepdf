@@ -575,6 +575,7 @@ class QRGenerator {
         
         let hasColor1 = false;
         let hasColor2 = false;
+        let intermediateColors = 0;
         
         for (let i = 0; i < imageData.data.length; i += 4) {
             const r = imageData.data[i];
@@ -594,11 +595,28 @@ class QRGenerator {
                 hasColor2 = true;
             }
             
-            // If we found both colors, gradient is working
-            if (hasColor1 && hasColor2) return true;
+            // Check for intermediate gradient colors
+            if (!hasColor1 && !hasColor2) {
+                const midR = (color1RGB.r + color2RGB.r) / 2;
+                const midG = (color1RGB.g + color2RGB.g) / 2;
+                const midB = (color1RGB.b + color2RGB.b) / 2;
+                
+                if (Math.abs(r - midR) < 30 && Math.abs(g - midG) < 30 && Math.abs(b - midB) < 30) {
+                    intermediateColors++;
+                }
+            }
         }
         
-        return false;
+        // Consider it a gradient if we found both colors OR multiple intermediate colors
+        const hasGradient = (hasColor1 && hasColor2) || intermediateColors > 10;
+        
+        console.log('🔍 Gradient Detection Analysis:');
+        console.log('- Found Color1:', hasColor1);
+        console.log('- Found Color2:', hasColor2);
+        console.log('- Intermediate Colors:', intermediateColors);
+        console.log('- Has Gradient:', hasGradient);
+        
+        return hasGradient;
     }
 
     // Size Management
@@ -703,11 +721,22 @@ class QRGenerator {
         const file = event.target.files[0];
         if (!file) return;
         
+        console.log('🖼️ Logo Upload Started:');
+        console.log('- File Name:', file.name);
+        console.log('- File Size:', file.size, 'bytes');
+        console.log('- File Type:', file.type);
+        
         const reader = new FileReader();
         reader.onload = (e) => {
             this.currentLogo = e.target.result;
             document.getElementById('logoSettings').classList.remove('hidden');
+            console.log('🖼️ Logo Loaded Successfully');
+            console.log('- Data URL Length:', this.currentLogo.length);
+            console.log('- Data URL Preview:', this.currentLogo.substring(0, 100) + '...');
             this.updatePreview();
+        };
+        reader.onerror = (error) => {
+            console.error('❌ Logo Upload Failed:', error);
         };
         reader.readAsDataURL(file);
     }
@@ -907,7 +936,11 @@ class QRGenerator {
             'rounded': 'rounded',
             'extra-rounded': 'extra-rounded',
             'classy': 'classy',
-            'classy-rounded': 'classy-rounded'
+            'classy-rounded': 'classy-rounded',
+            'diamond': 'square', // QRCodeStyling doesn't have diamond, fallback to square
+            'star': 'dots', // QRCodeStyling doesn't have star, fallback to dots
+            'heart': 'rounded', // QRCodeStyling doesn't have heart, fallback to rounded
+            'flower': 'classy' // QRCodeStyling doesn't have flower, fallback to classy
         };
         
         const qrOptions = {
@@ -940,16 +973,22 @@ class QRGenerator {
 
         // Add logo if available
         if (this.currentLogo) {
-            const logoSize = parseFloat(document.getElementById('logoSize').value);
-            const logoMargin = parseInt(document.getElementById('logoMargin').value);
+            const logoSize = parseFloat(document.getElementById('logoSize')?.value || '0.3');
+            const logoMargin = parseInt(document.getElementById('logoMargin')?.value || '5');
             
             qrOptions.image = this.currentLogo;
             qrOptions.imageOptions = {
                 hideBackgroundDots: true,
                 imageSize: logoSize,
                 margin: logoMargin,
-                crossOrigin: 'anonymous'
+                crossOrigin: 'anonymous',
+                saveAsBlob: false
             };
+            
+            console.log('🖼️ Logo Configuration:');
+            console.log('- Logo Size:', logoSize);
+            console.log('- Logo Margin:', logoMargin);
+            console.log('- Logo URL:', this.currentLogo.substring(0, 50) + '...');
         }
 
         // Debug QR options
@@ -964,14 +1003,24 @@ class QRGenerator {
         // Create QRCodeStyling instance
         const qrCode = new QRCodeStyling(qrOptions);
         
-        // If gradient is not working, try to update after creation
+        // If gradient is not working, try to update after creation with proper format
         if (foregroundType === 'gradient' && typeof dotsColor === 'object') {
             console.log('🔄 Attempting to apply gradient after QR creation...');
             
-            // Try updating the QR code with gradient again
+            // Ensure gradient has proper QRCodeStyling format
+            const properGradient = {
+                type: gradientType === 'radial' ? 'radial' : 'linear',
+                rotation: gradientType === 'linear' ? Math.PI / 4 : 0,
+                colorStops: [
+                    { offset: 0, color: qrColor1 },
+                    { offset: 1, color: qrColor2 }
+                ]
+            };
+            
+            // Try updating the QR code with corrected gradient
             qrCode.update({
                 dotsOptions: {
-                    color: dotsColor,
+                    color: properGradient,
                     type: shapeMapping[dotStyle] || 'square'
                 }
             });
@@ -995,7 +1044,7 @@ class QRGenerator {
                     
                     if (!hasGradient) {
                         console.log('⚠️ Gradient not detected, applying manual gradient...');
-                        this.applyGradientToCanvas(canvas, qrColor1, qrColor2, bgColor);
+                        this.applyGradientToCanvas(canvas, qrColor1, qrColor2, bgColor, gradientType);
                     } else {
                         console.log('✅ Gradient successfully applied by QRCodeStyling');
                     }
@@ -1047,7 +1096,7 @@ class QRGenerator {
     }
 
     // Custom Styling Helpers
-    applyGradientToCanvas(canvas, color1, color2, bgColor) {
+    applyGradientToCanvas(canvas, color1, color2, bgColor, gradientType = 'linear') {
         const ctx = canvas.getContext('2d');
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
@@ -1058,6 +1107,10 @@ class QRGenerator {
         
         if (!color1RGB || !color2RGB) return;
         
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+        
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
@@ -1066,7 +1119,17 @@ class QRGenerator {
             // If it's not background color (assuming dark pixels are QR code)
             if (r < 128 && g < 128 && b < 128) {
                 const x = (i / 4) % canvas.width;
-                const progress = x / canvas.width;
+                const y = Math.floor((i / 4) / canvas.width);
+                
+                let progress;
+                if (gradientType === 'radial') {
+                    // Radial gradient from center
+                    const distance = Math.sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
+                    progress = Math.min(distance / maxDistance, 1);
+                } else {
+                    // Linear gradient (left to right)
+                    progress = x / canvas.width;
+                }
                 
                 data[i] = Math.round(color1RGB.r + (color2RGB.r - color1RGB.r) * progress);
                 data[i + 1] = Math.round(color1RGB.g + (color2RGB.g - color1RGB.g) * progress);
