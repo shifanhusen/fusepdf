@@ -15,15 +15,10 @@ class QRGenerator {
     }
     
     init() {
-        // Check if libraries are loaded
-        if (typeof QRCode === 'undefined') {
-            console.error('QRCode library not loaded. Please check the CDN link.');
-            document.getElementById('qrCodeContainer').innerHTML = `
-                <div class="error-message" style="color: #ff4757; padding: 2rem; text-align: center;">
-                    <h3>⚠️ Library Loading Error</h3>
-                    <p>QR Code library failed to load. Please refresh the page.</p>
-                </div>
-            `;
+        // Check if QR libraries are loaded
+        if (typeof QRious === 'undefined' && typeof QRCode === 'undefined') {
+            console.error('QR libraries not loaded. Attempting to reload...');
+            this.attemptLibraryReload();
             return;
         }
         
@@ -80,8 +75,8 @@ class QRGenerator {
         document.getElementById('downloadSVG').addEventListener('click', () => this.downloadQR('svg'));
         document.getElementById('downloadPDF').addEventListener('click', () => this.downloadQR('pdf'));
         
-        // Theme Toggle
-        document.getElementById('themeToggle').addEventListener('click', this.toggleTheme.bind(this));
+        // Theme Toggle - handled in setupTheme method
+        // Theme functionality is initialized in setupTheme()
     }
     
     // Mode Management
@@ -260,6 +255,44 @@ class QRGenerator {
         inputs.forEach(input => {
             input.addEventListener('input', () => this.updatePreview());
         });
+    }
+    
+    // Library Loading Fallback
+    attemptLibraryReload() {
+        const container = document.getElementById('qrCodeContainer');
+        container.innerHTML = `
+            <div class="error-message" style="color: #ff4757; padding: 2rem; text-align: center;">
+                <h3>⚠️ Library Loading Error</h3>
+                <p>QR Code library failed to load. Attempting to reload...</p>
+                <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary-blue); color: white; border: none; border-radius: 4px; cursor: pointer;">Reload Page</button>
+            </div>
+        `;
+        
+        // Try to reload libraries after a delay
+        setTimeout(() => {
+            if (typeof QRCode !== 'undefined') {
+                this.updatePreview();
+            }
+        }, 2000);
+    }
+    
+    // Library Loading Fallback
+    attemptLibraryReload() {
+        const container = document.getElementById('qrCodeContainer');
+        container.innerHTML = `
+            <div class="error-message" style="color: #ff4757; padding: 2rem; text-align: center;">
+                <h3>⚠️ Library Loading Error</h3>
+                <p>QR Code library failed to load. Attempting to reload...</p>
+                <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary-blue); color: white; border: none; border-radius: 4px; cursor: pointer;">Reload Page</button>
+            </div>
+        `;
+        
+        // Try to reload libraries after a delay
+        setTimeout(() => {
+            if (typeof QRCode !== 'undefined') {
+                this.updatePreview();
+            }
+        }, 2000);
     }
     
     bindDesignGridEvents() {
@@ -506,6 +539,7 @@ class QRGenerator {
         const downloadBtns = document.querySelectorAll('.download-btn');
         
         // Debug: Check if libraries are loaded
+        console.log('QRious available:', typeof QRious !== 'undefined');
         console.log('QRCode available:', typeof QRCode !== 'undefined');
         console.log('QRCodeStyling available:', typeof QRCodeStyling !== 'undefined');
         console.log('Content:', content);
@@ -528,9 +562,9 @@ class QRGenerator {
         try {
             info.textContent = 'Generating...';
             
-            // Check if QRCode library is available
-            if (typeof QRCode === 'undefined') {
-                throw new Error('QRCode library not loaded');
+            // Check if QR libraries are available
+            if (typeof QRious === 'undefined' && typeof QRCode === 'undefined') {
+                throw new Error('QR libraries not loaded');
             }
             
             if (this.isAdvancedMode) {
@@ -567,15 +601,25 @@ class QRGenerator {
                 throw new Error('Content too long. Please reduce the text size.');
             }
             
-            await QRCode.toCanvas(canvas, content, {
-                width: size,
-                margin: 2,
-                color: {
-                    dark: '#000000',
-                    light: '#ffffff'
-                },
-                errorCorrectionLevel: errorCorrection
-            });
+            // Try QRious first, fallback to QRCode
+            if (typeof QRious !== 'undefined') {
+                const qr = new QRious({
+                    element: canvas,
+                    value: content,
+                    size: size,
+                    level: errorCorrection
+                });
+            } else {
+                await QRCode.toCanvas(canvas, content, {
+                    width: size,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#ffffff'
+                    },
+                    errorCorrectionLevel: errorCorrection
+                });
+            }
             
             canvas.classList.add('qr-code-canvas');
             container.appendChild(canvas);

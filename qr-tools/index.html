@@ -35,10 +35,11 @@
     }
     </script>
     
-    <!-- External Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- External Libraries - Local Files -->
+    <script src="lib/qrious.min.js"></script>
+    <script src="lib/qrcode-simple.js"></script>
+    <script src="lib/qr-code-styling.js"></script>
+    <script src="lib/jspdf.umd.min.js"></script>
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -356,6 +357,31 @@
             </div>
         </div>
     </footer>
+
+    <!-- Library Loading Check -->
+    <script>
+        // Check if libraries loaded correctly
+        window.addEventListener('load', () => {
+            const checkLibraries = () => {
+                if (typeof QRCode === 'undefined') {
+                    console.error('QRCode library failed to load');
+                    const container = document.getElementById('qrCodeContainer');
+                    if (container) {
+                        container.innerHTML = `
+                            <div style="color: #ff4757; padding: 2rem; text-align: center; border: 1px solid #ff4757; border-radius: 8px; background: rgba(255, 71, 87, 0.1);">
+                                <h3>⚠️ Library Loading Error</h3>
+                                <p>QR Code libraries failed to load from CDN.<br>Please check your internet connection and refresh the page.</p>
+                                <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #ff4757; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🔄 Reload Page</button>
+                            </div>
+                        `;
+                    }
+                }
+            };
+            
+            // Check after a short delay to allow libraries to load
+            setTimeout(checkLibraries, 1000);
+        });
+    </script>
 
     <script src="app.js"></script>
 </body>

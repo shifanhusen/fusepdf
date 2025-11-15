@@ -5,6 +5,10 @@ const urlsToCache = [
     '/qr-tools/index.html',
     '/qr-tools/style.css',
     '/qr-tools/app.js',
+    '/qr-tools/lib/qrious.min.js',
+    '/qr-tools/lib/qrcode-simple.js',
+    '/qr-tools/lib/qr-code-styling.js',
+    '/qr-tools/lib/jspdf.umd.min.js',
     '/qr-tools/assets/images/InnoviQR.png'
 ];
 
