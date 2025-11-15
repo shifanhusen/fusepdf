@@ -55,6 +55,19 @@ class QRGenerator {
         document.getElementById('bgColor').addEventListener('change', () => this.updatePreview());
         document.getElementById('gradientType').addEventListener('change', () => this.updatePreview());
         
+        // Corner Color Controls
+        document.getElementById('cornerSquareColor').addEventListener('change', () => this.updatePreview());
+        document.getElementById('cornerDotColor').addEventListener('change', () => this.updatePreview());
+        
+        // Gradient Rotation Control
+        if (document.getElementById('gradientRotation')) {
+            document.getElementById('gradientRotation').addEventListener('input', () => {
+                const rotation = document.getElementById('gradientRotation').value;
+                document.getElementById('rotationValue').textContent = rotation + '°';
+                this.updatePreview();
+            });
+        }
+        
         // Design Grid Events
         this.bindDesignGridEvents();
         
@@ -552,6 +565,23 @@ class QRGenerator {
         this.updatePreview();
     }
     
+    // Color Preset Management
+    applyColorPreset(color1, color2) {
+        document.getElementById('qrColor').value = color1;
+        document.getElementById('qrColor2').value = color2;
+        
+        // Enable gradient if not already enabled
+        if (!this.isGradientEnabled) {
+            this.toggleGradient();
+        }
+        
+        // Also apply to corners for consistency
+        document.getElementById('cornerSquareColor').value = color1;
+        document.getElementById('cornerDotColor').value = color1;
+        
+        this.updatePreview();
+    }
+    
     // Logo Management
     handleLogoUpload(event) {
         const file = event.target.files[0];
@@ -707,6 +737,34 @@ class QRGenerator {
         }
     
     async generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle) {
+        // Get corner colors (use same as QR color if not specified)
+        const cornerSquareColor = document.getElementById('cornerSquareColor')?.value || qrColor1;
+        const cornerDotColor = document.getElementById('cornerDotColor')?.value || qrColor1;
+        
+        // Configure gradient properly
+        let dotsColor = qrColor1;
+        if (this.isGradientEnabled) {
+            const gradientRotation = document.getElementById('gradientRotation')?.value || 45;
+            dotsColor = {
+                type: gradientType,
+                rotation: gradientType === 'linear' ? (gradientRotation * Math.PI / 180) : 0,
+                colorStops: [
+                    { offset: 0, color: qrColor1 },
+                    { offset: 1, color: qrColor2 }
+                ]
+            };
+        }
+        
+        // Map shape values to QRCodeStyling format
+        const shapeMapping = {
+            'square': 'square',
+            'dots': 'dots', 
+            'rounded': 'rounded',
+            'extra-rounded': 'extra-rounded',
+            'classy': 'classy',
+            'classy-rounded': 'classy-rounded'
+        };
+        
         const qrOptions = {
             width: size,
             height: size,
@@ -719,21 +777,19 @@ class QRGenerator {
                 errorCorrectionLevel: errorCorrection
             },
             dotsOptions: {
-                color: this.isGradientEnabled ? 
-                    { type: gradientType, rotation: 0, colorStops: [{ offset: 0, color: qrColor1 }, { offset: 1, color: qrColor2 }] } : 
-                    qrColor1,
-                type: dotStyle
+                color: dotsColor,
+                type: shapeMapping[dotStyle] || 'square'
             },
             backgroundOptions: {
                 color: this.isTransparentBg ? 'transparent' : bgColor
             },
             cornersSquareOptions: {
-                color: qrColor1,
-                type: cornerSquareStyle
+                color: cornerSquareColor,
+                type: shapeMapping[cornerSquareStyle] || 'square'
             },
             cornersDotOptions: {
-                color: qrColor1,
-                type: cornerDotStyle
+                color: cornerDotColor,
+                type: shapeMapping[cornerDotStyle] || 'dot'
             }
         };
 
@@ -751,6 +807,9 @@ class QRGenerator {
             };
         }
 
+        // Debug QR options
+        console.log('QRCodeStyling options:', qrOptions);
+        
         const qrCode = new QRCodeStyling(qrOptions);
         
         // QRCodeStyling creates its own canvas element
@@ -760,6 +819,9 @@ class QRGenerator {
         const canvas = container.querySelector('canvas');
         if (canvas) {
             canvas.classList.add('qr-code-canvas');
+            console.log('QR Canvas generated successfully');
+        } else {
+            console.error('QR Canvas not found after generation');
         }
         
         this.currentQR = qrCode;
@@ -997,8 +1059,9 @@ class QRGenerator {
 }
 
 // Initialize the QR Generator when DOM is loaded
+let qrGen; // Global reference for inline event handlers
 document.addEventListener('DOMContentLoaded', () => {
-    new QRGenerator();
+    qrGen = new QRGenerator();
 });
 
 // Service Worker Registration for PWA support

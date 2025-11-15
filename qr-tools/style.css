@@ -348,6 +348,137 @@ body {
     box-shadow: var(--shadow);
 }
 
+/* Color Controls */
+.color-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.color-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.color-picker {
+    width: 50px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.color-picker:hover {
+    border-color: var(--primary-blue);
+}
+
+.gradient-btn, .transparent-btn, .sync-btn {
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.gradient-btn:hover, .transparent-btn:hover, .sync-btn:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-blue);
+}
+
+.gradient-btn.active, .transparent-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+.sync-btn {
+    min-width: 40px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.gradient-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.gradient-select {
+    padding: 0.5rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.gradient-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.color-presets {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.preset-btn {
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    background-size: cover;
+    background-position: center;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary-blue);
+    transform: scale(1.1);
+}
+
+.gradient-rotation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.gradient-rotation label {
+    min-width: 60px;
+    color: var(--text-secondary);
+}
+
+.gradient-rotation .settings-slider {
+    flex: 1;
+    max-width: 100px;
+}
+
+.gradient-rotation span {
+    min-width: 35px;
+    text-align: right;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
 .settings-slider::-moz-range-thumb {
     width: 20px;
     height: 20px;
