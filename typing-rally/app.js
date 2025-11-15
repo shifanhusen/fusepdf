@@ -558,29 +558,48 @@ function displayParagraphWithCharacters() {
 
 function updateParagraphDisplay() {
     const paragraph = gameState.currentParagraph;
-    const currentPos = gameState.correctChars;
+    const typed = elements.typingInput.value;
+    const currentPos = typed.length;
     
     // Check if new paragraph display elements exist
     if (elements.completedText && elements.currentChar && elements.remainingText) {
-        // Split text into completed, current character, and remaining
-        const completed = paragraph.substring(0, currentPos);
+        // Split text into what user typed, current character to type, and remaining
+        const typedText = typed;
         const currentChar = paragraph.charAt(currentPos);
         const remaining = paragraph.substring(currentPos + 1);
         
+        // Create colored HTML for typed text showing correct/incorrect
+        let completedHTML = '';
+        for (let i = 0; i < typedText.length; i++) {
+            if (typedText[i] === paragraph[i]) {
+                completedHTML += `<span style="color: var(--success-color);">${typedText[i]}</span>`;
+            } else {
+                completedHTML += `<span style="color: var(--danger-color); background-color: rgba(239, 68, 68, 0.2);">${typedText[i]}</span>`;
+            }
+        }
+        
         // Update display elements
-        elements.completedText.textContent = completed;
+        elements.completedText.innerHTML = completedHTML;
         elements.currentChar.textContent = currentChar || '';
         elements.remainingText.textContent = remaining;
         
-        // Auto-scroll logic: keep only last 30 characters of completed text visible
-        if (completed.length > 30) {
-            const visibleCompleted = '...' + completed.substring(completed.length - 27);
-            elements.completedText.textContent = visibleCompleted;
+        // Auto-scroll logic: keep only last 50 characters of typed text visible
+        if (typedText.length > 50) {
+            let visibleCompletedHTML = '...';
+            const startIdx = typedText.length - 47;
+            for (let i = startIdx; i < typedText.length; i++) {
+                if (typedText[i] === paragraph[i]) {
+                    visibleCompletedHTML += `<span style="color: var(--success-color);">${typedText[i]}</span>`;
+                } else {
+                    visibleCompletedHTML += `<span style="color: var(--danger-color); background-color: rgba(239, 68, 68, 0.2);">${typedText[i]}</span>`;
+                }
+            }
+            elements.completedText.innerHTML = visibleCompletedHTML;
         }
         
-        // Show only next 100 characters of remaining text to limit display
-        if (remaining.length > 100) {
-            const visibleRemaining = remaining.substring(0, 100) + '...';
+        // Show only next 150 characters of remaining text to limit display
+        if (remaining.length > 150) {
+            const visibleRemaining = remaining.substring(0, 150) + '...';
             elements.remainingText.textContent = visibleRemaining;
         }
     }
@@ -637,11 +656,20 @@ async function handleCharacterTyping(event) {
         }
     }
     
-    // Update the scrolling paragraph display
-    updateParagraphDisplay();
-    
     // Calculate progress (percentage of paragraph typed correctly)
     const progress = Math.min((gameState.correctChars / gameState.totalChars) * 100, 100);
+    
+    // Calculate visual progress (based on characters typed for immediate feedback)
+    const visualProgress = Math.min((typed.length / gameState.totalChars) * 100, 100);
+    
+    // Update the scrolling paragraph display after calculating progress
+    updateParagraphDisplay();
+    
+    // Update car position in solo mode - use visual progress for immediate feedback
+    const raceCar = document.querySelector('.race-car');
+    if (raceCar) {
+        raceCar.style.left = `${visualProgress}%`;
+    }
     
     // Calculate WPM based on characters (standard: 5 chars = 1 word)
     const elapsedMinutes = (Date.now() - gameState.raceStartTime) / 60000;
@@ -899,7 +927,8 @@ function handlePracticeCharacterTyping(event) {
     // Update car progress
     const raceCar = document.querySelector('.race-car');
     if (raceCar) {
-        raceCar.style.left = `${progress}%`;
+        const currentProgress = Math.min((typed.length / gameState.totalChars) * 100, 100);
+        raceCar.style.left = `${currentProgress}%`;
     }
     
     // Check if paragraph is complete (typed entire length, not necessarily all correct)
@@ -971,7 +1000,7 @@ async function updatePracticeProgress() {
     const raceCar = document.querySelector('.race-car');
     if (raceCar) {
         const progress = (practiceState.currentIndex / practiceState.words.length) * 100;
-        raceCar.style.left = progress + '%';
+        raceCar.style.left = `${progress}%`;
     }
 }
 
