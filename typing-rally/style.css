@@ -491,6 +491,7 @@ input[type="text"]:focus {
 
 .word-display {
     margin-bottom: 2rem;
+    display: none; /* Hidden when new paragraph system is active */
 }
 
 .current-word {
@@ -522,6 +523,25 @@ input[type="text"]:focus {
     position: relative;
     border: 2px solid var(--border-color);
     display: block;
+}
+
+/* Ensure the display is always visible */
+.paragraph-display .paragraph-container {
+    display: block;
+    min-height: 60px;
+}
+
+.paragraph-display .completed-text,
+.paragraph-display .current-text {
+    display: inline;
+}
+
+.paragraph-display .current-char {
+    display: inline;
+}
+
+.paragraph-display .remaining-text {
+    display: inline;
 }
 
 .paragraph-container {

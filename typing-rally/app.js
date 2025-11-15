@@ -536,16 +536,19 @@ function startRaceTimer() {
 }
 
 function displayParagraphWithCharacters() {
-    // Initialize the advanced paragraph display
-    updateParagraphDisplay();
+    // Initialize both display systems
+    const paragraph = gameState.currentParagraph;
     
-    // Also ensure legacy display works if new elements aren't found
-    if (!elements.completedText && elements.currentWord) {
-        // Clear previous content
+    // Initialize new scrolling paragraph display
+    if (elements.completedText && elements.currentChar && elements.remainingText) {
+        elements.completedText.innerHTML = '';
+        elements.currentChar.textContent = paragraph.charAt(0) || '';
+        elements.remainingText.textContent = paragraph.substring(1) || '';
+    }
+    
+    // Initialize legacy display as fallback
+    if (elements.currentWord) {
         elements.currentWord.innerHTML = '';
-        
-        // Create spans for each character (legacy fallback)
-        const paragraph = gameState.currentParagraph;
         for (let i = 0; i < paragraph.length; i++) {
             const span = document.createElement('span');
             span.className = 'char-span pending';
@@ -554,14 +557,17 @@ function displayParagraphWithCharacters() {
             elements.currentWord.appendChild(span);
         }
     }
+    
+    // Update the display immediately
+    updateParagraphDisplay();
 }
 
 function updateParagraphDisplay() {
     const paragraph = gameState.currentParagraph;
-    const typed = elements.typingInput.value;
+    const typed = elements.typingInput ? elements.typingInput.value : '';
     const currentPos = typed.length;
     
-    // Check if new paragraph display elements exist
+    // Always try to update new paragraph display elements if they exist
     if (elements.completedText && elements.currentChar && elements.remainingText) {
         // Split text into what user typed, current character to type, and remaining
         const typedText = typed;
@@ -633,26 +639,34 @@ async function handleCharacterTyping(event) {
     gameState.correctChars = 0;
     gameState.incorrectChars = 0;
     
-    // Update character highlighting
+    // Count correct and incorrect characters
+    for (let i = 0; i < typed.length; i++) {
+        if (typed[i] === paragraph[i]) {
+            gameState.correctChars++;
+        } else {
+            gameState.incorrectChars++;
+        }
+    }
+    
+    // Update character highlighting for legacy display (if exists)
     for (let i = 0; i < paragraph.length; i++) {
         const charSpan = document.getElementById(`char-${i}`);
-        
-        if (i < typed.length) {
-            if (typed[i] === paragraph[i]) {
-                // Correct character - green
-                charSpan.classList.remove('pending', 'incorrect');
-                charSpan.classList.add('correct');
-                gameState.correctChars++;
+        if (charSpan) {
+            if (i < typed.length) {
+                if (typed[i] === paragraph[i]) {
+                    // Correct character - green
+                    charSpan.classList.remove('pending', 'incorrect');
+                    charSpan.classList.add('correct');
+                } else {
+                    // Incorrect character - red
+                    charSpan.classList.remove('pending', 'correct');
+                    charSpan.classList.add('incorrect');
+                }
             } else {
-                // Incorrect character - red
-                charSpan.classList.remove('pending', 'correct');
-                charSpan.classList.add('incorrect');
-                gameState.incorrectChars++;
+                // Not yet typed
+                charSpan.classList.remove('correct', 'incorrect');
+                charSpan.classList.add('pending');
             }
-        } else {
-            // Not yet typed
-            charSpan.classList.remove('correct', 'incorrect');
-            charSpan.classList.add('pending');
         }
     }
     
@@ -660,15 +674,24 @@ async function handleCharacterTyping(event) {
     const progress = Math.min((gameState.correctChars / gameState.totalChars) * 100, 100);
     
     // Calculate visual progress (based on characters typed for immediate feedback)
-    const visualProgress = Math.min((typed.length / gameState.totalChars) * 100, 100);
+    const visualProgress = gameState.totalChars > 0 ? Math.min((typed.length / gameState.totalChars) * 100, 100) : 0;
     
-    // Update the scrolling paragraph display after calculating progress
+    // Update the scrolling paragraph display first
     updateParagraphDisplay();
     
     // Update car position in solo mode - use visual progress for immediate feedback
     const raceCar = document.querySelector('.race-car');
     if (raceCar) {
         raceCar.style.left = `${visualProgress}%`;
+    }
+    
+    // Also update multiplayer car if needed
+    if (gameState.roomId) {
+        // Force update race track to show car movement
+        const raceTrackElement = document.getElementById('raceTrack');
+        if (raceTrackElement && gameState.currentGameData && gameState.currentGameData.players) {
+            updateRaceTrack(gameState.currentGameData.players);
+        }
     }
     
     // Calculate WPM based on characters (standard: 5 chars = 1 word)
