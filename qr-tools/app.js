@@ -476,6 +476,53 @@ class QRGenerator {
         }
     }
     
+    // Custom Styling Helpers
+    applyGradientToCanvas(canvas, color1, color2, bgColor) {
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, color1);
+        gradient.addColorStop(1, color2);
+        
+        // Apply gradient to non-background pixels
+        const color1RGB = this.hexToRgb(color1);
+        const color2RGB = this.hexToRgb(color2);
+        
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // If it's not background color (assuming dark pixels are QR code)
+            if (r < 128 && g < 128 && b < 128) {
+                const progress = (i / 4) / (canvas.width * canvas.height);
+                data[i] = Math.round(color1RGB.r + (color2RGB.r - color1RGB.r) * progress);
+                data[i + 1] = Math.round(color1RGB.g + (color2RGB.g - color1RGB.g) * progress);
+                data[i + 2] = Math.round(color1RGB.b + (color2RGB.b - color1RGB.b) * progress);
+            }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+    }
+    
+    applyDotStyling(canvas, dotStyle) {
+        // This is a simplified version - for full implementation,
+        // we would need to analyze and redraw the QR pattern
+        console.log('Dot styling applied:', dotStyle);
+    }
+    
+    hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
     // Size Management
     updateSize() {
         const size = document.getElementById('qrSize').value;
@@ -630,27 +677,36 @@ class QRGenerator {
     }
     
     async generateAdvancedQR(content, container) {
-        const size = parseInt(document.getElementById('qrSize').value);
-        const errorCorrection = document.getElementById('errorCorrection').value;
-        
-        // Get colors
-        const qrColor1 = document.getElementById('qrColor').value;
-        const qrColor2 = document.getElementById('qrColor2').value;
-        const bgColor = document.getElementById('bgColor').value;
-        const gradientType = document.getElementById('gradientType').value;
-        
-        // Get styles
-        const dotStyle = document.getElementById('dotStyle').value;
-        const cornerSquareStyle = document.getElementById('cornerSquareStyle').value;
-        const cornerDotStyle = document.getElementById('cornerDotStyle').value;
-        
-        // Check if QRCodeStyling is available
-        if (typeof QRCodeStyling === 'undefined') {
-            console.warn('QRCodeStyling not loaded, falling back to basic QR');
+        try {
+            const size = parseInt(document.getElementById('qrSize').value);
+            const errorCorrection = document.getElementById('errorCorrection').value;
+            
+            // Get colors
+            const qrColor1 = document.getElementById('qrColor').value;
+            const qrColor2 = document.getElementById('qrColor2').value;
+            const bgColor = document.getElementById('bgColor').value;
+            const gradientType = document.getElementById('gradientType').value;
+            
+            // Get styles
+            const dotStyle = document.getElementById('dotStyle').value;
+            const cornerSquareStyle = document.getElementById('cornerSquareStyle').value;
+            const cornerDotStyle = document.getElementById('cornerDotStyle').value;
+            
+            // Try QRCodeStyling first, fallback to custom styling
+            if (typeof QRCodeStyling !== 'undefined') {
+                return this.generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle);
+            } else {
+                console.warn('QRCodeStyling not available, using custom advanced QR');
+                return this.generateCustomAdvancedQR(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, dotStyle);
+            }
+        } catch (error) {
+            console.error('Advanced QR generation failed:', error);
+            // Fallback to basic QR
             return this.generateBasicQR(content, container);
         }
-        
-        // Configure QR options
+        }
+    
+    async generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle) {
         const qrOptions = {
             width: size,
             height: size,
@@ -661,12 +717,6 @@ class QRGenerator {
                 typeNumber: 0,
                 mode: 'Byte',
                 errorCorrectionLevel: errorCorrection
-            },
-            imageOptions: {
-                hideBackgroundDots: true,
-                imageSize: 0.4,
-                margin: 5,
-                crossOrigin: 'anonymous'
             },
             dotsOptions: {
                 color: this.isGradientEnabled ? 
@@ -686,26 +736,107 @@ class QRGenerator {
                 type: cornerDotStyle
             }
         };
-        
+
         // Add logo if available
         if (this.currentLogo) {
             const logoSize = parseFloat(document.getElementById('logoSize').value);
             const logoMargin = parseInt(document.getElementById('logoMargin').value);
             
             qrOptions.image = this.currentLogo;
-            qrOptions.imageOptions.imageSize = logoSize;
-            qrOptions.imageOptions.margin = logoMargin;
+            qrOptions.imageOptions = {
+                hideBackgroundDots: true,
+                imageSize: logoSize,
+                margin: logoMargin,
+                crossOrigin: 'anonymous'
+            };
         }
-        
-        // Generate QR code
-        const qrCodeStyling = new QRCodeStyling(qrOptions);
-        
+
+        const qrCode = new QRCodeStyling(qrOptions);
         const canvas = document.createElement('canvas');
-        await qrCodeStyling.append(canvas);
+        
+        await qrCode.append(canvas);
         
         canvas.classList.add('qr-code-canvas');
         container.appendChild(canvas);
-        this.currentQR = qrCodeStyling;
+        this.currentQR = canvas;
+    }
+    
+    async generateCustomAdvancedQR(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, dotStyle) {
+        // Create base QR code with QRious
+        const canvas = document.createElement('canvas');
+        
+        if (typeof QRious !== 'undefined') {
+            // Generate base QR with custom colors
+            const qr = new QRious({
+                element: canvas,
+                value: content,
+                size: size,
+                level: errorCorrection,
+                foreground: qrColor1,
+                background: this.isTransparentBg ? 'transparent' : bgColor
+            });
+            
+            // Apply additional styling if gradient is enabled
+            if (this.isGradientEnabled) {
+                this.applyGradientToCanvas(canvas, qrColor1, qrColor2, bgColor);
+            }
+            
+        } else {
+            // Final fallback to simple QRCode
+            await QRCode.toCanvas(canvas, content, {
+                width: size,
+                margin: 2,
+                color: {
+                    dark: qrColor1,
+                    light: this.isTransparentBg ? '#00000000' : bgColor
+                },
+                errorCorrectionLevel: errorCorrection
+            });
+        }
+        
+        canvas.classList.add('qr-code-canvas');
+        container.appendChild(canvas);
+        this.currentQR = canvas;
+    }
+
+    // Custom Styling Helpers
+    applyGradientToCanvas(canvas, color1, color2, bgColor) {
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Create gradient colors
+        const color1RGB = this.hexToRgb(color1);
+        const color2RGB = this.hexToRgb(color2);
+        
+        if (!color1RGB || !color2RGB) return;
+        
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // If it's not background color (assuming dark pixels are QR code)
+            if (r < 128 && g < 128 && b < 128) {
+                const x = (i / 4) % canvas.width;
+                const progress = x / canvas.width;
+                
+                data[i] = Math.round(color1RGB.r + (color2RGB.r - color1RGB.r) * progress);
+                data[i + 1] = Math.round(color1RGB.g + (color2RGB.g - color1RGB.g) * progress);
+                data[i + 2] = Math.round(color1RGB.b + (color2RGB.b - color1RGB.b) * progress);
+            }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+    }
+    
+    hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
     }
     
     // Download Functions
