@@ -752,13 +752,17 @@ class QRGenerator {
         }
 
         const qrCode = new QRCodeStyling(qrOptions);
-        const canvas = document.createElement('canvas');
         
-        await qrCode.append(canvas);
+        // QRCodeStyling creates its own canvas element
+        await qrCode.append(container);
         
-        canvas.classList.add('qr-code-canvas');
-        container.appendChild(canvas);
-        this.currentQR = canvas;
+        // Get the generated canvas element
+        const canvas = container.querySelector('canvas');
+        if (canvas) {
+            canvas.classList.add('qr-code-canvas');
+        }
+        
+        this.currentQR = qrCode;
     }
     
     async generateCustomAdvancedQR(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, dotStyle) {
@@ -870,18 +874,25 @@ class QRGenerator {
         let canvas;
         
         if (this.isAdvancedMode && this.currentQR instanceof QRCodeStyling) {
-            // Create a temporary canvas with the desired size
-            canvas = document.createElement('canvas');
+            // Create a temporary container for the download
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            document.body.appendChild(tempContainer);
             
             // Update QR code size for download
             const originalOptions = this.currentQR._options;
-            this.currentQR.update({
+            const downloadQR = new QRCodeStyling({
                 ...originalOptions,
                 width: size,
                 height: size
             });
             
-            await this.currentQR.append(canvas);
+            await downloadQR.append(tempContainer);
+            canvas = tempContainer.querySelector('canvas');
+            
+            // Clean up temp container after getting canvas
+            document.body.removeChild(tempContainer);
         } else {
             // Basic QR - resize canvas
             canvas = this.currentQR;
@@ -925,16 +936,24 @@ class QRGenerator {
         let canvas;
         
         if (this.isAdvancedMode && this.currentQR instanceof QRCodeStyling) {
-            canvas = document.createElement('canvas');
+            // Create a temporary container for PDF generation
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            document.body.appendChild(tempContainer);
             
             const originalOptions = this.currentQR._options;
-            this.currentQR.update({
+            const pdfQR = new QRCodeStyling({
                 ...originalOptions,
                 width: size,
                 height: size
             });
             
-            await this.currentQR.append(canvas);
+            await pdfQR.append(tempContainer);
+            canvas = tempContainer.querySelector('canvas');
+            
+            // Clean up temp container
+            document.body.removeChild(tempContainer);
         } else {
             canvas = this.currentQR;
         }
