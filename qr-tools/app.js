@@ -565,6 +565,41 @@ class QRGenerator {
             b: parseInt(result[3], 16)
         } : null;
     }
+    
+    // Check if canvas has gradient colors applied
+    checkCanvasForGradient(imageData, color1, color2) {
+        const color1RGB = this.hexToRgb(color1);
+        const color2RGB = this.hexToRgb(color2);
+        
+        if (!color1RGB || !color2RGB) return false;
+        
+        let hasColor1 = false;
+        let hasColor2 = false;
+        
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const r = imageData.data[i];
+            const g = imageData.data[i + 1];
+            const b = imageData.data[i + 2];
+            
+            // Skip transparent/white pixels (background)
+            if (r > 200 && g > 200 && b > 200) continue;
+            
+            // Check for color1 (within tolerance)
+            if (Math.abs(r - color1RGB.r) < 30 && Math.abs(g - color1RGB.g) < 30 && Math.abs(b - color1RGB.b) < 30) {
+                hasColor1 = true;
+            }
+            
+            // Check for color2 (within tolerance)  
+            if (Math.abs(r - color2RGB.r) < 30 && Math.abs(g - color2RGB.g) < 30 && Math.abs(b - color2RGB.b) < 30) {
+                hasColor2 = true;
+            }
+            
+            // If we found both colors, gradient is working
+            if (hasColor1 && hasColor2) return true;
+        }
+        
+        return false;
+    }
 
     // Size Management
     updateSize() {
@@ -847,14 +882,22 @@ class QRGenerator {
         let dotsColor = qrColor1;
         
         if (foregroundType === 'gradient') {
+            // QRCodeStyling gradient format - ensure proper structure
             dotsColor = {
-                type: gradientType,
+                type: gradientType || 'linear',
                 rotation: gradientType === 'linear' ? Math.PI / 4 : 0,
                 colorStops: [
                     { offset: 0, color: qrColor1 },
                     { offset: 1, color: qrColor2 }
                 ]
             };
+            
+            console.log('🎨 Gradient Configuration Details:');
+            console.log('- Type:', gradientType);
+            console.log('- Color 1:', qrColor1);
+            console.log('- Color 2:', qrColor2);
+            console.log('- Rotation:', dotsColor.rotation);
+            console.log('- Color Stops:', dotsColor.colorStops);
         }
         
         // Map shape values to QRCodeStyling format
@@ -918,7 +961,21 @@ class QRGenerator {
         console.log('- Background Color:', bgColor);
         console.log('- Full Options:', qrOptions);
         
+        // Create QRCodeStyling instance
         const qrCode = new QRCodeStyling(qrOptions);
+        
+        // If gradient is not working, try to update after creation
+        if (foregroundType === 'gradient' && typeof dotsColor === 'object') {
+            console.log('🔄 Attempting to apply gradient after QR creation...');
+            
+            // Try updating the QR code with gradient again
+            qrCode.update({
+                dotsOptions: {
+                    color: dotsColor,
+                    type: shapeMapping[dotStyle] || 'square'
+                }
+            });
+        }
         
         // QRCodeStyling creates its own canvas element
         await qrCode.append(container);
@@ -928,6 +985,22 @@ class QRGenerator {
         if (canvas) {
             canvas.classList.add('qr-code-canvas');
             console.log('✅ QR Canvas generated successfully');
+            
+            // Check if gradient was applied correctly by checking canvas colors
+            if (foregroundType === 'gradient') {
+                setTimeout(() => {
+                    const ctx = canvas.getContext('2d');
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const hasGradient = this.checkCanvasForGradient(imageData, qrColor1, qrColor2);
+                    
+                    if (!hasGradient) {
+                        console.log('⚠️ Gradient not detected, applying manual gradient...');
+                        this.applyGradientToCanvas(canvas, qrColor1, qrColor2, bgColor);
+                    } else {
+                        console.log('✅ Gradient successfully applied by QRCodeStyling');
+                    }
+                }, 100);
+            }
         } else {
             console.error('❌ QR Canvas not found after generation');
         }
