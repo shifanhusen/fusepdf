@@ -176,6 +176,11 @@ function generatePlayerId() {
 function showScreen(screenName) {
     Object.values(screens).forEach(screen => screen.classList.remove('active'));
     screens[screenName].classList.add('active');
+    
+    // Remove racing mode class when not on racing screen
+    if (screenName !== 'racing') {
+        document.body.classList.remove('racing-mode');
+    }
 }
 
 function showToast(message, type = 'info') {
@@ -438,6 +443,14 @@ function startCountdown() {
 }
 
 function startRace(paragraphIndex = null) {
+    console.log('🏁 Race started!');
+    
+    // Show racing screen
+    showScreen('racing');
+    
+    // Add mobile-specific class
+    document.body.classList.add('racing-mode');
+    
     gameState.raceStartTime = Date.now();
     
     // Use provided paragraph index (for multiplayer) or random (for solo)
@@ -455,10 +468,19 @@ function startRace(paragraphIndex = null) {
     // Display paragraph with character spans
     displayParagraphWithCharacters();
     
-    // Focus input
-    elements.typingInput.value = '';
-    elements.typingInput.addEventListener('input', handleCharacterTyping);
-    elements.typingInput.focus();
+    // Focus input with delay for mobile
+    setTimeout(() => {
+        if (elements.typingInput) {
+            elements.typingInput.focus();
+            // Scroll to ensure paragraph is visible on mobile
+            if (window.innerWidth <= 768) {
+                document.querySelector('.current-word-display').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+    }, 100);
     
     // Setup race track
     setupRaceTrack();
@@ -743,6 +765,8 @@ const practiceState = {
 };
 
 function startPracticeMode() {
+    console.log('🎯 Starting practice mode...');
+    
     // Select random paragraph
     const randomIndex = Math.floor(Math.random() * PARAGRAPHS.length);
     gameState.currentParagraph = PARAGRAPHS[randomIndex];
@@ -757,6 +781,9 @@ function startPracticeMode() {
     
     // Show racing screen
     showScreen('racing');
+    
+    // Add mobile-specific class
+    document.body.classList.add('racing-mode');
     
     // Display paragraph with character spans
     displayParagraphWithCharacters();
@@ -814,6 +841,20 @@ function startPracticeMode() {
     elements.typingInput.removeEventListener('input', handleCharacterTyping);
     elements.typingInput.addEventListener('input', handlePracticeCharacterTyping);
     elements.typingInput.focus();
+    
+    // Focus input with mobile considerations
+    setTimeout(() => {
+        if (elements.typingInput) {
+            elements.typingInput.focus();
+            // Ensure content is visible on mobile
+            if (window.innerWidth <= 768) {
+                document.querySelector('.current-word-display').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+    }, 100);
     
     showToast('Start typing to begin practice mode!', 'success');
 }
@@ -1067,3 +1108,12 @@ console.log('⚠️  Remember to add your Firebase config at the top of app.js')
 
 // Show lobby screen on load
 showScreen('lobby');
+
+// Add viewport height handling for mobile browsers
+window.addEventListener('resize', () => {
+    if (document.body.classList.contains('racing-mode')) {
+        // Handle mobile keyboard showing/hiding
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+});
