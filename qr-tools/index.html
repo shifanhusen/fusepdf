@@ -136,59 +136,80 @@
 
                     <!-- Advanced Settings (Hidden by default) -->
                     <div id="advancedSettings" class="advanced-settings hidden">
-                        <!-- Colors -->
+                        <!-- Foreground Color Section -->
                         <div class="settings-section">
-                            <label class="settings-label">QR Color</label>
-                            <div class="color-controls">
-                                <div class="color-input-group">
-                                    <input type="color" id="qrColor" value="#000000" class="color-picker">
-                                    <button id="gradientToggle" class="gradient-btn">Gradient</button>
+                            <h3 class="section-title">🎨 Foreground Color</h3>
+                            
+                            <!-- Color Type Selection -->
+                            <div class="color-type-selection">
+                                <label class="radio-option">
+                                    <input type="radio" name="foregroundType" value="single" checked>
+                                    <span class="radio-label">Single Color</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="foregroundType" value="gradient">
+                                    <span class="radio-label">Color Gradient</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="foregroundType" value="custom-eye">
+                                    <span class="radio-label">Custom Eye Color</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Single Color Controls -->
+                            <div id="singleColorControls" class="color-control-group">
+                                <div class="color-input-row">
+                                    <input type="color" id="qrColor" value="#54BB7D" class="color-picker">
+                                    <span class="color-code">#54BB7D</span>
                                 </div>
-                                <div class="color-presets">
-                                    <button class="preset-btn" onclick="qrGen.applyColorPreset('#000000', '#333333')" style="background: linear-gradient(45deg, #000000, #333333);" title="Dark Gray"></button>
-                                    <button class="preset-btn" onclick="qrGen.applyColorPreset('#0082FF', '#00D4FF')" style="background: linear-gradient(45deg, #0082FF, #00D4FF);" title="Blue"></button>
-                                    <button class="preset-btn" onclick="qrGen.applyColorPreset('#FF6B6B', '#FF8E8E')" style="background: linear-gradient(45deg, #FF6B6B, #FF8E8E);" title="Red"></button>
-                                    <button class="preset-btn" onclick="qrGen.applyColorPreset('#4ECDC4', '#44E5E7')" style="background: linear-gradient(45deg, #4ECDC4, #44E5E7);" title="Teal"></button>
-                                    <button class="preset-btn" onclick="qrGen.applyColorPreset('#9B59B6', '#C39BD3')" style="background: linear-gradient(45deg, #9B59B6, #C39BD3);" title="Purple"></button>
-                                    <button class="preset-btn" onclick="qrGen.applyColorPreset('#F39C12', '#F7DC6F')" style="background: linear-gradient(45deg, #F39C12, #F7DC6F);" title="Orange"></button>
+                            </div>
+                            
+                            <!-- Gradient Controls -->
+                            <div id="gradientColorControls" class="color-control-group hidden">
+                                <div class="gradient-colors">
+                                    <div class="color-input-row">
+                                        <input type="color" id="gradientColor1" value="#54BB7D" class="color-picker">
+                                        <span class="color-code">#54BB7D</span>
+                                    </div>
+                                    <div class="color-input-row">
+                                        <input type="color" id="gradientColor2" value="#0277BD" class="color-picker">
+                                        <span class="color-code">#0277BD</span>
+                                    </div>
                                 </div>
-                                <div id="gradientControls" class="gradient-controls hidden">
-                                    <input type="color" id="qrColor2" value="#0082FF" class="color-picker">
+                                <div class="gradient-options">
                                     <select id="gradientType" class="gradient-select">
-                                        <option value="linear">Linear</option>
-                                        <option value="radial">Radial</option>
+                                        <option value="linear">Linear Gradient</option>
+                                        <option value="radial">Radial Gradient</option>
                                     </select>
-                                    <div class="gradient-rotation">
-                                        <label>Rotation:</label>
-                                        <input type="range" id="gradientRotation" min="0" max="360" value="45" class="settings-slider">
-                                        <span id="rotationValue">45°</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Eye Color Controls -->
+                            <div id="customEyeControls" class="color-control-group hidden">
+                                <div class="eye-color-section">
+                                    <label class="eye-color-label">Square Color:</label>
+                                    <div class="color-input-row">
+                                        <input type="color" id="eyeSquareColor" value="#000000" class="color-picker">
+                                        <span class="color-code">#000000</span>
+                                    </div>
+                                </div>
+                                <div class="eye-color-section">
+                                    <label class="eye-color-label">Dot Color:</label>
+                                    <div class="color-input-row">
+                                        <input type="color" id="eyeDotColor" value="#000000" class="color-picker">
+                                        <span class="color-code">#000000</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
+                        
+                        <!-- Background Color Section -->
                         <div class="settings-section">
-                            <label class="settings-label">Background Color</label>
-                            <div class="color-controls">
-                                <input type="color" id="bgColor" value="#ffffff" class="color-picker">
+                            <h3 class="section-title">🖼️ Background Color</h3>
+                            <div class="color-input-row">
+                                <input type="color" id="bgColor" value="#FFFFFF" class="color-picker">
+                                <span class="color-code">#FFFFFF</span>
                                 <button id="transparentBg" class="transparent-btn">Transparent</button>
-                            </div>
-                        </div>
-
-                        <!-- Corner Colors -->
-                        <div class="settings-section">
-                            <label class="settings-label">Corner Square Color</label>
-                            <div class="color-controls">
-                                <input type="color" id="cornerSquareColor" value="#000000" class="color-picker">
-                                <button onclick="document.getElementById('cornerSquareColor').value = document.getElementById('qrColor').value; qrGen.updatePreview()" class="sync-btn" title="Match QR Color">↻</button>
-                            </div>
-                        </div>
-
-                        <div class="settings-section">
-                            <label class="settings-label">Corner Dot Color</label>
-                            <div class="color-controls">
-                                <input type="color" id="cornerDotColor" value="#000000" class="color-picker">
-                                <button onclick="document.getElementById('cornerDotColor').value = document.getElementById('qrColor').value; qrGen.updatePreview()" class="sync-btn" title="Match QR Color">↻</button>
                             </div>
                         </div>
 

@@ -10,6 +10,7 @@ class QRGenerator {
         this.isAdvancedMode = false;
         this.isGradientEnabled = false;
         this.isTransparentBg = false;
+        this.isCustomEyeEnabled = false;
         
         this.init();
     }
@@ -26,6 +27,9 @@ class QRGenerator {
         this.setupTheme();
         this.generateContentInput();
         this.bindDesignGridEvents();
+        
+        // Initialize color system
+        this.initializeColorSystem();
         
         // Small delay to ensure DOM is ready
         setTimeout(() => {
@@ -49,15 +53,41 @@ class QRGenerator {
         document.getElementById('qrSize').addEventListener('input', this.updateSize.bind(this));
         document.getElementById('errorCorrection').addEventListener('change', () => this.updatePreview());
         
-        // Advanced Settings
-        document.getElementById('qrColor').addEventListener('change', () => this.updatePreview());
-        document.getElementById('qrColor2').addEventListener('change', () => this.updatePreview());
-        document.getElementById('bgColor').addEventListener('change', () => this.updatePreview());
+        // Advanced Color Controls with error checking
+        const addColorListener = (id, selector, updatePreview = true) => {
+            const element = document.getElementById(id);
+            const codeElement = document.querySelector(selector);
+            if (element && codeElement) {
+                element.addEventListener('change', () => {
+                    codeElement.textContent = element.value.toUpperCase();
+                    if (updatePreview) this.updatePreview();
+                });
+            }
+        };
+        
+        addColorListener('qrColor', '#singleColorControls .color-code');
+        addColorListener('gradientColor1', '#gradientColorControls .color-code:first-of-type');
+        addColorListener('gradientColor2', '#gradientColorControls .color-code:last-of-type');
+        addColorListener('eyeSquareColor', '#customEyeControls .color-code:first-of-type');
+        addColorListener('eyeDotColor', '#customEyeControls .color-code:last-of-type');
+        
+        if (document.getElementById('bgColor')) {
+            document.getElementById('bgColor').addEventListener('change', () => {
+                const codeElement = document.querySelector('#bgColor + .color-code');
+                if (codeElement) {
+                    codeElement.textContent = document.getElementById('bgColor').value.toUpperCase();
+                }
+                this.updatePreview();
+            });
+        }
         document.getElementById('gradientType').addEventListener('change', () => this.updatePreview());
         
-        // Corner Color Controls
-        document.getElementById('cornerSquareColor').addEventListener('change', () => this.updatePreview());
-        document.getElementById('cornerDotColor').addEventListener('change', () => this.updatePreview());
+        // Foreground Type Radio Buttons
+        document.querySelectorAll('input[name="foregroundType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.setForegroundType(e.target.value);
+            });
+        });
         
         // Gradient Rotation Control
         if (document.getElementById('gradientRotation')) {
@@ -565,19 +595,70 @@ class QRGenerator {
         this.updatePreview();
     }
     
-    // Color Preset Management
-    applyColorPreset(color1, color2) {
-        document.getElementById('qrColor').value = color1;
-        document.getElementById('qrColor2').value = color2;
-        
-        // Enable gradient if not already enabled
-        if (!this.isGradientEnabled) {
-            this.toggleGradient();
+    // Initialize Color System
+    initializeColorSystem() {
+        // Set default color codes
+        if (document.querySelector('#singleColorControls .color-code')) {
+            document.querySelector('#singleColorControls .color-code').textContent = '#54BB7D';
+        }
+        if (document.querySelectorAll('#gradientColorControls .color-code')[0]) {
+            document.querySelectorAll('#gradientColorControls .color-code')[0].textContent = '#54BB7D';
+            document.querySelectorAll('#gradientColorControls .color-code')[1].textContent = '#0277BD';
+        }
+        if (document.querySelectorAll('#customEyeControls .color-code')[0]) {
+            document.querySelectorAll('#customEyeControls .color-code')[0].textContent = '#000000';
+            document.querySelectorAll('#customEyeControls .color-code')[1].textContent = '#000000';
+        }
+        if (document.querySelector('#bgColor').nextElementSibling) {
+            document.querySelector('#bgColor').nextElementSibling.textContent = '#FFFFFF';
         }
         
-        // Also apply to corners for consistency
-        document.getElementById('cornerSquareColor').value = color1;
-        document.getElementById('cornerDotColor').value = color1;
+        // Set initial foreground type
+        this.setForegroundType('single');
+    }
+    
+    // Foreground Type Management
+    setForegroundType(type) {
+        // Hide all color control groups
+        document.getElementById('singleColorControls').classList.add('hidden');
+        document.getElementById('gradientColorControls').classList.add('hidden');
+        document.getElementById('customEyeControls').classList.add('hidden');
+        
+        // Show the selected control group
+        switch(type) {
+            case 'single':
+                document.getElementById('singleColorControls').classList.remove('hidden');
+                this.isGradientEnabled = false;
+                this.isCustomEyeEnabled = false;
+                break;
+            case 'gradient':
+                document.getElementById('gradientColorControls').classList.remove('hidden');
+                this.isGradientEnabled = true;
+                this.isCustomEyeEnabled = false;
+                break;
+            case 'custom-eye':
+                document.getElementById('customEyeControls').classList.remove('hidden');
+                this.isGradientEnabled = false;
+                this.isCustomEyeEnabled = true;
+                break;
+        }
+        
+        this.updatePreview();
+    }
+    
+    // Color Preset Management
+    applyColorPreset(color1, color2) {
+        // Set gradient mode
+        document.querySelector('input[name="foregroundType"][value="gradient"]').checked = true;
+        this.setForegroundType('gradient');
+        
+        // Set colors
+        document.getElementById('gradientColor1').value = color1;
+        document.getElementById('gradientColor2').value = color2;
+        
+        // Update color codes
+        document.querySelectorAll('#gradientColorControls .color-code')[0].textContent = color1.toUpperCase();
+        document.querySelectorAll('#gradientColorControls .color-code')[1].textContent = color2.toUpperCase();
         
         this.updatePreview();
     }
@@ -711,20 +792,45 @@ class QRGenerator {
             const size = parseInt(document.getElementById('qrSize').value);
             const errorCorrection = document.getElementById('errorCorrection').value;
             
-            // Get colors
-            const qrColor1 = document.getElementById('qrColor').value;
-            const qrColor2 = document.getElementById('qrColor2').value;
+            // Get current foreground type
+            const foregroundType = document.querySelector('input[name="foregroundType"]:checked').value;
             const bgColor = document.getElementById('bgColor').value;
             const gradientType = document.getElementById('gradientType').value;
             
+            // Configure colors based on foreground type
+            let qrColor1, qrColor2, cornerSquareColor, cornerDotColor;
+            
+            switch(foregroundType) {
+                case 'single':
+                    qrColor1 = document.getElementById('qrColor').value;
+                    qrColor2 = qrColor1;
+                    cornerSquareColor = qrColor1;
+                    cornerDotColor = qrColor1;
+                    break;
+                    
+                case 'gradient':
+                    qrColor1 = document.getElementById('gradientColor1').value;
+                    qrColor2 = document.getElementById('gradientColor2').value;
+                    cornerSquareColor = qrColor1;
+                    cornerDotColor = qrColor1;
+                    break;
+                    
+                case 'custom-eye':
+                    qrColor1 = document.getElementById('qrColor').value;
+                    qrColor2 = qrColor1;
+                    cornerSquareColor = document.getElementById('eyeSquareColor').value;
+                    cornerDotColor = document.getElementById('eyeDotColor').value;
+                    break;
+            }
+            
             // Get styles
-            const dotStyle = document.getElementById('dotStyle').value;
-            const cornerSquareStyle = document.getElementById('cornerSquareStyle').value;
-            const cornerDotStyle = document.getElementById('cornerDotStyle').value;
+            const dotStyle = document.getElementById('dotStyle')?.value || 'square';
+            const cornerSquareStyle = document.getElementById('cornerSquareStyle')?.value || 'square';
+            const cornerDotStyle = document.getElementById('cornerDotStyle')?.value || 'dot';
             
             // Try QRCodeStyling first, fallback to custom styling
             if (typeof QRCodeStyling !== 'undefined') {
-                return this.generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle);
+                return this.generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle, cornerSquareColor, cornerDotColor, foregroundType);
             } else {
                 console.warn('QRCodeStyling not available, using custom advanced QR');
                 return this.generateCustomAdvancedQR(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, dotStyle);
@@ -734,20 +840,16 @@ class QRGenerator {
             // Fallback to basic QR
             return this.generateBasicQR(content, container);
         }
-        }
+    }
     
-    async generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle) {
-        // Get corner colors (use same as QR color if not specified)
-        const cornerSquareColor = document.getElementById('cornerSquareColor')?.value || qrColor1;
-        const cornerDotColor = document.getElementById('cornerDotColor')?.value || qrColor1;
-        
-        // Configure gradient properly
+    async generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle, cornerSquareColor, cornerDotColor, foregroundType) {
+        // Configure colors based on foreground type
         let dotsColor = qrColor1;
-        if (this.isGradientEnabled) {
-            const gradientRotation = document.getElementById('gradientRotation')?.value || 45;
+        
+        if (foregroundType === 'gradient') {
             dotsColor = {
                 type: gradientType,
-                rotation: gradientType === 'linear' ? (gradientRotation * Math.PI / 180) : 0,
+                rotation: gradientType === 'linear' ? Math.PI / 4 : 0,
                 colorStops: [
                     { offset: 0, color: qrColor1 },
                     { offset: 1, color: qrColor2 }
@@ -808,7 +910,13 @@ class QRGenerator {
         }
 
         // Debug QR options
-        console.log('QRCodeStyling options:', qrOptions);
+        console.log('🎨 QRCodeStyling Configuration:');
+        console.log('- Foreground Type:', foregroundType);
+        console.log('- Dots Color:', dotsColor);
+        console.log('- Corner Square Color:', cornerSquareColor);
+        console.log('- Corner Dot Color:', cornerDotColor);
+        console.log('- Background Color:', bgColor);
+        console.log('- Full Options:', qrOptions);
         
         const qrCode = new QRCodeStyling(qrOptions);
         
@@ -819,9 +927,9 @@ class QRGenerator {
         const canvas = container.querySelector('canvas');
         if (canvas) {
             canvas.classList.add('qr-code-canvas');
-            console.log('QR Canvas generated successfully');
+            console.log('✅ QR Canvas generated successfully');
         } else {
-            console.error('QR Canvas not found after generation');
+            console.error('❌ QR Canvas not found after generation');
         }
         
         this.currentQR = qrCode;
