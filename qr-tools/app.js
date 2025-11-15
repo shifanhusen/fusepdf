@@ -15,10 +15,27 @@ class QRGenerator {
     }
     
     init() {
+        // Check if libraries are loaded
+        if (typeof QRCode === 'undefined') {
+            console.error('QRCode library not loaded. Please check the CDN link.');
+            document.getElementById('qrCodeContainer').innerHTML = `
+                <div class="error-message" style="color: #ff4757; padding: 2rem; text-align: center;">
+                    <h3>⚠️ Library Loading Error</h3>
+                    <p>QR Code library failed to load. Please refresh the page.</p>
+                </div>
+            `;
+            return;
+        }
+        
         this.bindEvents();
         this.setupTheme();
         this.generateContentInput();
-        this.updatePreview();
+        this.bindDesignGridEvents();
+        
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+            this.updatePreview();
+        }, 100);
     }
     
     // Event Bindings
@@ -42,9 +59,12 @@ class QRGenerator {
         document.getElementById('qrColor2').addEventListener('change', () => this.updatePreview());
         document.getElementById('bgColor').addEventListener('change', () => this.updatePreview());
         document.getElementById('gradientType').addEventListener('change', () => this.updatePreview());
-        document.getElementById('dotStyle').addEventListener('change', () => this.updatePreview());
-        document.getElementById('cornerSquareStyle').addEventListener('change', () => this.updatePreview());
-        document.getElementById('cornerDotStyle').addEventListener('change', () => this.updatePreview());
+        
+        // Design Grid Events
+        this.bindDesignGridEvents();
+        
+        // Generate Button
+        document.getElementById('generateBtn').addEventListener('click', () => this.updatePreview());
         
         // Color Controls
         document.getElementById('gradientToggle').addEventListener('click', this.toggleGradient.bind(this));
@@ -109,14 +129,14 @@ class QRGenerator {
             case 'text':
                 html = `
                     <label class="settings-label">Text Content</label>
-                    <textarea id="qrContent" class="settings-textarea" placeholder="Enter your text here..."></textarea>
+                    <textarea id="qrContent" class="settings-textarea" placeholder="Enter your text here...">Hello World! 👋</textarea>
                 `;
                 break;
                 
             case 'url':
                 html = `
                     <label class="settings-label">Website URL</label>
-                    <input type="url" id="qrContent" class="settings-input" placeholder="https://example.com">
+                    <input type="url" id="qrContent" class="settings-input" placeholder="https://example.com" value="https://innovitecho.com">
                 `;
                 break;
                 
@@ -176,6 +196,57 @@ class QRGenerator {
                     <input type="url" id="vcardUrl" class="settings-input" placeholder="https://example.com">
                 `;
                 break;
+                
+            case 'vevent':
+                html = `
+                    <label class="settings-label">Event Name</label>
+                    <input type="text" id="eventTitle" class="settings-input" placeholder="Annual Conference 2025">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem;">
+                        <div>
+                            <label class="settings-sublabel">Start Date</label>
+                            <input type="date" id="eventStartDate" class="settings-input">
+                        </div>
+                        <div>
+                            <label class="settings-sublabel">Start Time</label>
+                            <input type="time" id="eventStartTime" class="settings-input">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+                        <div>
+                            <label class="settings-sublabel">End Date (Optional)</label>
+                            <input type="date" id="eventEndDate" class="settings-input">
+                        </div>
+                        <div>
+                            <label class="settings-sublabel">End Time (Optional)</label>
+                            <input type="time" id="eventEndTime" class="settings-input">
+                        </div>
+                    </div>
+                    
+                    <label class="settings-sublabel">Location</label>
+                    <input type="text" id="eventLocation" class="settings-input" placeholder="Grand Convention Center, New York">
+                    
+                    <label class="settings-sublabel">Google Maps Link (Optional)</label>
+                    <input type="url" id="eventMapsUrl" class="settings-input" placeholder="https://maps.google.com/...">
+                    
+                    <label class="settings-sublabel">Description (Optional)</label>
+                    <textarea id="eventDescription" class="settings-textarea" rows="3" placeholder="Join us for our annual conference featuring keynote speakers, networking sessions, and workshops..."></textarea>
+                    
+                    <label class="settings-sublabel">Organizer Email (Optional)</label>
+                    <input type="email" id="eventOrganizer" class="settings-input" placeholder="events@company.com">
+                    
+                    <div class="event-info-box" style="background: var(--bg-tertiary); padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary); font-size: 0.9rem;">📱 Event QR Benefits:</h4>
+                        <ul style="margin: 0; padding-left: 1.2rem; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">
+                            <li>Automatically adds event to calendar apps</li>
+                            <li>Works with iPhone, Android, Google Calendar</li>
+                            <li>Perfect for exhibitions, weddings, seminars</li>
+                            <li>Reduces manual data entry for attendees</li>
+                        </ul>
+                    </div>
+                `;
+                break;
         }
         
         container.innerHTML = html;
@@ -189,6 +260,53 @@ class QRGenerator {
         inputs.forEach(input => {
             input.addEventListener('input', () => this.updatePreview());
         });
+    }
+    
+    bindDesignGridEvents() {
+        // Body Shape Grid
+        const bodyGrid = document.getElementById('bodyShapeGrid');
+        if (bodyGrid) {
+            bodyGrid.addEventListener('click', (e) => {
+                const option = e.target.closest('.design-option');
+                if (option) {
+                    // Remove active class from siblings
+                    bodyGrid.querySelectorAll('.design-option').forEach(opt => opt.classList.remove('active'));
+                    // Add active class to clicked option
+                    option.classList.add('active');
+                    // Update hidden input
+                    document.getElementById('dotStyle').value = option.dataset.value;
+                    this.updatePreview();
+                }
+            });
+        }
+        
+        // Eye Frame Grid
+        const eyeFrameGrid = document.getElementById('eyeFrameGrid');
+        if (eyeFrameGrid) {
+            eyeFrameGrid.addEventListener('click', (e) => {
+                const option = e.target.closest('.design-option');
+                if (option) {
+                    eyeFrameGrid.querySelectorAll('.design-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    document.getElementById('cornerSquareStyle').value = option.dataset.value;
+                    this.updatePreview();
+                }
+            });
+        }
+        
+        // Eye Ball Grid
+        const eyeBallGrid = document.getElementById('eyeBallGrid');
+        if (eyeBallGrid) {
+            eyeBallGrid.addEventListener('click', (e) => {
+                const option = e.target.closest('.design-option');
+                if (option) {
+                    eyeBallGrid.querySelectorAll('.design-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    document.getElementById('cornerDotStyle').value = option.dataset.value;
+                    this.updatePreview();
+                }
+            });
+        }
     }
     
     // Get Content Based on Type
@@ -252,6 +370,73 @@ class QRGenerator {
                 vcard += 'END:VCARD';
                 
                 return vcard;
+                
+            case 'vevent':
+                const title = document.getElementById('eventTitle')?.value || '';
+                const startDate = document.getElementById('eventStartDate')?.value || '';
+                const startTime = document.getElementById('eventStartTime')?.value || '';
+                const endDate = document.getElementById('eventEndDate')?.value || '';
+                const endTime = document.getElementById('eventEndTime')?.value || '';
+                const location = document.getElementById('eventLocation')?.value || '';
+                const mapsUrl = document.getElementById('eventMapsUrl')?.value || '';
+                const description = document.getElementById('eventDescription')?.value || '';
+                const organizer = document.getElementById('eventOrganizer')?.value || '';
+                
+                if (!title || !startDate || !startTime) {
+                    return '';
+                }
+                
+                // Format dates for vEvent (YYYYMMDDTHHMMSS format)
+                const formatDateTime = (date, time) => {
+                    const dateTime = new Date(`${date}T${time}`);
+                    return dateTime.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                };
+                
+                const dtStart = formatDateTime(startDate, startTime);
+                let dtEnd = '';
+                
+                if (endDate && endTime) {
+                    dtEnd = formatDateTime(endDate, endTime);
+                } else {
+                    // Default to 1 hour after start time if no end time specified
+                    const endDateTime = new Date(`${startDate}T${startTime}`);
+                    endDateTime.setHours(endDateTime.getHours() + 1);
+                    dtEnd = endDateTime.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                }
+                
+                // Generate unique UID
+                const uid = 'event-' + Date.now() + '@innoviqr.com';
+                const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                
+                let event = 'BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//InnoviQR//QR Event Generator//EN\\n';
+                event += 'BEGIN:VEVENT\\n';
+                event += `UID:${uid}\\n`;
+                event += `DTSTAMP:${timestamp}\\n`;
+                event += `DTSTART:${dtStart}\\n`;
+                event += `DTEND:${dtEnd}\\n`;
+                event += `SUMMARY:${title}\\n`;
+                
+                if (location) {
+                    event += `LOCATION:${location}\\n`;
+                    if (mapsUrl) {
+                        event += `URL:${mapsUrl}\\n`;
+                    }
+                }
+                
+                if (description) {
+                    event += `DESCRIPTION:${description.replace(/\n/g, '\\\\n')}\\n`;
+                }
+                
+                if (organizer) {
+                    event += `ORGANIZER:mailto:${organizer}\\n`;
+                }
+                
+                event += 'STATUS:CONFIRMED\\n';
+                event += 'TRANSP:OPAQUE\\n';
+                event += 'END:VEVENT\\n';
+                event += 'END:VCALENDAR';
+                
+                return event;
                 
             default:
                 return '';
@@ -320,10 +505,15 @@ class QRGenerator {
         const info = document.getElementById('qrInfo');
         const downloadBtns = document.querySelectorAll('.download-btn');
         
+        // Debug: Check if libraries are loaded
+        console.log('QRCode available:', typeof QRCode !== 'undefined');
+        console.log('QRCodeStyling available:', typeof QRCodeStyling !== 'undefined');
+        console.log('Content:', content);
+        
         // Clear container
         container.innerHTML = '';
         
-        if (!content) {
+        if (!content || content.trim() === '') {
             container.innerHTML = `
                 <div class="qr-placeholder">
                     <div class="placeholder-icon">📱</div>
@@ -338,6 +528,11 @@ class QRGenerator {
         try {
             info.textContent = 'Generating...';
             
+            // Check if QRCode library is available
+            if (typeof QRCode === 'undefined') {
+                throw new Error('QRCode library not loaded');
+            }
+            
             if (this.isAdvancedMode) {
                 await this.generateAdvancedQR(content, container);
             } else {
@@ -351,7 +546,9 @@ class QRGenerator {
             console.error('QR Generation Error:', error);
             container.innerHTML = `
                 <div class="error-message">
-                    Error generating QR code: ${error.message}
+                    <div style="color: #ff4757; padding: 1rem; text-align: center;">
+                        ⚠️ Error: ${error.message}
+                    </div>
                 </div>
             `;
             info.textContent = 'Generation failed';
@@ -360,23 +557,32 @@ class QRGenerator {
     }
     
     async generateBasicQR(content, container) {
-        const canvas = document.createElement('canvas');
-        const size = parseInt(document.getElementById('qrSize').value);
-        const errorCorrection = document.getElementById('errorCorrection').value;
-        
-        await QRCode.toCanvas(canvas, content, {
-            width: size,
-            margin: 2,
-            color: {
-                dark: '#000000',
-                light: '#ffffff'
-            },
-            errorCorrectionLevel: errorCorrection
-        });
-        
-        canvas.classList.add('qr-code-canvas');
-        container.appendChild(canvas);
-        this.currentQR = canvas;
+        try {
+            const canvas = document.createElement('canvas');
+            const size = parseInt(document.getElementById('qrSize').value);
+            const errorCorrection = document.getElementById('errorCorrection').value;
+            
+            // Validate content length
+            if (content.length > 4000) {
+                throw new Error('Content too long. Please reduce the text size.');
+            }
+            
+            await QRCode.toCanvas(canvas, content, {
+                width: size,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                },
+                errorCorrectionLevel: errorCorrection
+            });
+            
+            canvas.classList.add('qr-code-canvas');
+            container.appendChild(canvas);
+            this.currentQR = canvas;
+        } catch (error) {
+            throw new Error(`QR generation failed: ${error.message}`);
+        }
     }
     
     async generateAdvancedQR(content, container) {
@@ -393,6 +599,12 @@ class QRGenerator {
         const dotStyle = document.getElementById('dotStyle').value;
         const cornerSquareStyle = document.getElementById('cornerSquareStyle').value;
         const cornerDotStyle = document.getElementById('cornerDotStyle').value;
+        
+        // Check if QRCodeStyling is available
+        if (typeof QRCodeStyling === 'undefined') {
+            console.warn('QRCodeStyling not loaded, falling back to basic QR');
+            return this.generateBasicQR(content, container);
+        }
         
         // Configure QR options
         const qrOptions = {

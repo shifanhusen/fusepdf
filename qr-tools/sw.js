@@ -5,7 +5,7 @@ const urlsToCache = [
     '/qr-tools/index.html',
     '/qr-tools/style.css',
     '/qr-tools/app.js',
-    '/favicon.png'
+    '/qr-tools/assets/images/InnoviQR.png'
 ];
 
 // Install event

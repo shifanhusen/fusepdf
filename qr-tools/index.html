@@ -8,14 +8,15 @@
     <meta name="keywords" content="qr code generator, graphical qr, qr with logo, gradient qr, free qr tool, online qr generator, custom qr code, qr code maker">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="icon" type="image/png" href="assets/images/InnoviQR.png">
+    <link rel="apple-touch-icon" href="assets/images/InnoviQR.png">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Free QR Code Generator – Create Stylish QR Codes">
     <meta property="og:description" content="Generate free QR codes online with gradients, logos, and custom styles. Download as PNG, SVG, or PDF.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://innovitecho.com/qr-tools">
+    <meta property="og:image" content="https://innovitecho.com/qr-tools/assets/images/InnoviQR.png">
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -47,7 +48,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-                    <img src="/favicon.png" alt="InnoviTecho" class="logo-img">
+                    <img src="assets/images/InnoviQR.png" alt="InnoviQR" class="logo-img">
                     <h1 class="logo-text">InnoviQR</h1>
                 </div>
                 <nav class="nav">
@@ -67,11 +68,12 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">Advanced QR Code Generator</h1>
-                <p class="hero-subtitle">Create stunning QR codes with gradients, logos, and custom styling. Download as PNG, SVG, or PDF.</p>
+                <p class="hero-subtitle">Create stunning QR codes with gradients, logos, and custom styling. Generate for events, contacts, WiFi, and more. Download as PNG, SVG, or PDF.</p>
                 <div class="hero-features">
                     <span class="feature-tag">✨ Graphical QR Codes</span>
                     <span class="feature-tag">🎨 Custom Colors & Gradients</span>
                     <span class="feature-tag">📷 Logo Integration</span>
+                    <span class="feature-tag">📅 Calendar Events</span>
                     <span class="feature-tag">📱 Mobile Responsive</span>
                 </div>
             </div>
@@ -103,6 +105,7 @@
                             <option value="wifi">WiFi Network</option>
                             <option value="whatsapp">WhatsApp Message</option>
                             <option value="vcard">Contact Card</option>
+                            <option value="vevent">📅 Event (Calendar)</option>
                         </select>
                     </div>
 
@@ -158,35 +161,106 @@
                             </div>
                         </div>
 
-                        <!-- Dot Style -->
+                        <!-- Body Design -->
                         <div class="settings-section">
-                            <label class="settings-label">Dot Style</label>
-                            <select id="dotStyle" class="settings-select">
-                                <option value="square">Square</option>
-                                <option value="dots">Dots</option>
-                                <option value="rounded">Rounded</option>
-                                <option value="extra-rounded">Extra Rounded</option>
-                                <option value="classy">Classy</option>
-                                <option value="classy-rounded">Classy Rounded</option>
-                            </select>
+                            <label class="settings-label">Body Shape</label>
+                            <div class="design-grid" id="bodyShapeGrid">
+                                <div class="design-option active" data-value="square" title="Square">
+                                    <div class="shape-preview square-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="dots" title="Round Dots">
+                                    <div class="shape-preview round-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="rounded" title="Rounded">
+                                    <div class="shape-preview rounded-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="extra-rounded" title="Extra Rounded">
+                                    <div class="shape-preview extra-rounded-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="classy" title="Classy">
+                                    <div class="shape-preview classy-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="classy-rounded" title="Classy Rounded">
+                                    <div class="shape-preview classy-rounded-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="diamond" title="Diamond">
+                                    <div class="shape-preview diamond-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="star" title="Star">
+                                    <div class="shape-preview star-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="heart" title="Heart">
+                                    <div class="shape-preview heart-dots"></div>
+                                </div>
+                                <div class="design-option" data-value="flower" title="Flower">
+                                    <div class="shape-preview flower-dots"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="dotStyle" value="square">
                         </div>
 
-                        <!-- Corner Style -->
+                        <!-- Eye Frame Design -->
                         <div class="settings-section">
-                            <label class="settings-label">Corner Style</label>
-                            <select id="cornerSquareStyle" class="settings-select">
-                                <option value="square">Square</option>
-                                <option value="dot">Dot</option>
-                                <option value="extra-rounded">Extra Rounded</option>
-                            </select>
+                            <label class="settings-label">Eye Frame Shape</label>
+                            <div class="design-grid" id="eyeFrameGrid">
+                                <div class="design-option active" data-value="square" title="Square">
+                                    <div class="eye-frame-preview square-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="rounded" title="Rounded">
+                                    <div class="eye-frame-preview rounded-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="extra-rounded" title="Extra Rounded">
+                                    <div class="eye-frame-preview extra-rounded-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="circle" title="Circle">
+                                    <div class="eye-frame-preview circle-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="leaf" title="Leaf">
+                                    <div class="eye-frame-preview leaf-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="pointed" title="Pointed">
+                                    <div class="eye-frame-preview pointed-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="star" title="Star Frame">
+                                    <div class="eye-frame-preview star-frame"></div>
+                                </div>
+                                <div class="design-option" data-value="flower" title="Flower Frame">
+                                    <div class="eye-frame-preview flower-frame"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="cornerSquareStyle" value="square">
                         </div>
 
+                        <!-- Eye Ball Design -->
                         <div class="settings-section">
-                            <label class="settings-label">Corner Dot Style</label>
-                            <select id="cornerDotStyle" class="settings-select">
-                                <option value="square">Square</option>
-                                <option value="dot">Dot</option>
-                            </select>
+                            <label class="settings-label">Eye Ball Shape</label>
+                            <div class="design-grid" id="eyeBallGrid">
+                                <div class="design-option active" data-value="square" title="Square">
+                                    <div class="eye-ball-preview square-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="dot" title="Circle">
+                                    <div class="eye-ball-preview circle-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="rounded" title="Rounded">
+                                    <div class="eye-ball-preview rounded-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="diamond" title="Diamond">
+                                    <div class="eye-ball-preview diamond-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="star" title="Star">
+                                    <div class="eye-ball-preview star-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="heart" title="Heart">
+                                    <div class="eye-ball-preview heart-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="flower" title="Flower">
+                                    <div class="eye-ball-preview flower-ball"></div>
+                                </div>
+                                <div class="design-option" data-value="cross" title="Cross">
+                                    <div class="eye-ball-preview cross-ball"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="cornerDotStyle" value="square">
                         </div>
 
                         <!-- Logo Upload -->
@@ -214,6 +288,10 @@
                         <h3>Live Preview</h3>
                         <div class="preview-info">
                             <span id="qrInfo" class="qr-info">Ready to generate</span>
+                            <button id="generateBtn" class="generate-btn">
+                                <span class="btn-icon">⚡</span>
+                                Create QR Code
+                            </button>
                         </div>
                     </div>
 
