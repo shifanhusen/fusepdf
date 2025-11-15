@@ -512,72 +512,25 @@ input[type="text"]:focus {
     border-left: 3px solid var(--primary-color);
 }
 
-/* Advanced Paragraph Display System */
-.paragraph-display {
+/* Simple Word Display System */
+.current-word-display {
     margin-bottom: 2rem;
     min-height: 120px;
-    overflow: hidden;
     background: var(--bg-tertiary);
     border-radius: 0.8rem;
     padding: 1.5rem;
-    position: relative;
     border: 2px solid var(--border-color);
-    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-/* Ensure the display is always visible */
-.paragraph-display .paragraph-container {
-    display: block;
-    min-height: 60px;
-}
-
-.paragraph-display .completed-text,
-.paragraph-display .current-text {
-    display: inline;
-}
-
-.paragraph-display .current-char {
-    display: inline;
-}
-
-.paragraph-display .remaining-text {
-    display: inline;
-}
-
-.paragraph-container {
+.current-word {
     font-size: 1.4rem;
     line-height: 1.8;
     font-family: 'Courier New', monospace;
     letter-spacing: 0.02em;
-    transition: transform 0.3s ease;
-}
-
-.completed-text {
-    color: var(--success-color);
-    opacity: 0.6;
-    margin-bottom: 0.5rem;
-}
-
-.current-text {
-    color: var(--text-primary);
-}
-
-.current-char {
-    background: var(--primary-color);
-    color: white;
-    padding: 2px 4px;
-    border-radius: 3px;
-    animation: blink 1s infinite;
-}
-
-.remaining-text {
-    color: var(--text-secondary);
-    opacity: 0.8;
-}
-
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 /* Character-by-character highlighting */
