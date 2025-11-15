@@ -457,13 +457,24 @@ function startRace(paragraphIndex = null) {
     gameState.incorrectChars = 0;
     gameState.totalChars = gameState.currentParagraph.length;
     
-    // Display paragraph with character spans
-    displayParagraphWithCharacters();
-    
-    // Focus input
-    elements.typingInput.value = '';
-    elements.typingInput.addEventListener('input', handleCharacterTyping);
-    elements.typingInput.focus();
+    // Wait for DOM to be ready before initializing display
+    setTimeout(() => {
+        // Display paragraph with character spans
+        displayParagraphWithCharacters();
+        
+        // Focus input and attach listener
+        if (elements.typingInput) {
+            elements.typingInput.value = '';
+            // Remove any existing listeners to prevent duplicates
+            elements.typingInput.removeEventListener('input', handleCharacterTyping);
+            elements.typingInput.addEventListener('input', handleCharacterTyping);
+            
+            // Focus with a slight delay to ensure it works
+            setTimeout(() => {
+                elements.typingInput.focus();
+            }, 50);
+        }
+    }, 150); // Longer delay to ensure screen is fully switched
     
     // Setup race track
     setupRaceTrack();
@@ -538,75 +549,110 @@ function startRaceTimer() {
 function displayParagraphWithCharacters() {
     // Initialize both display systems
     const paragraph = gameState.currentParagraph;
+    if (!paragraph) return;
     
-    // Initialize new scrolling paragraph display
-    if (elements.completedText && elements.currentChar && elements.remainingText) {
-        elements.completedText.innerHTML = '';
-        elements.currentChar.textContent = paragraph.charAt(0) || '';
-        elements.remainingText.textContent = paragraph.substring(1) || '';
-    }
-    
-    // Initialize legacy display as fallback
-    if (elements.currentWord) {
-        elements.currentWord.innerHTML = '';
-        for (let i = 0; i < paragraph.length; i++) {
-            const span = document.createElement('span');
-            span.className = 'char-span pending';
-            span.textContent = paragraph[i];
-            span.id = `char-${i}`;
-            elements.currentWord.appendChild(span);
+    // Use setTimeout to ensure DOM is ready after screen switch
+    setTimeout(() => {
+        // Re-query elements to ensure they exist after screen switch
+        const completedTextEl = document.getElementById('completedText');
+        const currentCharEl = document.getElementById('currentChar');
+        const remainingTextEl = document.getElementById('remainingText');
+        
+        // Initialize new scrolling paragraph display
+        if (completedTextEl && currentCharEl && remainingTextEl) {
+            try {
+                completedTextEl.innerHTML = '';
+                currentCharEl.textContent = paragraph.charAt(0) || '';
+                remainingTextEl.textContent = paragraph.substring(1) || '';
+                
+                // Make sure the paragraph container is visible
+                const paragraphContainer = document.getElementById('paragraphContainer');
+                if (paragraphContainer) {
+                    paragraphContainer.style.display = 'block';
+                    paragraphContainer.style.visibility = 'visible';
+                }
+            } catch (error) {
+                console.warn('Error initializing new paragraph display:', error);
+            }
         }
-    }
-    
-    // Update the display immediately
-    updateParagraphDisplay();
+        
+        // Initialize legacy display as fallback
+        if (elements.currentWord) {
+            try {
+                elements.currentWord.innerHTML = '';
+                for (let i = 0; i < paragraph.length; i++) {
+                    const span = document.createElement('span');
+                    span.className = 'char-span pending';
+                    span.textContent = paragraph[i];
+                    span.id = `char-${i}`;
+                    elements.currentWord.appendChild(span);
+                }
+            } catch (error) {
+                console.warn('Error initializing legacy display:', error);
+            }
+        }
+        
+        // Update the display immediately after initialization
+        updateParagraphDisplay();
+    }, 100); // Small delay to ensure DOM is ready
 }
 
 function updateParagraphDisplay() {
     const paragraph = gameState.currentParagraph;
+    if (!paragraph) return;
+    
     const typed = elements.typingInput ? elements.typingInput.value : '';
     const currentPos = typed.length;
     
-    // Always try to update new paragraph display elements if they exist
-    if (elements.completedText && elements.currentChar && elements.remainingText) {
-        // Split text into what user typed, current character to type, and remaining
-        const typedText = typed;
-        const currentChar = paragraph.charAt(currentPos);
-        const remaining = paragraph.substring(currentPos + 1);
-        
-        // Create colored HTML for typed text showing correct/incorrect
-        let completedHTML = '';
-        for (let i = 0; i < typedText.length; i++) {
-            if (typedText[i] === paragraph[i]) {
-                completedHTML += `<span style="color: var(--success-color);">${typedText[i]}</span>`;
-            } else {
-                completedHTML += `<span style="color: var(--danger-color); background-color: rgba(239, 68, 68, 0.2);">${typedText[i]}</span>`;
-            }
-        }
-        
-        // Update display elements
-        elements.completedText.innerHTML = completedHTML;
-        elements.currentChar.textContent = currentChar || '';
-        elements.remainingText.textContent = remaining;
-        
-        // Auto-scroll logic: keep only last 50 characters of typed text visible
-        if (typedText.length > 50) {
-            let visibleCompletedHTML = '...';
-            const startIdx = typedText.length - 47;
-            for (let i = startIdx; i < typedText.length; i++) {
+    // Re-query elements to ensure they exist and are accessible
+    const completedTextEl = document.getElementById('completedText');
+    const currentCharEl = document.getElementById('currentChar');
+    const remainingTextEl = document.getElementById('remainingText');
+    
+    // Try to update new paragraph display elements if they exist and are visible
+    if (completedTextEl && currentCharEl && remainingTextEl) {
+        try {
+            // Split text into what user typed, current character to type, and remaining
+            const typedText = typed;
+            const currentChar = paragraph.charAt(currentPos);
+            const remaining = paragraph.substring(currentPos + 1);
+            
+            // Create colored HTML for typed text showing correct/incorrect
+            let completedHTML = '';
+            for (let i = 0; i < typedText.length; i++) {
                 if (typedText[i] === paragraph[i]) {
-                    visibleCompletedHTML += `<span style="color: var(--success-color);">${typedText[i]}</span>`;
+                    completedHTML += `<span style="color: var(--success-color);">${typedText[i]}</span>`;
                 } else {
-                    visibleCompletedHTML += `<span style="color: var(--danger-color); background-color: rgba(239, 68, 68, 0.2);">${typedText[i]}</span>`;
+                    completedHTML += `<span style="color: var(--danger-color); background-color: rgba(239, 68, 68, 0.2);">${typedText[i]}</span>`;
                 }
             }
-            elements.completedText.innerHTML = visibleCompletedHTML;
-        }
-        
-        // Show only next 150 characters of remaining text to limit display
-        if (remaining.length > 150) {
-            const visibleRemaining = remaining.substring(0, 150) + '...';
-            elements.remainingText.textContent = visibleRemaining;
+            
+            // Update display elements
+            completedTextEl.innerHTML = completedHTML;
+            currentCharEl.textContent = currentChar || '';
+            remainingTextEl.textContent = remaining;
+            
+            // Auto-scroll logic: keep only last 50 characters of typed text visible
+            if (typedText.length > 50) {
+                let visibleCompletedHTML = '...';
+                const startIdx = typedText.length - 47;
+                for (let i = startIdx; i < typedText.length; i++) {
+                    if (typedText[i] === paragraph[i]) {
+                        visibleCompletedHTML += `<span style="color: var(--success-color);">${typedText[i]}</span>`;
+                    } else {
+                        visibleCompletedHTML += `<span style="color: var(--danger-color); background-color: rgba(239, 68, 68, 0.2);">${typedText[i]}</span>`;
+                    }
+                }
+                completedTextEl.innerHTML = visibleCompletedHTML;
+            }
+            
+            // Show only next 150 characters of remaining text to limit display
+            if (remaining.length > 150) {
+                const visibleRemaining = remaining.substring(0, 150) + '...';
+                remainingTextEl.textContent = visibleRemaining;
+            }
+        } catch (error) {
+            console.warn('Error updating paragraph display:', error);
         }
     }
     
@@ -634,6 +680,8 @@ function updateParagraphDisplay() {
 async function handleCharacterTyping(event) {
     const typed = elements.typingInput.value;
     const paragraph = gameState.currentParagraph;
+    
+    if (!paragraph) return;
     
     // Reset counters
     gameState.correctChars = 0;
@@ -676,8 +724,12 @@ async function handleCharacterTyping(event) {
     // Calculate visual progress (based on characters typed for immediate feedback)
     const visualProgress = gameState.totalChars > 0 ? Math.min((typed.length / gameState.totalChars) * 100, 100) : 0;
     
-    // Update the scrolling paragraph display first
-    updateParagraphDisplay();
+    // Update the scrolling paragraph display first (with error handling)
+    try {
+        updateParagraphDisplay();
+    } catch (error) {
+        console.warn('Error updating paragraph display during typing:', error);
+    }
     
     // Update car position in solo mode - use visual progress for immediate feedback
     const raceCar = document.querySelector('.race-car');
@@ -835,13 +887,41 @@ function startPracticeMode() {
     practiceState.incorrectChars = 0;
     practiceState.startTime = null;
     practiceState.isPracticing = true;
+    gameState.totalChars = gameState.currentParagraph.length;
     
     // Show racing screen
     showScreen('racing');
     
-    // Display paragraph with character spans
-    displayParagraphWithCharacters();
+    // Wait for DOM to be ready before initializing display
+    setTimeout(() => {
+        // Display paragraph with character spans
+        displayParagraphWithCharacters();
+        
+        // Setup input with proper timing
+        setupPracticeInput();
+    }, 150);
     
+    setupPracticeCar();
+}
+
+function setupPracticeInput() {
+    // Clear and setup input with proper timing
+    if (elements.typingInput) {
+        elements.typingInput.value = '';
+        elements.typingInput.disabled = false;
+        elements.typingInput.removeEventListener('input', handleCharacterTyping);
+        elements.typingInput.removeEventListener('input', handlePracticeCharacterTyping);
+        elements.typingInput.addEventListener('input', handlePracticeCharacterTyping);
+        
+        setTimeout(() => {
+            elements.typingInput.focus();
+        }, 50);
+    }
+    
+    showToast('Start typing to begin practice mode!', 'success');
+}
+
+function setupPracticeCar() {
     // Clear race track and show solo player
     elements.raceTrack.innerHTML = '';
     const playerName = elements.playerNameInput.value.trim() || 'You';
@@ -888,20 +968,13 @@ function startPracticeMode() {
     elements.raceTimer.textContent = '0:00';
     elements.currentWPM.textContent = '0 WPM';
     elements.wordsTyped.textContent = '0/0 chars';
-    
-    // Clear and setup input
-    elements.typingInput.value = '';
-    elements.typingInput.disabled = false;
-    elements.typingInput.removeEventListener('input', handleCharacterTyping);
-    elements.typingInput.addEventListener('input', handlePracticeCharacterTyping);
-    elements.typingInput.focus();
-    
-    showToast('Start typing to begin practice mode!', 'success');
 }
 
 function handlePracticeCharacterTyping(event) {
     const typed = elements.typingInput.value;
     const paragraph = practiceState.currentParagraph;
+    
+    if (!paragraph) return;
     
     // Start timer on first keypress
     if (!practiceState.startTime) {
@@ -913,7 +986,14 @@ function handlePracticeCharacterTyping(event) {
     practiceState.correctChars = 0;
     practiceState.incorrectChars = 0;
     
-    // Update character highlighting
+    // Update the scrolling paragraph display first (with error handling)
+    try {
+        updateParagraphDisplay();
+    } catch (error) {
+        console.warn('Error updating paragraph display in practice:', error);
+    }
+    
+    // Update character highlighting for legacy display
     for (let i = 0; i < paragraph.length; i++) {
         const charSpan = document.getElementById(`char-${i}`);
         
