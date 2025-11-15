@@ -1036,68 +1036,7 @@ elements.roomCodeInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Leaderboard button functionality
-document.getElementById('leaderboardBtn')?.addEventListener('click', () => {
-    showLeaderboard();
-});
 
-// =============================================================================
-// LEADERBOARD FUNCTIONALITY
-// =============================================================================
-
-function showLeaderboard() {
-    // Create a simple modal-style leaderboard display
-    const modal = document.createElement('div');
-    modal.className = 'leaderboard-modal';
-    modal.innerHTML = `
-        <div class="leaderboard-content">
-            <h2>🏆 Top Typing Speeds</h2>
-            <div class="leaderboard-list">
-                <div class="leaderboard-item">
-                    <span class="rank">1.</span>
-                    <span class="name">SpeedTyper</span>
-                    <span class="score">120 WPM</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span class="rank">2.</span>
-                    <span class="name">FastFingers</span>
-                    <span class="score">115 WPM</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span class="rank">3.</span>
-                    <span class="name">QuickType</span>
-                    <span class="score">108 WPM</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span class="rank">4.</span>
-                    <span class="name">TypeMaster</span>
-                    <span class="score">95 WPM</span>
-                </div>
-                <div class="leaderboard-item">
-                    <span class="rank">5.</span>
-                    <span class="name">KeyboardNinja</span>
-                    <span class="score">88 WPM</span>
-                </div>
-            </div>
-            <p class="leaderboard-note">Complete a solo game to submit your score!</p>
-            <button id="closeLeaderboard" class="btn btn-secondary">Close</button>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Close leaderboard functionality
-    document.getElementById('closeLeaderboard').addEventListener('click', () => {
-        document.body.removeChild(modal);
-    });
-    
-    // Click outside to close
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            document.body.removeChild(modal);
-        }
-    });
-}
 
 // =============================================================================
 // INITIALIZATION

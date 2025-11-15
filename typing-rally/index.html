@@ -21,29 +21,32 @@
             </div>
 
             <div class="lobby-options">
-                <div class="option-card">
-                    <h2>Solo Game</h2>
-                    <p>Practice solo to check your WPM and improve typing accuracy</p>
+                <!-- Solo Game - Takes full width -->
+                <div class="option-card solo-card">
+                    <h3>🎯 Solo Game</h3>
+                    <p>Practice solo to improve your typing speed and accuracy. Perfect your WPM and challenge yourself with different paragraphs!</p>
+                    <div class="features-list">
+                        <span>✓ Personal WPM tracking</span>
+                        <span>✓ Accuracy measurement</span>
+                        <span>✓ Progress monitoring</span>
+                    </div>
                     <button id="practiceBtn" class="btn btn-practice">Start Solo Game</button>
                 </div>
-
-                <div class="option-card">
-                    <h2>Multiplayer Typing Race</h2>
-                    <p>Create typing speed competition room and challenge friends</p>
-                    <button id="createRoomBtn" class="btn btn-primary">Create Typing Race</button>
-                </div>
-
-                <div class="option-card">
-                    <h2>Join Typing Game</h2>
-                    <p>Enter room code to join live typing speed competition</p>
-                    <input type="text" id="roomCodeInput" placeholder="Enter room code (e.g., ABC123)" maxlength="6">
-                    <button id="joinRoomBtn" class="btn btn-secondary">Join Room</button>
-                </div>
-
-                <div class="option-card">
-                    <h2>Leaderboard</h2>
-                    <p>View top typing speeds and compete for the best WPM scores</p>
-                    <button id="leaderboardBtn" class="btn btn-info">View Rankings</button>
+                
+                <!-- Multiplayer Games Row -->
+                <div class="multiplayer-row">
+                    <div class="option-card">
+                        <h3>🏁 Create Race</h3>
+                        <p>Start a new typing race room and invite up to 3 friends to compete!</p>
+                        <button id="createRoomBtn" class="btn btn-primary">Create Race</button>
+                    </div>
+                    
+                    <div class="option-card">
+                        <h3>🚗 Join Race</h3>
+                        <p>Enter a room code to join an existing typing race with friends!</p>
+                        <input type="text" id="roomCodeInput" placeholder="Enter room code (e.g., ABC123)" maxlength="6">
+                        <button id="joinRoomBtn" class="btn btn-secondary">Join Race</button>
+                    </div>
                 </div>
             </div>
 
