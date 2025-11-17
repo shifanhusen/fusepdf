@@ -293,11 +293,14 @@
                                 <label>
                                     Compression Level:
                                     <select id="compressionLevel">
-                                        <option value="low">Low (Better Quality)</option>
-                                        <option value="medium" selected>Medium (Balanced)</option>
-                                        <option value="high">High (Smaller Size)</option>
+                                        <option value="low">Low (90% quality, minimal compression)</option>
+                                        <option value="medium" selected>Medium (70% quality, good balance)</option>
+                                        <option value="high">High (50% quality, maximum compression)</option>
                                     </select>
                                 </label>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                    💡 Higher compression reduces file size but may affect image quality
+                                </p>
                             </div>
                             <button class="process-btn" id="compressBtn">Compress PDF</button>
                         </div>
