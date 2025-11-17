@@ -137,9 +137,9 @@ class QRGenerator {
     
     // Theme Management
     setupTheme() {
-        const savedTheme = localStorage.getItem('qr-theme') || 'light';
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        this.updateThemeIcon(savedTheme);
+        this.updateThemeIcons(savedTheme);
     }
     
     toggleTheme() {
@@ -147,13 +147,23 @@ class QRGenerator {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
         document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('qr-theme', newTheme);
-        this.updateThemeIcon(newTheme);
+        localStorage.setItem('theme', newTheme);
+        this.updateThemeIcons(newTheme);
     }
     
-    updateThemeIcon(theme) {
-        const icon = document.querySelector('.theme-icon');
-        icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    updateThemeIcons(theme) {
+        const lightIcon = document.getElementById('lightIcon');
+        const darkIcon = document.getElementById('darkIcon');
+        
+        if (lightIcon && darkIcon) {
+            if (theme === 'light') {
+                lightIcon.classList.add('active');
+                darkIcon.classList.remove('active');
+            } else {
+                lightIcon.classList.remove('active');
+                darkIcon.classList.add('active');
+            }
+        }
     }
     
     // Content Input Generation
@@ -1311,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Service Worker Registration for PWA support
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('/qr-tools/sw.js')
             .then(registration => {
                 console.log('SW registered: ', registration);
             })

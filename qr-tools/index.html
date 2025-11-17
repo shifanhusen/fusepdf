@@ -8,8 +8,8 @@
     <meta name="keywords" content="qr code generator, graphical qr, qr with logo, gradient qr, free qr tool, online qr generator, custom qr code, qr code maker">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/images/InnoviQR.png">
-    <link rel="apple-touch-icon" href="assets/images/InnoviQR.png">
+    <link rel="icon" type="image/png" href="/qr-tools/assets/images/InnoviQR.png">
+    <link rel="apple-touch-icon" href="/qr-tools/assets/images/InnoviQR.png">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Free QR Code Generator – Create Stylish QR Codes">
@@ -36,39 +36,43 @@
     </script>
     
     <!-- External Libraries - Local Files -->
-    <script src="lib/qrious.min.js"></script>
-    <script src="lib/qrcode-simple.js"></script>
-    <script src="lib/qr-code-styling.js"></script>
-    <script src="lib/jspdf.umd.min.js"></script>
+    <script src="/qr-tools/lib/qrious.min.js"></script>
+    <script src="/qr-tools/lib/qrcode-simple.js"></script>
+    <script src="/qr-tools/lib/qr-code-styling.js"></script>
+    <script src="/qr-tools/lib/jspdf.umd.min.js"></script>
     
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/qr-tools/style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo-section">
-                    <img src="assets/images/InnoviQR.png" alt="InnoviQR" class="logo-img">
-                    <h1 class="logo-text">InnoviQR</h1>
-                </div>
-                <nav class="nav">
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-container">
+            <div class="menu-left">
+                <a href="/" class="menu-logo">
+                    <img src="/qr-tools/assets/images/InnoviQR.png" alt="InnoviQR" class="logo-img">
+                    <span class="logo-text">InnoviQR</span>
+                </a>
+                <nav class="menu-nav">
                     <a href="/" class="nav-link">Home</a>
                     <a href="/pdf-tools/" class="nav-link">PDF Tools</a>
+                    <a href="/qr-tools/" class="nav-link active">QR Tools</a>
                     <a href="/typing-rally/" class="nav-link">Typing Rally</a>
-                    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                        <span class="theme-icon">🌙</span>
-                    </button>
                 </nav>
             </div>
+            <div class="menu-right">
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon" id="lightIcon">☀️</span>
+                    <span class="theme-icon active" id="darkIcon">🌙</span>
+                </div>
+            </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- Main Content -->
+    <main class="main">
         <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">Advanced QR Code Generator</h1>
+            <header class="hero">
+                <h1 class="hero-title">QR Code Generator</h1>
                 <p class="hero-subtitle">Create stunning QR codes with gradients, logos, and custom styling. Generate for events, contacts, WiFi, and more. Download as PNG, SVG, or PDF.</p>
                 <div class="hero-features">
                     <span class="feature-tag">✨ Graphical QR Codes</span>
@@ -77,13 +81,7 @@
                     <span class="feature-tag">📅 Calendar Events</span>
                     <span class="feature-tag">📱 Mobile Responsive</span>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="main">
-        <div class="container">
+            </header>
             <div class="qr-generator">
                 <!-- Settings Panel -->
                 <div class="settings-panel">
@@ -434,6 +432,6 @@
         });
     </script>
 
-    <script src="app.js"></script>
+    <script src="/qr-tools/app.js"></script>
 </body>
 </html>
