@@ -139,7 +139,7 @@ class QRGenerator {
     
     // Theme Management
     setupTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
         this.updateThemeIcons(savedTheme);
     }
@@ -1071,20 +1071,6 @@ class QRGenerator {
         
         // QRCodeStyling creates its own canvas element
         await qrCode.append(container);
-        if (this.currentLogo) {
-            const logoSize = parseFloat(document.getElementById('logoSize')?.value || '0.3');
-            const logoMargin = parseInt(document.getElementById('logoMargin')?.value || '5');
-            qrCode.update({
-                image: this.currentLogo,
-                imageOptions: {
-                    hideBackgroundDots: true,
-                    imageSize: logoSize,
-                    margin: logoMargin,
-                    crossOrigin: 'anonymous',
-                    saveAsBlob: false
-                }
-            });
-        }
         
         // Get the generated canvas element
         const canvas = container.querySelector('canvas');
