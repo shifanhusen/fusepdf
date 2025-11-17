@@ -12,11 +12,35 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-container">
+            <div class="menu-left">
+                <a href="/" class="menu-logo">
+                    <img src="assets/images/typing-Rally.png" alt="TurboType Rally" class="logo-img">
+                    <span class="logo-text">TurboType Rally</span>
+                </a>
+                <nav class="menu-nav">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/pdf-tools/" class="nav-link">PDF Tools</a>
+                    <a href="/qr-tools/" class="nav-link">QR Tools</a>
+                    <a href="/typing-rally/" class="nav-link active">Typing Rally</a>
+                </nav>
+            </div>
+            <div class="menu-right">
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon" id="lightIcon">☀️</span>
+                    <span class="theme-icon active" id="darkIcon">🌙</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Lobby Screen -->
     <section id="lobbyScreen" class="screen active">
         <div class="container">
             <div class="game-header">
-                <h1 class="game-title"><img src="assets/images/typing-Rally.png" alt="TurboType Rally" style="width: 80px; height: auto; vertical-align: middle; margin-right: 10px;">TurboType Rally</h1>
+                <h1 class="game-title">TurboType Rally</h1>
                 <p class="game-subtitle">Free typing speed test and WPM measurement game!</p>
             </div>
 
@@ -65,7 +89,6 @@
     <section id="waitingScreen" class="screen">
         <div class="container">
             <div class="game-header">
-                <h1 class="game-title"><img src="assets/images/typing-Rally.png" alt="TurboType Rally" style="width: 40px; height: auto; vertical-align: middle; margin-right: 10px;">TurboType Rally</h1>
                 <div class="room-info">
                     <h2>Room Code: <span id="roomCodeDisplay" class="room-code">------</span></h2>
                     <p class="share-text">Share this code with friends to join!</p>

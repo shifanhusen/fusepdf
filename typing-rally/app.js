@@ -997,8 +997,51 @@ async function updatePracticeProgress() {
 }
 
 // =============================================================================
+// THEME MANAGEMENT
+// =============================================================================
+
+function setupTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcons(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcons(newTheme);
+}
+
+function updateThemeIcons(theme) {
+    const lightIcon = document.getElementById('lightIcon');
+    const darkIcon = document.getElementById('darkIcon');
+    
+    if (lightIcon && darkIcon) {
+        if (theme === 'light') {
+            lightIcon.classList.add('active');
+            darkIcon.classList.remove('active');
+        } else {
+            lightIcon.classList.remove('active');
+            darkIcon.classList.add('active');
+        }
+    }
+}
+
+// =============================================================================
 // EVENT LISTENERS
 // =============================================================================
+
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+}
+
+// Initialize theme on load
+setupTheme();
 
 elements.createRoomBtn.addEventListener('click', createRoom);
 elements.joinRoomBtn.addEventListener('click', joinRoom);
