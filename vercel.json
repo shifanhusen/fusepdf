@@ -1,28 +1,7 @@
 {
-  "builds": [
-    {
-      "src": "pdf-tools/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "npm run build",
-        "outputDirectory": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/pdf-tools/(.*)",
-      "dest": "/pdf-tools/$1"
-    },
-    {
-      "src": "/pdf-tools",
-      "dest": "/pdf-tools/index.html"
-    }
-  ],
   "rewrites": [
     { "source": "/pdf-tools", "destination": "/pdf-tools/index.html" },
     { "source": "/pdf-tools/", "destination": "/pdf-tools/index.html" },
-    { "source": "/pdf-tools/(.*)", "destination": "/pdf-tools/$1" },
     { "source": "/typing-rally", "destination": "/typing-rally/index.html" },
     { "source": "/typing-rally/", "destination": "/typing-rally/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
