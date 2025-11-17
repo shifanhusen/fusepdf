@@ -1,7 +1,10 @@
 {
+  "buildCommand": "cd pdf-tools && npm run build",
+  "outputDirectory": "pdf-tools/dist",
   "rewrites": [
     { "source": "/pdf-tools", "destination": "/pdf-tools/index.html" },
     { "source": "/pdf-tools/", "destination": "/pdf-tools/index.html" },
+    { "source": "/pdf-tools/(.*)", "destination": "/pdf-tools/$1" },
     { "source": "/typing-rally", "destination": "/typing-rally/index.html" },
     { "source": "/typing-rally/", "destination": "/typing-rally/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
