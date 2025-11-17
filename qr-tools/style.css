@@ -682,7 +682,19 @@ body {
     background: rgba(0, 255, 136, 0.08);
 }
 
-/* Shape Preview Styles */
+/* ============================================================================
+   Shape Preview Styles
+   
+   Visual previews for QR code shape options matching QRCodeStyling library
+   capabilities. These previews help users understand how different shape
+   styles will affect their QR code appearance.
+   
+   Categories:
+   - Body Shapes: Data module styling (squares, circles, rounded variants)
+   - Eye Frame Shapes: Finder pattern outer ring styling
+   - Eye Ball Shapes: Finder pattern center dot styling
+   ============================================================================ */
+
 .shape-preview,
 .eye-frame-preview,
 .eye-ball-preview {

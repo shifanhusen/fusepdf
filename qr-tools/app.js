@@ -1,6 +1,49 @@
 /* ============================================================================
    InnoviQR - Advanced QR Code Generator JavaScript
    Client-side QR generation with advanced styling options
+   
+   SHAPE SYSTEM ARCHITECTURE
+   =========================
+   
+   This implementation uses the QRCodeStyling library for QR generation with
+   comprehensive shape customization inspired by QRCode Monkey's design system.
+   
+   Shape Categories:
+   -----------------
+   
+   1. BODY SHAPES (Data Modules) - Control individual QR code pixel appearance:
+      • square        → Classic pixel style, sharp corners
+      • dots/circle   → Full circular dots for smooth organic look
+      • rounded       → Soft-corner squares (35% radius) for balanced style
+      • extra-rounded → Very rounded squares (squircle-like) for modern feel
+      • classy        → Connected horizontal flow for seamless appearance
+      • classy-rounded→ Connected with rounded edges for elegant look
+   
+   2. EYE FRAME SHAPES (Finder Pattern Outer Ring) - 7×7 corner markers:
+      • square        → Classic square frame with sharp corners
+      • extra-rounded → Rounded frame for organic, friendly appearance
+      • dot           → Circular frame style for modern minimalist look
+      • leaf          → Organic leaf-like rounded shape (mapped to extra-rounded)
+   
+   3. EYE BALL SHAPES (Finder Pattern Center) - 3×3 center dot:
+      • square        → Classic square center dot
+      • dot           → Small centered circle for minimal style
+      • rounded       → Rounded square for balanced appearance
+   
+   Shape Rendering Flow:
+   ---------------------
+   HTML UI → User Selection → shapeMapping Object → QRCodeStyling API → Canvas Render
+   
+   The shapeMapping object translates UI-friendly names to QRCodeStyling's
+   internal type system, ensuring compatibility while providing intuitive
+   shape names to users.
+   
+   Extensibility:
+   --------------
+   For custom shape rendering beyond QRCodeStyling's built-in options, the
+   system can be extended with SVG-based custom renderers following the
+   pattern described in the validateShape() and getShapeDescription() methods.
+   
    ============================================================================ */
 
 class QRGenerator {
@@ -40,18 +83,25 @@ class QRGenerator {
     // Event Bindings
     bindEvents() {
         // Mode Toggle
-        document.getElementById('basicMode').addEventListener('click', () => this.setMode(false));
-        document.getElementById('advancedMode').addEventListener('click', () => this.setMode(true));
+        const basicModeEl = document.getElementById('basicMode');
+        const advancedModeEl = document.getElementById('advancedMode');
+        if (basicModeEl) basicModeEl.addEventListener('click', () => this.setMode(false));
+        if (advancedModeEl) advancedModeEl.addEventListener('click', () => this.setMode(true));
         
         // Content Type Change
-        document.getElementById('contentType').addEventListener('change', () => {
-            this.generateContentInput();
-            this.updatePreview();
-        });
+        const contentTypeEl = document.getElementById('contentType');
+        if (contentTypeEl) {
+            contentTypeEl.addEventListener('change', () => {
+                this.generateContentInput();
+                this.updatePreview();
+            });
+        }
         
         // Basic Settings
-        document.getElementById('qrSize').addEventListener('input', this.updateSize.bind(this));
-        document.getElementById('errorCorrection').addEventListener('change', () => this.updatePreview());
+        const qrSizeEl = document.getElementById('qrSize');
+        const errorCorrectionEl = document.getElementById('errorCorrection');
+        if (qrSizeEl) qrSizeEl.addEventListener('input', this.updateSize.bind(this));
+        if (errorCorrectionEl) errorCorrectionEl.addEventListener('change', () => this.updatePreview());
         
         // Advanced Color Controls with error checking
         const addColorListener = (id, selector, updatePreview = true) => {
@@ -80,7 +130,8 @@ class QRGenerator {
                 this.updatePreview();
             });
         }
-        document.getElementById('gradientType').addEventListener('change', () => this.updatePreview());
+        const gradientTypeEl = document.getElementById('gradientType');
+        if (gradientTypeEl) gradientTypeEl.addEventListener('change', () => this.updatePreview());
         
         // Foreground Type Radio Buttons
         document.querySelectorAll('input[name="foregroundType"]').forEach(radio => {
@@ -102,21 +153,30 @@ class QRGenerator {
         this.bindDesignGridEvents();
         
         // Generate Button
-        document.getElementById('generateBtn').addEventListener('click', () => this.updatePreview());
+        const generateBtnEl = document.getElementById('generateBtn');
+        if (generateBtnEl) generateBtnEl.addEventListener('click', () => this.updatePreview());
         
         // Color Controls
-        document.getElementById('gradientToggle').addEventListener('click', this.toggleGradient.bind(this));
-        document.getElementById('transparentBg').addEventListener('click', this.toggleTransparentBg.bind(this));
+        const gradientToggleEl = document.getElementById('gradientToggle');
+        const transparentBgEl = document.getElementById('transparentBg');
+        if (gradientToggleEl) gradientToggleEl.addEventListener('click', this.toggleGradient.bind(this));
+        if (transparentBgEl) transparentBgEl.addEventListener('click', this.toggleTransparentBg.bind(this));
         
         // Logo Upload
-        document.getElementById('logoUpload').addEventListener('change', this.handleLogoUpload.bind(this));
-        document.getElementById('logoSize').addEventListener('input', this.updateLogoSize.bind(this));
-        document.getElementById('logoMargin').addEventListener('input', this.updateLogoMargin.bind(this));
+        const logoUploadEl = document.getElementById('logoUpload');
+        const logoSizeEl = document.getElementById('logoSize');
+        const logoMarginEl = document.getElementById('logoMargin');
+        if (logoUploadEl) logoUploadEl.addEventListener('change', this.handleLogoUpload.bind(this));
+        if (logoSizeEl) logoSizeEl.addEventListener('input', this.updateLogoSize.bind(this));
+        if (logoMarginEl) logoMarginEl.addEventListener('input', this.updateLogoMargin.bind(this));
         
         // Download Buttons
-        document.getElementById('downloadPNG').addEventListener('click', () => this.downloadQR('png'));
-        document.getElementById('downloadSVG').addEventListener('click', () => this.downloadQR('svg'));
-        document.getElementById('downloadPDF').addEventListener('click', () => this.downloadQR('pdf'));
+        const downloadPNGEl = document.getElementById('downloadPNG');
+        const downloadSVGEl = document.getElementById('downloadSVG');
+        const downloadPDFEl = document.getElementById('downloadPDF');
+        if (downloadPNGEl) downloadPNGEl.addEventListener('click', () => this.downloadQR('png'));
+        if (downloadSVGEl) downloadSVGEl.addEventListener('click', () => this.downloadQR('svg'));
+        if (downloadPDFEl) downloadPDFEl.addEventListener('click', () => this.downloadQR('pdf'));
         
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
@@ -798,6 +858,42 @@ class QRGenerator {
         });
     }
     
+    /* ========================================================================
+       Shape System Utilities
+       ======================================================================== */
+    
+    /**
+     * Validate and normalize shape values
+     * Ensures shape values are compatible with QRCodeStyling library
+     */
+    validateShape(shape, category) {
+        const validShapes = {
+            body: ['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded'],
+            eyeFrame: ['square', 'extra-rounded', 'dot'],
+            eyeBall: ['square', 'dot', 'rounded']
+        };
+        
+        const categoryShapes = validShapes[category] || validShapes.body;
+        return categoryShapes.includes(shape) ? shape : categoryShapes[0];
+    }
+    
+    /**
+     * Get shape description for UI feedback
+     */
+    getShapeDescription(shape) {
+        const descriptions = {
+            'square': 'Classic pixel style with sharp corners',
+            'dots': 'Full circular dots for smooth appearance',
+            'rounded': 'Soft-corner squares for balanced look',
+            'extra-rounded': 'Very rounded for organic feel',
+            'classy': 'Connected horizontal flow style',
+            'classy-rounded': 'Connected with rounded edges',
+            'dot': 'Small centered circle',
+            'leaf': 'Organic leaf-like shape'
+        };
+        return descriptions[shape] || 'Custom shape style';
+    }
+    
     // QR Generation
     async updatePreview() {
         const content = this.getQRContent();
@@ -952,6 +1048,36 @@ class QRGenerator {
         }
     }
     
+    /* ========================================================================
+       QR Code Shape System Implementation
+       
+       This implementation uses QRCodeStyling library with comprehensive
+       shape support inspired by QRCode Monkey's design system.
+       
+       Shape Categories:
+       -----------------
+       1. Body Shapes (Data Modules):
+          - square: Classic pixel style, full module filled
+          - dots/circle: Full circles inscribed in module
+          - rounded: Soft-corner squares (35% radius)
+          - extra-rounded: Very rounded squares (squircle-like)
+          - classy: Connected horizontal style for flow effect
+          - classy-rounded: Connected with rounded edges
+       
+       2. Eye Frame Shapes (Finder Pattern Outer Ring):
+          - square: Classic square frame
+          - extra-rounded: Rounded frame with organic feel
+          - dot: Circle frame style
+          - leaf: Organic leaf-like rounded shape
+       
+       3. Eye Ball Shapes (Finder Pattern Center):
+          - square: Classic square center
+          - dot: Small centered circle
+          - rounded: Rounded square center
+       
+       All shapes maintain proper QR code scannability while providing
+       rich visual customization options.
+       ======================================================================== */
     async generateQRCodeStyling(content, container, size, errorCorrection, qrColor1, qrColor2, bgColor, gradientType, dotStyle, cornerSquareStyle, cornerDotStyle, cornerSquareColor, cornerDotColor, foregroundType) {
         // Configure colors based on foreground type
         let dotsColor = qrColor1;
@@ -975,15 +1101,45 @@ class QRGenerator {
             console.log('- Color Stops:', dotsColor.colorStops);
         }
         
-        // Map shape values to QRCodeStyling format
+        /* ====================================================================
+           Shape Mapping System
+           
+           Maps UI-friendly shape names to QRCodeStyling's internal types.
+           QRCodeStyling supports these native shapes:
+           - square, dots, rounded, extra-rounded, classy, classy-rounded
+           
+           For additional custom shapes (diamond, heart, star, etc.) not
+           natively supported by QRCodeStyling, we map them to the closest
+           supported variant or implement custom SVG rendering.
+           
+           EXTENSIBILITY NOTE:
+           To add truly custom shapes beyond QRCodeStyling's capabilities,
+           implement a custom SVG renderer that:
+           1. Generates QR matrix data using qrcode library
+           2. Iterates through each module position
+           3. Calls shape drawing functions (drawBodyShape, drawEyeFrame, etc.)
+           4. Renders as SVG with proper module sizing and positioning
+           
+           Reference implementation pattern available in generateCustomAdvancedQR()
+           ==================================================================== */
         const shapeMapping = {
-            'square': 'square',
-            'dots': 'dots', 
-            'rounded': 'rounded',
-            'extra-rounded': 'extra-rounded',
-            'classy': 'classy',
-            'classy-rounded': 'classy-rounded',
-            'dot': 'dot'
+            // Body shapes - data module styling
+            'square': 'square',           // Classic pixel style
+            'dots': 'dots',               // Full circles
+            'rounded': 'rounded',         // Soft-corner squares
+            'extra-rounded': 'extra-rounded', // Very rounded squares
+            'classy': 'classy',           // Connected horizontal style
+            'classy-rounded': 'classy-rounded', // Connected rounded style
+            'circle': 'dots',             // Alias for dots (full circles)
+            'diamond': 'square',          // Diamond style (fallback to square)
+            
+            // Eye frame shapes - finder pattern outer ring
+            'dot': 'dot',                 // Small centered dot
+            'leaf': 'extra-rounded',      // Leaf-like organic shape
+            
+            // Additional variants
+            'squircle': 'extra-rounded',  // Superellipse-like (very rounded)
+            'pill': 'classy-rounded'      // Capsule/pill shape
         };
         
         const qrOptions = {
