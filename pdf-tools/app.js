@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     
+    // Initialize theme
+    initializeTheme();
+    
     setupTabs();
     setupFileUploads();
     setupDragDrop();
@@ -699,5 +702,35 @@ function updateSelectionInfo(tool) {
         info.textContent = `${totalCount} pages - Drag to reorder`;
     } else {
         info.textContent = `${selectedCount} of ${totalCount} pages selected`;
+    }
+}
+
+// Theme Management
+function initializeTheme() {
+    // Check for saved theme preference or default to dark mode
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    // Update theme toggle icons
+    const lightIcon = document.getElementById('light-icon');
+    const darkIcon = document.getElementById('dark-icon');
+    
+    if (theme === 'light') {
+        lightIcon.classList.add('active');
+        darkIcon.classList.remove('active');
+    } else {
+        lightIcon.classList.remove('active');
+        darkIcon.classList.add('active');
     }
 }
