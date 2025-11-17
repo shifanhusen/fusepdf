@@ -1137,11 +1137,11 @@ class QRGenerator {
             'extra-rounded': 'extra-rounded', // Very rounded squares
             'classy': 'classy',           // Connected horizontal style
             'classy-rounded': 'classy-rounded', // Connected rounded style
-            'circle': 'dots',             // Alias for dots (full circles)
-            'small-circle': 'dots',       // Small dots (mapped to dots)
-            'diamond': 'square',          // Diamond rotated style
-            'leaf': 'extra-rounded',      // Leaf-like organic shape
-            'pointed': 'square',          // Pointed diamond style
+            'circle': 'circle',             // Alias for dots (full circles)
+            'small-circle': 'small-circle',       // Small dots (mapped to dots)
+            'diamond': 'diamond',          // Diamond rotated style
+            'leaf': 'leaf',      // Leaf-like organic shape
+            'pointed': 'pointed',          // Pointed diamond style
             
             // Eye frame shapes - finder pattern outer ring
             'dot': 'dot',                 // Circle frame
