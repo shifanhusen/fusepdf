@@ -262,9 +262,22 @@
                         </div>
                         
                         <div class="file-list" id="mergeFileList" style="display: none;">
-                            <h4>Files to merge:</h4>
-                            <div class="files-container" id="filesContainer"></div>
-                            <button class="process-btn" id="mergeBtn">Merge PDFs</button>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 id="mergePageCount">Total pages: 0</h4>
+                                <div>
+                                    <button class="upload-btn" onclick="document.querySelector('#mergeUpload input').click()" style="margin-right: 0.5rem;">
+                                        ➕ Add More Files
+                                    </button>
+                                    <button class="secondary-btn" onclick="fusePDF.clearMergeData()">
+                                        🗑️ Clear All
+                                    </button>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                                💡 Drag and drop pages to reorder them before merging
+                            </p>
+                            <div class="merge-pages-container" id="mergePagesContainer"></div>
+                            <button class="process-btn" id="mergeBtn" style="margin-top: 1rem;">Merge PDFs</button>
                         </div>
                         
                         <div class="progress-bar" id="mergeProgress" style="display: none;">

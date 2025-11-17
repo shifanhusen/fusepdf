@@ -16,6 +16,8 @@ class FusePDF {
             this.currentPageCount = 0;
             this.splitMode = 'range';
             this.processingHistory = this.loadHistory();
+            this.mergePages = []; // Store pages for merge with ordering
+            this.mergePdfData = []; // Store loaded PDF data
             
             // Initialize PDF.js worker
             if (typeof pdfjsLib !== 'undefined') {
@@ -812,48 +814,181 @@ class FusePDF {
     /**
      * Handle merge files
      */
-    handleMergeFiles(files) {
-        if (files.length < 2) {
-            this.showError('Please select at least 2 PDF files for merging.');
+    async handleMergeFiles(files) {
+        if (files.length < 1) {
+            this.showError('Please select at least 1 PDF file for merging.');
             return;
         }
 
-        this.currentFiles = files;
-        this.displayMergeFiles();
+        // Add new files to existing ones
+        const newFiles = Array.from(files);
+        this.currentFiles = [...this.currentFiles, ...newFiles];
+        
+        // Load and preview all pages
+        await this.loadMergePDFs(newFiles);
+        
         document.getElementById('mergeFileList').style.display = 'block';
     }
 
     /**
-     * Display files for merging
+     * Load PDFs and generate page thumbnails for merge
      */
-    displayMergeFiles() {
-        const container = document.getElementById('filesContainer');
-        container.innerHTML = '';
+    async loadMergePDFs(files) {
+        if (!window.pdfjsLib) {
+            console.warn('PDF.js not loaded, using basic merge');
+            return;
+        }
 
-        this.currentFiles.forEach((file, index) => {
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.innerHTML = `
-                <div class="file-info">
-                    <div class="file-name">${file.name}</div>
-                    <div class="file-size">${this.formatFileSize(file.size)}</div>
-                </div>
-                <button class="remove-file" onclick="fusePDF.removeFile(${index})">×</button>
-            `;
-            container.appendChild(fileItem);
-        });
+        for (const file of files) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
+                const pdf = await loadingTask.promise;
+                
+                // Store PDF data for merging without reloading
+                this.mergePdfData.push({
+                    file: file,
+                    arrayBuffer: arrayBuffer,
+                    pdfDoc: pdf,
+                    pageCount: pdf.numPages
+                });
+                
+                // Generate thumbnails for each page
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const viewport = page.getViewport({scale: 0.3});
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+                    
+                    this.mergePages.push({
+                        fileName: file.name,
+                        fileIndex: this.mergePdfData.length - 1,
+                        pageNum: pageNum,
+                        canvas: canvas,
+                        thumbnail: canvas.toDataURL('image/png')
+                    });
+                }
+            } catch (error) {
+                console.error(`Error loading ${file.name}:`, error);
+                this.showError(`Error loading ${file.name}`);
+            }
+        }
+        
+        this.displayMergePages();
     }
 
     /**
-     * Remove file from merge list
+     * Display all pages with drag-and-drop reordering
      */
-    removeFile(index) {
-        this.currentFiles.splice(index, 1);
-        if (this.currentFiles.length > 0) {
-            this.displayMergeFiles();
-        } else {
-            document.getElementById('mergeFileList').style.display = 'none';
+    displayMergePages() {
+        const container = document.getElementById('mergePagesContainer');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        this.mergePages.forEach((pageData, index) => {
+            const pageItem = document.createElement('div');
+            pageItem.className = 'merge-page-item';
+            pageItem.draggable = true;
+            pageItem.dataset.index = index;
+            
+            pageItem.innerHTML = `
+                <div class="merge-page-number">${index + 1}</div>
+                <img src="${pageData.thumbnail}" alt="Page ${pageData.pageNum}">
+                <div class="merge-page-info">
+                    <div class="merge-page-label">${pageData.fileName}</div>
+                    <div class="merge-page-original">Page ${pageData.pageNum}</div>
+                </div>
+                <button class="merge-page-remove" onclick="fusePDF.removeMergePage(${index})" title="Remove page">×</button>
+            `;
+            
+            // Drag and drop events
+            pageItem.addEventListener('dragstart', (e) => this.handleDragStart(e));
+            pageItem.addEventListener('dragover', (e) => this.handleDragOver(e));
+            pageItem.addEventListener('drop', (e) => this.handleDrop(e));
+            pageItem.addEventListener('dragend', (e) => this.handleDragEnd(e));
+            
+            container.appendChild(pageItem);
+        });
+        
+        // Update page count display
+        const pageCountEl = document.getElementById('mergePageCount');
+        if (pageCountEl) {
+            pageCountEl.textContent = `Total pages: ${this.mergePages.length}`;
         }
+    }
+
+    /**
+     * Remove page from merge list
+     */
+    removeMergePage(index) {
+        this.mergePages.splice(index, 1);
+        if (this.mergePages.length > 0) {
+            this.displayMergePages();
+        } else {
+            this.clearMergeData();
+        }
+    }
+
+    /**
+     * Clear all merge data
+     */
+    clearMergeData() {
+        this.currentFiles = [];
+        this.mergePages = [];
+        this.mergePdfData = [];
+        document.getElementById('mergeFileList').style.display = 'none';
+    }
+
+    /**
+     * Drag and drop handlers for page reordering
+     */
+    handleDragStart(e) {
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.innerHTML);
+        this.draggedIndex = parseInt(e.target.dataset.index);
+    }
+
+    handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const target = e.target.closest('.merge-page-item');
+        if (target && !target.classList.contains('dragging')) {
+            target.classList.add('drag-over');
+        }
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        const target = e.target.closest('.merge-page-item');
+        if (target) {
+            target.classList.remove('drag-over');
+            const dropIndex = parseInt(target.dataset.index);
+            
+            if (this.draggedIndex !== dropIndex) {
+                // Reorder pages array
+                const draggedPage = this.mergePages[this.draggedIndex];
+                this.mergePages.splice(this.draggedIndex, 1);
+                this.mergePages.splice(dropIndex, 0, draggedPage);
+                this.displayMergePages();
+            }
+        }
+    }
+
+    handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        document.querySelectorAll('.merge-page-item').forEach(item => {
+            item.classList.remove('drag-over');
+        });
     }
 
     /**
@@ -1147,11 +1282,28 @@ class FusePDF {
     async mergePDF(files) {
         const mergedPdf = await PDFLib.PDFDocument.create();
 
-        for (const file of files) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-            const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
-            copiedPages.forEach(page => mergedPdf.addPage(page));
+        // If we have page ordering data, use it
+        if (this.mergePages.length > 0) {
+            console.log(`Merging ${this.mergePages.length} pages in custom order`);
+            
+            for (const pageData of this.mergePages) {
+                const pdfData = this.mergePdfData[pageData.fileIndex];
+                const arrayBuffer = pdfData.arrayBuffer;
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                // Copy specific page (0-based index)
+                const [copiedPage] = await mergedPdf.copyPages(pdfDoc, [pageData.pageNum - 1]);
+                mergedPdf.addPage(copiedPage);
+            }
+        } else {
+            // Fallback: merge all files in order
+            console.log('Merging files in default order');
+            for (const file of files) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
+                copiedPages.forEach(page => mergedPdf.addPage(page));
+            }
         }
 
         const pdfBytes = await mergedPdf.save();
@@ -1515,6 +1667,8 @@ class FusePDF {
         this.currentPdfDoc = null;
         this.currentArrayBuffer = null;
         this.currentPageCount = 0;
+        this.mergePages = [];
+        this.mergePdfData = [];
         this.currentResults = null;
         
         // Hide all option sections
