@@ -7,6 +7,7 @@
     --bg-primary: #1a1a1a;
     --bg-secondary: #242424;
     --bg-tertiary: #2a2a2a;
+    --bg-card: #242424;
     --text-primary: #ffffff;
     --text-secondary: #cccccc;
     --text-muted: #888888;
@@ -16,12 +17,14 @@
     --accent-hover: #00cc6a;
     --error-color: #ff4444;
     --success-color: #00ff88;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="light"] {
     --bg-primary: #ffffff;
     --bg-secondary: #f8f9fa;
     --bg-tertiary: #f1f3f4;
+    --bg-card: #ffffff;
     --text-primary: #1a1a1a;
     --text-secondary: #333333;
     --text-muted: #666666;
@@ -31,6 +34,7 @@
     --accent-hover: #00a854;
     --error-color: #dc3545;
     --success-color: #28a745;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
 /* ============================================================================
@@ -648,7 +652,7 @@ body {
 /* Design Grid Styles */
 .design-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
     gap: 0.5rem;
     margin: 0.75rem 0;
 }
@@ -670,12 +674,12 @@ body {
 
 .design-option:hover {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(0, 130, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.15);
 }
 
 .design-option.active {
     border-color: var(--accent-color);
-    background: rgba(0, 130, 255, 0.1);
+    background: rgba(0, 255, 136, 0.08);
 }
 
 /* Shape Preview Styles */
@@ -714,66 +718,10 @@ body {
     border-radius: 15%;
 }
 
-.diamond-dots {
-    transform: rotate(45deg);
-}
-
-.star-dots {
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-
-.heart-dots {
-    position: relative;
-    transform: rotate(-45deg);
-}
-
-.heart-dots::before,
-.heart-dots::after {
-    content: '';
-    width: 12px;
-    height: 19px;
-    position: absolute;
-    left: 6px;
-    background: var(--text-primary);
-    border-radius: 6px 6px 0 0;
-    transform: rotate(-45deg);
-    transform-origin: 0 100%;
-}
-
-.heart-dots::after {
-    left: 0;
-    transform: rotate(45deg);
-    transform-origin: 100% 100%;
-}
-
-.flower-dots {
-    border-radius: 50%;
-    position: relative;
-}
-
-.flower-dots::before {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    background: var(--text-primary);
-    border-radius: 50%;
-    opacity: 0.6;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
-
 /* Eye Frame Previews */
 .square-frame {
     border: 3px solid var(--text-primary);
     background: transparent;
-}
-
-.rounded-frame {
-    border: 3px solid var(--text-primary);
-    background: transparent;
-    border-radius: 20%;
 }
 
 .extra-rounded-frame {
@@ -782,34 +730,11 @@ body {
     border-radius: 40%;
 }
 
-.circle-frame {
+.dot-frame {
     border: 3px solid var(--text-primary);
-    background: transparent;
-    border-radius: 50%;
-}
-
-.leaf-frame {
-    border: 3px solid var(--text-primary);
-    background: transparent;
-    border-radius: 50% 0;
-}
-
-.pointed-frame {
-    border: 3px solid var(--text-primary);
-    background: transparent;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-
-.star-frame {
-    border: 3px solid var(--text-primary);
-    background: transparent;
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-
-.flower-frame {
-    border: 3px solid var(--text-primary);
-    background: transparent;
-    border-radius: 50%;
+    background: var(--text-primary);
+    border-radius: 6px;
+    clip-path: inset(35% 35% 35% 35%);
 }
 
 /* Eye Ball Previews */
@@ -820,56 +745,6 @@ body {
 .circle-ball {
     background: var(--text-primary);
     border-radius: 50%;
-}
-
-.rounded-ball {
-    background: var(--text-primary);
-    border-radius: 20%;
-}
-
-.diamond-ball {
-    background: var(--text-primary);
-    transform: rotate(45deg);
-}
-
-.star-ball {
-    background: var(--text-primary);
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-
-.heart-ball {
-    background: var(--text-primary);
-    position: relative;
-    transform: rotate(-45deg);
-}
-
-.heart-ball::before,
-.heart-ball::after {
-    content: '';
-    width: 12px;
-    height: 19px;
-    position: absolute;
-    left: 6px;
-    background: var(--text-primary);
-    border-radius: 6px 6px 0 0;
-    transform: rotate(-45deg);
-    transform-origin: 0 100%;
-}
-
-.heart-ball::after {
-    left: 0;
-    transform: rotate(45deg);
-    transform-origin: 100% 100%;
-}
-
-.flower-ball {
-    background: var(--text-primary);
-    border-radius: 50%;
-}
-
-.cross-ball {
-    background: var(--text-primary);
-    clip-path: polygon(40% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0% 60%, 0% 40%, 40% 40%);
 }
 
 .color-controls {

@@ -118,8 +118,10 @@ class QRGenerator {
         document.getElementById('downloadSVG').addEventListener('click', () => this.downloadQR('svg'));
         document.getElementById('downloadPDF').addEventListener('click', () => this.downloadQR('pdf'));
         
-        // Theme Toggle - handled in setupTheme method
-        // Theme functionality is initialized in setupTheme()
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
     }
     
     // Mode Management
@@ -762,6 +764,39 @@ class QRGenerator {
         document.getElementById('logoMarginValue').textContent = margin + 'px';
         this.updatePreview();
     }
+
+    drawLogoOverlay(canvas) {
+        if (!this.currentLogo || !canvas) return Promise.resolve();
+        const sizeRatio = parseFloat(document.getElementById('logoSize')?.value || '0.2');
+        const margin = parseInt(document.getElementById('logoMargin')?.value || '5');
+        const bgColor = document.getElementById('bgColor')?.value || '#ffffff';
+        const coverSize = Math.min(canvas.width, canvas.height) * sizeRatio;
+        const x = (canvas.width - coverSize) / 2;
+        const y = (canvas.height - coverSize) / 2;
+        const ctx = canvas.getContext('2d');
+        const drawSafeZone = () => {
+            if (margin > 0) {
+                ctx.save();
+                ctx.fillStyle = this.isTransparentBg ? 'rgba(0, 0, 0, 0.1)' : bgColor;
+                ctx.globalAlpha = this.isTransparentBg ? 0.65 : 1;
+                ctx.fillRect(x - margin, y - margin, coverSize + margin * 2, coverSize + margin * 2);
+                ctx.restore();
+            }
+        };
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                drawSafeZone();
+                ctx.drawImage(img, x, y, coverSize, coverSize);
+                resolve();
+            };
+            img.onerror = (err) => {
+                console.error('Logo render failed:', err);
+                resolve();
+            };
+            img.src = this.currentLogo;
+        });
+    }
     
     // QR Generation
     async updatePreview() {
@@ -853,6 +888,7 @@ class QRGenerator {
                 });
             }
             
+            await this.drawLogoOverlay(canvas);
             canvas.classList.add('qr-code-canvas');
             container.appendChild(canvas);
             this.currentQR = canvas;
@@ -947,10 +983,7 @@ class QRGenerator {
             'extra-rounded': 'extra-rounded',
             'classy': 'classy',
             'classy-rounded': 'classy-rounded',
-            'diamond': 'square', // QRCodeStyling doesn't have diamond, fallback to square
-            'star': 'dots', // QRCodeStyling doesn't have star, fallback to dots
-            'heart': 'rounded', // QRCodeStyling doesn't have heart, fallback to rounded
-            'flower': 'classy' // QRCodeStyling doesn't have flower, fallback to classy
+            'dot': 'dot'
         };
         
         const qrOptions = {
@@ -1038,6 +1071,20 @@ class QRGenerator {
         
         // QRCodeStyling creates its own canvas element
         await qrCode.append(container);
+        if (this.currentLogo) {
+            const logoSize = parseFloat(document.getElementById('logoSize')?.value || '0.3');
+            const logoMargin = parseInt(document.getElementById('logoMargin')?.value || '5');
+            qrCode.update({
+                image: this.currentLogo,
+                imageOptions: {
+                    hideBackgroundDots: true,
+                    imageSize: logoSize,
+                    margin: logoMargin,
+                    crossOrigin: 'anonymous',
+                    saveAsBlob: false
+                }
+            });
+        }
         
         // Get the generated canvas element
         const canvas = container.querySelector('canvas');
