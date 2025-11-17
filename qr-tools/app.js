@@ -868,9 +868,9 @@ class QRGenerator {
      */
     validateShape(shape, category) {
         const validShapes = {
-            body: ['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded'],
-            eyeFrame: ['square', 'extra-rounded', 'dot'],
-            eyeBall: ['square', 'dot', 'rounded']
+            body: ['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded', 'small-circle', 'diamond', 'leaf', 'pointed'],
+            eyeFrame: ['square', 'extra-rounded', 'dot', 'left-leaf', 'right-leaf', 'left-diamond', 'right-diamond'],
+            eyeBall: ['square', 'dot', 'rounded', 'diamond', 'leaf', 'pointed']
         };
         
         const categoryShapes = validShapes[category] || validShapes.body;
@@ -888,8 +888,15 @@ class QRGenerator {
             'extra-rounded': 'Very rounded for organic feel',
             'classy': 'Connected horizontal flow style',
             'classy-rounded': 'Connected with rounded edges',
-            'dot': 'Small centered circle',
-            'leaf': 'Organic leaf-like shape'
+            'small-circle': 'Small circular dots for airy look',
+            'diamond': 'Diamond shaped modules',
+            'leaf': 'Organic leaf-like shape',
+            'pointed': 'Sharp pointed diamond style',
+            'dot': 'Circle frame or center',
+            'left-leaf': 'Leaf shape oriented left',
+            'right-leaf': 'Leaf shape oriented right',
+            'left-diamond': 'Diamond frame oriented left',
+            'right-diamond': 'Diamond frame oriented right'
         };
         return descriptions[shape] || 'Custom shape style';
     }
@@ -1131,11 +1138,17 @@ class QRGenerator {
             'classy': 'classy',           // Connected horizontal style
             'classy-rounded': 'classy-rounded', // Connected rounded style
             'circle': 'dots',             // Alias for dots (full circles)
-            'diamond': 'square',          // Diamond style (fallback to square)
+            'small-circle': 'dots',       // Small dots (mapped to dots)
+            'diamond': 'square',          // Diamond rotated style
+            'leaf': 'extra-rounded',      // Leaf-like organic shape
+            'pointed': 'square',          // Pointed diamond style
             
             // Eye frame shapes - finder pattern outer ring
-            'dot': 'dot',                 // Small centered dot
-            'leaf': 'extra-rounded',      // Leaf-like organic shape
+            'dot': 'dot',                 // Circle frame
+            'left-leaf': 'extra-rounded', // Left leaf frame
+            'right-leaf': 'extra-rounded',// Right leaf frame
+            'left-diamond': 'square',     // Left diamond frame
+            'right-diamond': 'square',    // Right diamond frame
             
             // Additional variants
             'squircle': 'extra-rounded',  // Superellipse-like (very rounded)

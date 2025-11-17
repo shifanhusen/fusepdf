@@ -657,6 +657,18 @@ body {
     margin: 0.75rem 0;
 }
 
+.body-shapes-grid {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.eye-frame-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.eye-ball-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
 .design-option {
     position: relative;
     width: 40px;
@@ -730,6 +742,24 @@ body {
     border-radius: 15%;
 }
 
+.small-circle-dots {
+    border-radius: 50%;
+    transform: scale(0.7);
+}
+
+.diamond-dots {
+    transform: rotate(45deg);
+    border-radius: 10%;
+}
+
+.leaf-dots {
+    border-radius: 0% 50% 50% 50%;
+}
+
+.pointed-dots {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
 /* Eye Frame Previews */
 .square-frame {
     border: 3px solid var(--text-primary);
@@ -744,9 +774,34 @@ body {
 
 .dot-frame {
     border: 3px solid var(--text-primary);
-    background: var(--text-primary);
-    border-radius: 6px;
-    clip-path: inset(35% 35% 35% 35%);
+    background: transparent;
+    border-radius: 50%;
+}
+
+.left-leaf-frame {
+    border: 3px solid var(--text-primary);
+    background: transparent;
+    border-radius: 0% 50% 50% 50%;
+}
+
+.right-leaf-frame {
+    border: 3px solid var(--text-primary);
+    background: transparent;
+    border-radius: 50% 0% 50% 50%;
+}
+
+.left-diamond-frame {
+    border: 3px solid var(--text-primary);
+    background: transparent;
+    transform: rotate(45deg);
+    border-radius: 0% 30% 0% 30%;
+}
+
+.right-diamond-frame {
+    border: 3px solid var(--text-primary);
+    background: transparent;
+    transform: rotate(-45deg);
+    border-radius: 30% 0% 30% 0%;
 }
 
 /* Eye Ball Previews */
@@ -757,6 +812,27 @@ body {
 .circle-ball {
     background: var(--text-primary);
     border-radius: 50%;
+}
+
+.rounded-ball {
+    background: var(--text-primary);
+    border-radius: 30%;
+}
+
+.diamond-ball {
+    background: var(--text-primary);
+    transform: rotate(45deg);
+    border-radius: 10%;
+}
+
+.leaf-ball {
+    background: var(--text-primary);
+    border-radius: 0% 50% 50% 50%;
+}
+
+.pointed-ball {
+    background: var(--text-primary);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 .color-controls {
