@@ -14,6 +14,7 @@ class FusePDF {
             this.currentPdfDoc = null;
             this.currentArrayBuffer = null;
             this.currentPageCount = 0;
+            this.selectionAction = 'extract';
             this.splitMode = 'range';
             this.processingHistory = this.loadHistory();
             this.mergePages = []; // Store pages for merge with ordering
@@ -55,6 +56,7 @@ class FusePDF {
         
         // Split mode switching
         this.initSplitModes();
+        this.initSplitEnhancements();
         
         // Process buttons
         document.getElementById('splitBtn').addEventListener('click', () => this.handleSplit());
@@ -150,7 +152,7 @@ class FusePDF {
                 element.classList.remove('dragover');
                 
                 const files = Array.from(e.dataTransfer.files).filter(file => {
-                    return accept.some(type => file.type.startsWith(type) || file.type === type);
+                    return accept.some(type => this.fileMatchesType(file, type));
                 });
                 
                 if (files.length > 0) {
@@ -161,6 +163,28 @@ class FusePDF {
                 }
             });
         });
+    }
+
+    fileMatchesType(file, acceptType) {
+        if (acceptType === 'application/pdf') {
+            return this.isPdfFile(file);
+        }
+        if (acceptType === 'image/') {
+            return this.isImageFile(file);
+        }
+        return file.type === acceptType;
+    }
+
+    isPdfFile(file) {
+        if (!file) return false;
+        if (file.type === 'application/pdf') return true;
+        return file.name?.toLowerCase().endsWith('.pdf');
+    }
+
+    isImageFile(file) {
+        if (!file) return false;
+        if (file.type && file.type.startsWith('image/')) return true;
+        return /\.(png|jpe?g|webp|gif|bmp|tiff?)$/i.test(file.name || '');
     }
 
     /**
@@ -185,8 +209,9 @@ class FusePDF {
      * Handle split file selection
      */
     handleSplitFileSelect(e) {
-        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        const files = Array.from(e.target.files).filter(file => this.isPdfFile(file));
         this.handleSplitFiles(files);
+        e.target.value = '';
     }
 
     /**
@@ -215,6 +240,13 @@ class FusePDF {
             document.getElementById('splitOptions').style.display = 'block';
 
             this.currentFiles = [file];
+            this.selectedPages.clear();
+            this.selectionAction = 'extract';
+            const extractOption = document.querySelector('input[name="selectionAction"][value="extract"]');
+            if (extractOption) extractOption.checked = true;
+            const customInput = document.getElementById('customRangesInput');
+            if (customInput) customInput.value = '';
+            this.updateSelectedPagesDisplay();
             
             // Generate thumbnails
             await this.generateThumbnails(file);
@@ -323,6 +355,32 @@ class FusePDF {
             });
         });
     }
+
+    initSplitEnhancements() {
+        const selectionInputs = document.querySelectorAll('input[name="selectionAction"]');
+        selectionInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                this.selectionAction = e.target.value;
+            });
+        });
+
+        const invertBtn = document.getElementById('invertSelection');
+        if (invertBtn) {
+            invertBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.invertSelectedPages();
+            });
+        }
+
+        const quickButtons = document.querySelectorAll('[data-quick-split]');
+        quickButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = e.currentTarget.dataset.quickSplit;
+                this.handleQuickSplitAction(action);
+            });
+        });
+    }
     
     /**
      * Switch split mode
@@ -346,6 +404,53 @@ class FusePDF {
             thumbnailsContainer.style.display = 'block';
         }
     }
+
+    handleQuickSplitAction(action) {
+        if (!this.currentPageCount) {
+            this.showError('Upload a PDF first to use quick actions.');
+            return;
+        }
+
+        const typeSelect = document.getElementById('advancedSplitType');
+        const valueInput = document.getElementById('advancedValue');
+        const customWrapper = document.getElementById('customRangesWrapper');
+        const customInput = document.getElementById('customRangesInput');
+
+        const setAdvanced = (type) => {
+            typeSelect.value = type;
+            this.updateAdvancedInput(type);
+        };
+
+        switch (action) {
+            case 'single':
+                this.switchSplitMode('advanced');
+                setAdvanced('pages');
+                valueInput.value = 1;
+                break;
+            case 'pairs':
+                this.switchSplitMode('advanced');
+                setAdvanced('pages');
+                valueInput.value = 2;
+                break;
+            case 'halves':
+                this.switchSplitMode('advanced');
+                setAdvanced('custom');
+                if (customWrapper) customWrapper.style.display = 'block';
+                if (customInput) {
+                    const half = Math.ceil(this.currentPageCount / 2);
+                    customInput.value = `1-${half},${half + 1}-${this.currentPageCount}`;
+                }
+                break;
+            case 'selection':
+                this.switchSplitMode('selection');
+                const extractOption = document.querySelector('input[name="selectionAction"][value="extract"]');
+                if (extractOption) extractOption.checked = true;
+                this.selectionAction = 'extract';
+                break;
+            default:
+                break;
+        }
+    }
     
     /**
      * Toggle page selection
@@ -355,10 +460,10 @@ class FusePDF {
         
         if (selected) {
             this.selectedPages.add(pageNum);
-            thumbnailItem.classList.add('selected');
+            thumbnailItem?.classList.add('selected');
         } else {
             this.selectedPages.delete(pageNum);
-            thumbnailItem.classList.remove('selected');
+            thumbnailItem?.classList.remove('selected');
         }
         
         this.updateSelectedPagesDisplay();
@@ -375,6 +480,29 @@ class FusePDF {
             const sortedPages = Array.from(this.selectedPages).sort((a, b) => a - b);
             selectedPagesElement.textContent = `Selected pages: ${sortedPages.join(', ')}`;
         }
+    }
+
+    invertSelectedPages() {
+        if (!this.currentPageCount) return;
+        const newSelection = new Set();
+        for (let i = 1; i <= this.currentPageCount; i++) {
+            if (!this.selectedPages.has(i)) {
+                newSelection.add(i);
+            }
+        }
+        this.selectedPages = newSelection;
+
+        document.querySelectorAll('.thumbnail-checkbox').forEach(checkbox => {
+            const page = parseInt(checkbox.dataset.page, 10);
+            const isSelected = this.selectedPages.has(page);
+            checkbox.checked = isSelected;
+            const thumbnail = checkbox.closest('.thumbnail-item');
+            if (thumbnail) {
+                thumbnail.classList.toggle('selected', isSelected);
+            }
+        });
+
+        this.updateSelectedPagesDisplay();
     }
     
     /**
@@ -394,6 +522,10 @@ class FusePDF {
         const advancedInput = document.getElementById('advancedInput');
         const advancedLabel = document.getElementById('advancedLabel');
         const advancedValue = document.getElementById('advancedValue');
+        const customWrapper = document.getElementById('customRangesWrapper');
+        if (advancedInput) advancedInput.style.display = 'block';
+        if (customWrapper) customWrapper.style.display = 'none';
+        if (advancedValue) advancedValue.style.display = 'block';
         
         switch (type) {
             case 'pages':
@@ -416,6 +548,12 @@ class FusePDF {
                 break;
             case 'odd-even':
                 advancedInput.style.display = 'none';
+                break;
+            case 'custom':
+                advancedInput.style.display = 'block';
+                advancedLabel.textContent = 'Use the field below:';
+                advancedValue.style.display = 'none';
+                if (customWrapper) customWrapper.style.display = 'block';
                 break;
         }
     }
@@ -493,8 +631,9 @@ class FusePDF {
      * Handle images file selection
      */
     handleImagesFileSelect(e) {
-        const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+        const files = Array.from(e.target.files).filter(file => this.isImageFile(file));
         this.handleImagesFiles(files);
+        e.target.value = '';
     }
 
     /**
@@ -506,7 +645,20 @@ class FusePDF {
             return;
         }
 
-        this.currentFiles = files;
+        const uniqueNewFiles = files.filter(file => {
+            return !this.currentFiles.some(existing =>
+                existing.name === file.name &&
+                existing.size === file.size &&
+                existing.lastModified === file.lastModified
+            );
+        });
+
+        if (uniqueNewFiles.length === 0) {
+            this.showError('Those images are already added. Choose different files.');
+            return;
+        }
+
+        this.currentFiles = [...this.currentFiles, ...uniqueNewFiles];
         this.displayImagePreviews();
         document.getElementById('imagesOptions').style.display = 'block';
     }
@@ -682,8 +834,9 @@ class FusePDF {
      * Handle extract file selection
      */
     handleExtractFileSelect(e) {
-        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        const files = Array.from(e.target.files).filter(file => this.isPdfFile(file));
         this.handleExtractFiles(files);
+        e.target.value = '';
     }
 
     /**
@@ -807,8 +960,9 @@ class FusePDF {
      * Handle merge file selection
      */
     handleMergeFileSelect(e) {
-        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        const files = Array.from(e.target.files).filter(file => this.isPdfFile(file));
         this.handleMergeFiles(files);
+        e.target.value = '';
     }
 
     /**
@@ -849,7 +1003,6 @@ class FusePDF {
                 this.mergePdfData.push({
                     file: file,
                     arrayBuffer: arrayBuffer,
-                    pdfDoc: pdf,
                     pageCount: pdf.numPages
                 });
                 
@@ -897,24 +1050,23 @@ class FusePDF {
         this.mergePages.forEach((pageData, index) => {
             const pageItem = document.createElement('div');
             pageItem.className = 'merge-page-item';
-            pageItem.draggable = true;
             pageItem.dataset.index = index;
             
             pageItem.innerHTML = `
                 <div class="merge-page-number">${index + 1}</div>
                 <img src="${pageData.thumbnail}" alt="Page ${pageData.pageNum}">
                 <div class="merge-page-info">
-                    <div class="merge-page-label">${pageData.fileName}</div>
+                    <div class="merge-page-label" title="${pageData.fileName}">${pageData.fileName}</div>
                     <div class="merge-page-original">Page ${pageData.pageNum}</div>
+                </div>
+                <div class="merge-page-actions">
+                    <button class="merge-page-action" aria-label="Move to top" onclick="fusePDF.moveMergePage(${index}, 'top')">⤒</button>
+                    <button class="merge-page-action" aria-label="Move up" onclick="fusePDF.moveMergePage(${index}, 'up')">↑</button>
+                    <button class="merge-page-action" aria-label="Move down" onclick="fusePDF.moveMergePage(${index}, 'down')">↓</button>
+                    <button class="merge-page-action" aria-label="Move to bottom" onclick="fusePDF.moveMergePage(${index}, 'bottom')">⤓</button>
                 </div>
                 <button class="merge-page-remove" onclick="fusePDF.removeMergePage(${index})" title="Remove page">×</button>
             `;
-            
-            // Drag and drop events
-            pageItem.addEventListener('dragstart', (e) => this.handleDragStart(e));
-            pageItem.addEventListener('dragover', (e) => this.handleDragOver(e));
-            pageItem.addEventListener('drop', (e) => this.handleDrop(e));
-            pageItem.addEventListener('dragend', (e) => this.handleDragEnd(e));
             
             container.appendChild(pageItem);
         });
@@ -945,58 +1097,54 @@ class FusePDF {
         this.currentFiles = [];
         this.mergePages = [];
         this.mergePdfData = [];
-        document.getElementById('mergeFileList').style.display = 'none';
+        const listEl = document.getElementById('mergeFileList');
+        if (listEl) listEl.style.display = 'none';
+        const pagesContainer = document.getElementById('mergePagesContainer');
+        if (pagesContainer) pagesContainer.innerHTML = '';
+        const pageCountEl = document.getElementById('mergePageCount');
+        if (pageCountEl) pageCountEl.textContent = 'Total pages: 0';
     }
 
     /**
-     * Drag and drop handlers for page reordering
+     * Move page using action buttons
      */
-    handleDragStart(e) {
-        e.target.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', e.target.innerHTML);
-        this.draggedIndex = parseInt(e.target.dataset.index);
-    }
+    moveMergePage(index, direction) {
+        if (this.mergePages.length === 0) return;
+        const page = this.mergePages[index];
+        if (!page) return;
 
-    handleDragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        const target = e.target.closest('.merge-page-item');
-        if (target && !target.classList.contains('dragging')) {
-            target.classList.add('drag-over');
+        let targetIndex = index;
+        switch (direction) {
+            case 'up':
+                targetIndex = Math.max(0, index - 1);
+                break;
+            case 'down':
+                targetIndex = Math.min(this.mergePages.length - 1, index + 1);
+                break;
+            case 'top':
+                targetIndex = 0;
+                break;
+            case 'bottom':
+                targetIndex = this.mergePages.length - 1;
+                break;
+            default:
+                return;
         }
-    }
 
-    handleDrop(e) {
-        e.preventDefault();
-        const target = e.target.closest('.merge-page-item');
-        if (target) {
-            target.classList.remove('drag-over');
-            const dropIndex = parseInt(target.dataset.index);
-            
-            if (this.draggedIndex !== dropIndex) {
-                // Reorder pages array
-                const draggedPage = this.mergePages[this.draggedIndex];
-                this.mergePages.splice(this.draggedIndex, 1);
-                this.mergePages.splice(dropIndex, 0, draggedPage);
-                this.displayMergePages();
-            }
-        }
-    }
+        if (targetIndex === index) return;
 
-    handleDragEnd(e) {
-        e.target.classList.remove('dragging');
-        document.querySelectorAll('.merge-page-item').forEach(item => {
-            item.classList.remove('drag-over');
-        });
+        this.mergePages.splice(index, 1);
+        this.mergePages.splice(targetIndex, 0, page);
+        this.displayMergePages();
     }
 
     /**
      * Handle compress file selection
      */
     handleCompressFileSelect(e) {
-        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        const files = Array.from(e.target.files).filter(file => this.isPdfFile(file));
         this.handleCompressFiles(files);
+        e.target.value = '';
     }
 
     /**
@@ -1082,34 +1230,81 @@ class FusePDF {
         }
         
         const sortedPages = Array.from(this.selectedPages).sort((a, b) => a - b);
-        const result = await this.splitPDFByPages(this.currentFiles[0], sortedPages);
-        
-        return [{
-            message: `Extracted ${sortedPages.length} selected pages`,
-            size: result.size,
-            blob: result.blob,
-            filename: `selected-pages.pdf`
-        }];
+        if (this.selectionAction === 'remove') {
+            const result = await this.removePagesFromPdf(this.currentFiles[0], sortedPages);
+            return [{
+                message: `Removed ${sortedPages.length} page(s)` ,
+                size: result.size,
+                blob: result.blob,
+                filename: 'pages-removed.pdf'
+            }];
+        } else {
+            const result = await this.splitPDFByPages(this.currentFiles[0], sortedPages);
+            return [{
+                message: `Extracted ${sortedPages.length} selected pages`,
+                size: result.size,
+                blob: result.blob,
+                filename: `selected-pages.pdf`
+            }];
+        }
     }
     
     /**
      * Split by advanced options
      */
     async splitByAdvanced() {
-        const advancedType = document.getElementById('advancedSplitType').value;
-        const advancedValue = parseInt(document.getElementById('advancedValue').value);
-        const totalPages = this.currentPdfDoc.getPageCount();
+        const typeSelect = document.getElementById('advancedSplitType');
+        const advancedType = typeSelect?.value || 'pages';
+        const valueInput = document.getElementById('advancedValue');
+        const rawValue = valueInput?.value ?? '';
+        const advancedValue = rawValue === '' ? NaN : Number(rawValue);
+        const totalPages = this.currentPdfDoc?.getPageCount() ?? 0;
+
+        if (totalPages === 0) {
+            throw new Error('Could not determine page count for this PDF.');
+        }
+
+        const requirePositiveInteger = (label, min = 1) => {
+            if (!Number.isFinite(advancedValue) || advancedValue < min) {
+                throw new Error(`Enter a value of at least ${min} for ${label}.`);
+            }
+            return Math.floor(advancedValue);
+        };
+
+        const requirePositiveNumber = (label, min = 0.1) => {
+            if (!Number.isFinite(advancedValue) || advancedValue < min) {
+                throw new Error(`Enter a value of at least ${min} for ${label}.`);
+            }
+            return advancedValue;
+        };
         
         switch (advancedType) {
-            case 'pages':
-                return await this.splitEveryNPages(advancedValue);
-            case 'equal':
-                return await this.splitIntoEqualParts(advancedValue);
+            case 'pages': {
+                const pagesPerFile = requirePositiveInteger('pages per file');
+                return await this.splitEveryNPages(pagesPerFile);
+            }
+            case 'equal': {
+                const parts = requirePositiveInteger('number of parts', 2);
+                if (parts > totalPages) {
+                    throw new Error('Number of parts cannot exceed total pages.');
+                }
+                return await this.splitIntoEqualParts(parts);
+            }
             case 'odd-even':
                 return await this.splitOddEvenPages();
-            case 'size':
-                // For size-based splitting, we'll use a simple page-based approximation
-                return await this.splitByApproximateSize(advancedValue);
+            case 'size': {
+                const maxSizeMb = requirePositiveNumber('max file size (MB)');
+                return await this.splitByApproximateSize(maxSizeMb);
+            }
+            case 'custom': {
+                const customInput = document.getElementById('customRangesInput')?.value || '';
+                if (!customInput.trim()) {
+                    throw new Error('Enter at least one custom range before splitting.');
+                }
+                return await this.splitByCustomRanges(customInput);
+            }
+            default:
+                throw new Error('Select a valid advanced split type.');
         }
     }
     
@@ -1142,6 +1337,67 @@ class FusePDF {
         const pagesPerPart = Math.ceil(totalPages / numParts);
         
         return await this.splitEveryNPages(pagesPerPart);
+    }
+
+    /**
+     * Split based on an approximate size target
+     */
+    async splitByApproximateSize(maxSizeMb) {
+        const totalPages = this.currentPdfDoc?.getPageCount() ?? 0;
+        if (totalPages === 0) {
+            throw new Error('Cannot split a PDF with no pages loaded.');
+        }
+
+        const maxSizeBytes = maxSizeMb * 1024 * 1024;
+        if (!Number.isFinite(maxSizeBytes) || maxSizeBytes <= 0) {
+            throw new Error('Enter a positive size limit in MB.');
+        }
+
+        const fileSizeBytes = this.currentFiles?.[0]?.size || this.currentArrayBuffer?.byteLength;
+        if (!fileSizeBytes) {
+            throw new Error('Could not read the current file size for size-based splitting.');
+        }
+
+        const approxBytesPerPage = Math.max(1, Math.round(fileSizeBytes / totalPages));
+        let targetPagesPerChunk = Math.floor(maxSizeBytes / approxBytesPerPage);
+        if (targetPagesPerChunk < 1) {
+            targetPagesPerChunk = 1;
+        }
+
+        const results = [];
+        let pageStart = 1;
+        let chunkIndex = 1;
+        let hadOversizedChunk = false;
+
+        while (pageStart <= totalPages) {
+            let pageEnd = Math.min(totalPages, pageStart + targetPagesPerChunk - 1);
+            let chunkResult = await this.splitPDF(this.currentFiles[0], pageStart, pageEnd);
+
+            while (chunkResult.size > maxSizeBytes && pageEnd > pageStart) {
+                pageEnd--;
+                chunkResult = await this.splitPDF(this.currentFiles[0], pageStart, pageEnd);
+            }
+
+            const exceedsLimit = chunkResult.size > maxSizeBytes;
+            hadOversizedChunk = hadOversizedChunk || exceedsLimit;
+            const rangeLabel = pageStart === pageEnd ? `page ${pageStart}` : `pages ${pageStart}-${pageEnd}`;
+            const messageSuffix = exceedsLimit ? ' (exceeds limit)' : '';
+            results.push({
+                message: `Part ${chunkIndex} (${rangeLabel})${messageSuffix}`,
+                size: chunkResult.size,
+                blob: chunkResult.blob,
+                filename: `part-${chunkIndex}-${pageStart}-${pageEnd}.pdf`
+            });
+
+            pageStart = pageEnd + 1;
+            chunkIndex++;
+        }
+
+        if (hadOversizedChunk) {
+            console.warn('Some chunks exceed the requested size limit. Consider choosing a larger limit or splitting fewer pages.');
+        }
+
+        return results;
     }
     
     /**
@@ -1184,6 +1440,53 @@ class FusePDF {
         
         return results;
     }
+
+    async splitByCustomRanges(rangeInput) {
+        const totalPages = this.currentPageCount || (this.currentPdfDoc?.getPageCount() ?? 0);
+        if (!rangeInput.trim()) {
+            throw new Error('Enter at least one range in the custom field.');
+        }
+
+        const ranges = this.parseCustomRanges(rangeInput, totalPages);
+        if (ranges.length === 0) {
+            throw new Error('Could not parse the provided ranges. Use formats like 1-3,5,7-9.');
+        }
+
+        const results = [];
+        let part = 1;
+        for (const range of ranges) {
+            const result = await this.splitPDF(this.currentFiles[0], range.start, range.end);
+            results.push({
+                message: `Custom part ${part} (pages ${range.start}-${range.end})`,
+                size: result.size,
+                blob: result.blob,
+                filename: `custom-${part}.pdf`
+            });
+            part++;
+        }
+
+        return results;
+    }
+
+    parseCustomRanges(input, totalPages) {
+        if (!input) return [];
+        return input.split(',').map(part => part.trim()).filter(Boolean).map(part => {
+            if (part.includes('-')) {
+                const [startStr, endStr] = part.split('-');
+                let start = parseInt(startStr, 10);
+                let end = parseInt(endStr, 10);
+                if (isNaN(start) || isNaN(end)) return null;
+                if (start > end) [start, end] = [end, start];
+                start = Math.max(1, Math.min(start, totalPages));
+                end = Math.max(1, Math.min(end, totalPages));
+                return { start, end };
+            }
+            const single = parseInt(part, 10);
+            if (isNaN(single)) return null;
+            const page = Math.max(1, Math.min(single, totalPages));
+            return { start: page, end: page };
+        }).filter(Boolean);
+    }
     
     /**
      * Split PDF by specific pages
@@ -1213,8 +1516,9 @@ class FusePDF {
      * Handle PDF merging
      */
     async handleMerge() {
-        if (this.currentFiles.length < 2) {
-            this.showError('Please select at least 2 PDF files.');
+        const hasCustomPages = this.mergePages.length > 0;
+        if (!hasCustomPages && this.currentFiles.length < 2) {
+            this.showError('Please add at least 2 PDF files.');
             return;
         }
 
@@ -1222,6 +1526,7 @@ class FusePDF {
             this.setProcessing(true, 'mergeProgress');
             const result = await this.mergePDF(this.currentFiles);
             this.showResult(`Merged ${this.currentFiles.length} PDFs`, result.size, result.blob);
+            this.clearMergeData();
         } catch (error) {
             this.showError('Error merging PDFs: ' + error.message);
         } finally {
@@ -1276,11 +1581,41 @@ class FusePDF {
         };
     }
 
+    async removePagesFromPdf(file, pagesToRemove) {
+        const removeSet = new Set(pagesToRemove);
+        const arrayBuffer = this.currentArrayBuffer || await file.arrayBuffer();
+        const pdfDoc = this.currentPdfDoc || await PDFLib.PDFDocument.load(arrayBuffer);
+        const totalPages = pdfDoc.getPageCount();
+
+        const keepIndices = [];
+        for (let i = 0; i < totalPages; i++) {
+            if (!removeSet.has(i + 1)) {
+                keepIndices.push(i);
+            }
+        }
+
+        if (keepIndices.length === 0) {
+            throw new Error('Remove fewer pages so at least one page remains.');
+        }
+
+        const newPdfDoc = await PDFLib.PDFDocument.create();
+        const copiedPages = await newPdfDoc.copyPages(pdfDoc, keepIndices);
+        copiedPages.forEach(page => newPdfDoc.addPage(page));
+
+        const pdfBytes = await newPdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        return {
+            blob,
+            size: blob.size
+        };
+    }
+
     /**
      * Merge PDF function
      */
     async mergePDF(files) {
         const mergedPdf = await PDFLib.PDFDocument.create();
+        const pdfLibCache = {};
 
         // If we have page ordering data, use it
         if (this.mergePages.length > 0) {
@@ -1288,19 +1623,27 @@ class FusePDF {
             
             for (const pageData of this.mergePages) {
                 const pdfData = this.mergePdfData[pageData.fileIndex];
-                const arrayBuffer = pdfData.arrayBuffer;
-                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                if (!pdfData) continue;
                 
-                // Copy specific page (0-based index)
-                const [copiedPage] = await mergedPdf.copyPages(pdfDoc, [pageData.pageNum - 1]);
+                if (!pdfLibCache[pageData.fileIndex]) {
+                    pdfLibCache[pageData.fileIndex] = await PDFLib.PDFDocument.load(pdfData.arrayBuffer);
+                }
+                const pdfDoc = pdfLibCache[pageData.fileIndex];
+                
+                const pageIndex = Math.max(0, Math.min(pageData.pageNum - 1, pdfDoc.getPageCount() - 1));
+                const [copiedPage] = await mergedPdf.copyPages(pdfDoc, [pageIndex]);
                 mergedPdf.addPage(copiedPage);
             }
         } else {
             // Fallback: merge all files in order
             console.log('Merging files in default order');
             for (const file of files) {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                if (!file) continue;
+                if (!pdfLibCache[file.name]) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    pdfLibCache[file.name] = await PDFLib.PDFDocument.load(arrayBuffer);
+                }
+                const pdfDoc = pdfLibCache[file.name];
                 const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
                 copiedPages.forEach(page => mergedPdf.addPage(page));
             }
@@ -1667,6 +2010,7 @@ class FusePDF {
         this.currentPdfDoc = null;
         this.currentArrayBuffer = null;
         this.currentPageCount = 0;
+        this.selectionAction = 'extract';
         this.mergePages = [];
         this.mergePdfData = [];
         this.currentResults = null;

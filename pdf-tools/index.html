@@ -217,6 +217,17 @@
                                     <span id="selectedPages">No pages selected</span>
                                     <button class="clear-selection" id="clearSelection">Clear All</button>
                                 </div>
+                                <div class="selection-actions">
+                                    <label>
+                                        <input type="radio" name="selectionAction" value="extract" checked>
+                                        Keep only selected pages
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="selectionAction" value="remove">
+                                        Remove selected pages from PDF
+                                    </label>
+                                    <button type="button" class="secondary-btn small" id="invertSelection">Invert Selection</button>
+                                </div>
                             </div>
                             
                             <!-- Advanced Mode -->
@@ -229,6 +240,7 @@
                                             <option value="size">Max File Size</option>
                                             <option value="odd-even">Odd/Even Pages</option>
                                             <option value="equal">Equal Parts</option>
+                                            <option value="custom">Custom Ranges</option>
                                         </select>
                                     </label>
                                     <div class="advanced-input" id="advancedInput">
@@ -236,6 +248,19 @@
                                             <span id="advancedLabel">Pages per file:</span>
                                             <input type="number" id="advancedValue" min="1" value="1">
                                         </label>
+                                        <label id="customRangesWrapper" style="display: none;">
+                                            Custom ranges (e.g., 1-3,5,8-10)
+                                            <textarea id="customRangesInput" rows="3" placeholder="1-3,5,8-10"></textarea>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="quick-split-actions">
+                                    <h4>Quick split actions</h4>
+                                    <div class="quick-split-buttons">
+                                        <button type="button" class="secondary-btn" data-quick-split="single">Split into single pages</button>
+                                        <button type="button" class="secondary-btn" data-quick-split="pairs">Split every 2 pages</button>
+                                        <button type="button" class="secondary-btn" data-quick-split="halves">Split into two halves</button>
+                                        <button type="button" class="secondary-btn" data-quick-split="selection" title="Extract currently selected pages">Use selected pages</button>
                                     </div>
                                 </div>
                             </div>
@@ -274,7 +299,7 @@
                                 </div>
                             </div>
                             <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                                💡 Drag and drop pages to reorder them before merging
+                                💡 Use the arrow buttons on each thumbnail to reorder pages before merging
                             </p>
                             <div class="merge-pages-container" id="mergePagesContainer"></div>
                             <button class="process-btn" id="mergeBtn" style="margin-top: 1rem;">Merge PDFs</button>

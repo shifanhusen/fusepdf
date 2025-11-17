@@ -930,29 +930,18 @@ body {
     background: var(--bg-primary);
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: 0.5rem;
-    cursor: move;
+    padding: 0.5rem 0.5rem 0.75rem;
     transition: var(--transition);
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0.5rem;
 }
 
 .merge-page-item:hover {
     border-color: var(--primary-color);
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-}
-
-.merge-page-item.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
-.merge-page-item.drag-over {
-    border-color: var(--primary-color);
-    background: var(--bg-tertiary);
-    border-style: dashed;
 }
 
 .merge-page-number {
@@ -996,6 +985,29 @@ body {
     color: var(--text-secondary);
 }
 
+.merge-page-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+    width: 100%;
+}
+
+.merge-page-action {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.25rem 0;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.merge-page-action:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
 .merge-page-remove {
     position: absolute;
     top: 0.25rem;
@@ -1034,6 +1046,45 @@ body {
 
 .secondary-btn:hover {
     background: #475569;
+}
+
+.secondary-btn.small {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+.selection-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.selection-actions label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.quick-split-actions {
+    margin-top: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
+}
+
+.quick-split-actions h4 {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.quick-split-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 /* Buttons */
