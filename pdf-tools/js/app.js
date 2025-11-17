@@ -12,6 +12,8 @@ class FusePDF {
             this.isProcessing = false;
             this.selectedPages = new Set();
             this.currentPdfDoc = null;
+            this.currentArrayBuffer = null;
+            this.currentPageCount = 0;
             this.splitMode = 'range';
             this.processingHistory = this.loadHistory();
             
@@ -200,8 +202,10 @@ class FusePDF {
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
             const pageCount = pdfDoc.getPageCount();
             
-            // Store for thumbnail generation
+            // Store for reuse to avoid double loading
             this.currentPdfDoc = pdfDoc;
+            this.currentArrayBuffer = arrayBuffer;
+            this.currentPageCount = pageCount;
 
             document.getElementById('pageCount').textContent = `Total pages: ${pageCount}`;
             document.getElementById('endPage').max = pageCount;
@@ -232,7 +236,8 @@ class FusePDF {
         }
         
         try {
-            const arrayBuffer = await file.arrayBuffer();
+            // Reuse stored arrayBuffer to avoid double loading
+            const arrayBuffer = this.currentArrayBuffer || await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
             const pdf = await loadingTask.promise;
             
@@ -694,6 +699,10 @@ class FusePDF {
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
             const pageCount = pdfDoc.getPageCount();
 
+            // Store for reuse to avoid double loading
+            this.currentArrayBuffer = arrayBuffer;
+            this.currentPageCount = pageCount;
+
             document.getElementById('extractPageCount').textContent = `Total pages: ${pageCount}`;
             document.getElementById('extractEndPage').max = pageCount;
             document.getElementById('extractEndPage').value = pageCount;
@@ -749,7 +758,8 @@ class FusePDF {
             throw new Error('PDF.js library not loaded');
         }
 
-        const arrayBuffer = await file.arrayBuffer();
+        // Reuse stored arrayBuffer to avoid double loading
+        const arrayBuffer = this.currentArrayBuffer || await file.arrayBuffer();
         const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
         const pdf = await loadingTask.promise;
         
@@ -1044,8 +1054,9 @@ class FusePDF {
      * Split PDF by specific pages
      */
     async splitPDFByPages(file, pages) {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        // Reuse stored arrayBuffer to avoid double loading
+        const arrayBuffer = this.currentArrayBuffer || await file.arrayBuffer();
+        const pdfDoc = this.currentPdfDoc || await PDFLib.PDFDocument.load(arrayBuffer);
         const newPdfDoc = await PDFLib.PDFDocument.create();
 
         // Copy selected pages (PDF-lib uses 0-based indexing)
@@ -1110,8 +1121,9 @@ class FusePDF {
      * Split PDF function
      */
     async splitPDF(file, startPage, endPage) {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        // Reuse stored arrayBuffer to avoid double loading
+        const arrayBuffer = this.currentArrayBuffer || await file.arrayBuffer();
+        const pdfDoc = this.currentPdfDoc || await PDFLib.PDFDocument.load(arrayBuffer);
         const newPdfDoc = await PDFLib.PDFDocument.create();
 
         // Copy pages (PDF-lib uses 0-based indexing)
@@ -1155,7 +1167,8 @@ class FusePDF {
      * Compress PDF function
      */
     async compressPDF(file, quality) {
-        const arrayBuffer = await file.arrayBuffer();
+        // Load arrayBuffer (will use stored one if available from previous operations)
+        const arrayBuffer = this.currentArrayBuffer || await file.arrayBuffer();
         const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
 
         // Basic compression by re-saving the PDF
@@ -1386,6 +1399,8 @@ class FusePDF {
         this.currentFiles = [];
         this.selectedPages.clear();
         this.currentPdfDoc = null;
+        this.currentArrayBuffer = null;
+        this.currentPageCount = 0;
         this.currentResults = null;
         
         // Hide all option sections
