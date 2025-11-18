@@ -868,9 +868,9 @@ class QRGenerator {
      */
     validateShape(shape, category) {
         const validShapes = {
-            body: ['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded', 'small-circle', 'diamond', 'leaf', 'pointed'],
-            eyeFrame: ['square', 'extra-rounded', 'dot', 'left-leaf', 'right-leaf', 'left-diamond', 'right-diamond'],
-            eyeBall: ['square', 'dot', 'rounded', 'diamond', 'leaf', 'pointed']
+            body: ['square', 'circle', 'dot', 'rounded', 'squircle', 'diamond', 'star', 'blob1', 'blob2', 'liquid', 'corner-round', 'diagonal-cut', 'pill-horizontal', 'pill-vertical', 'nine-dots'],
+            eyeFrame: ['square', 'circle', 'rounded', 'diamond', 'star', 'dotted'],
+            eyeBall: ['square', 'circle', 'dot', 'rounded', 'diamond', 'star']
         };
         
         const categoryShapes = validShapes[category] || validShapes.body;
@@ -883,20 +883,21 @@ class QRGenerator {
     getShapeDescription(shape) {
         const descriptions = {
             'square': 'Classic pixel style with sharp corners',
-            'dots': 'Full circular dots for smooth appearance',
+            'circle': 'Full circular dots for smooth appearance',
+            'dot': 'Small circular dots for minimal look',
             'rounded': 'Soft-corner squares for balanced look',
-            'extra-rounded': 'Very rounded for organic feel',
-            'classy': 'Connected horizontal flow style',
-            'classy-rounded': 'Connected with rounded edges',
-            'small-circle': 'Small circular dots for airy look',
+            'squircle': 'Superellipse shape for modern organic feel',
             'diamond': 'Diamond shaped modules',
-            'leaf': 'Organic leaf-like shape',
-            'pointed': 'Sharp pointed diamond style',
-            'dot': 'Circle frame or center',
-            'left-leaf': 'Leaf shape oriented left',
-            'right-leaf': 'Leaf shape oriented right',
-            'left-diamond': 'Diamond frame oriented left',
-            'right-diamond': 'Diamond frame oriented right'
+            'star': 'Star shaped modules',
+            'blob1': 'Organic blob shape variant 1',
+            'blob2': 'Organic blob shape variant 2',
+            'liquid': 'Fluid liquid-like appearance',
+            'corner-round': 'Rounded corners style',
+            'diagonal-cut': 'Diagonal cut geometric style',
+            'pill-horizontal': 'Horizontal capsule/pill shape',
+            'pill-vertical': 'Vertical capsule/pill shape',
+            'nine-dots': 'Nine dots cluster pattern',
+            'dotted': 'Dotted frame style'
         };
         return descriptions[shape] || 'Custom shape style';
     }
@@ -1130,29 +1131,28 @@ class QRGenerator {
            Reference implementation pattern available in generateCustomAdvancedQR()
            ==================================================================== */
         const shapeMapping = {
-            // Body shapes - data module styling
-            'square': 'square',           // Classic pixel style
-            'dots': 'dots',               // Full circles
-            'rounded': 'rounded',         // Soft-corner squares
-            'extra-rounded': 'extra-rounded', // Very rounded squares
-            'classy': 'classy',           // Connected horizontal style
-            'classy-rounded': 'classy-rounded', // Connected rounded style
-            'circle': 'circle',             // Alias for dots (full circles)
-            'small-circle': 'small-circle',       // Small dots (mapped to dots)
-            'diamond': 'diamond',          // Diamond rotated style
-            'leaf': 'leaf',      // Leaf-like organic shape
-            'pointed': 'pointed',          // Pointed diamond style
+            // Body shapes - data module styling (from assets/shapes/body/)
+            'square': 'square',              // Classic pixel style
+            'circle': 'dots',                // Full circles
+            'dot': 'dots',                   // Small dots
+            'rounded': 'rounded',            // Soft-corner squares
+            'squircle': 'extra-rounded',     // Superellipse/squircle
+            'diamond': 'square',             // Diamond rotated style
+            'star': 'square',                // Star shape
+            'blob1': 'extra-rounded',        // Organic blob 1
+            'blob2': 'extra-rounded',        // Organic blob 2
+            'liquid': 'extra-rounded',       // Liquid/fluid shape
+            'corner-round': 'rounded',       // Corner rounded
+            'diagonal-cut': 'square',        // Diagonal cut
+            'pill-horizontal': 'classy',     // Horizontal pill/capsule
+            'pill-vertical': 'classy',       // Vertical pill/capsule
+            'nine-dots': 'dots',             // Nine dots pattern
             
-            // Eye frame shapes - finder pattern outer ring
-            'dot': 'dot',                 // Circle frame
-            'left-leaf': 'extra-rounded', // Left leaf frame
-            'right-leaf': 'extra-rounded',// Right leaf frame
-            'left-diamond': 'square',     // Left diamond frame
-            'right-diamond': 'square',    // Right diamond frame
+            // Eye frame shapes - finder pattern outer ring (from assets/shapes/eye-frame/)
+            'dotted': 'dot',                 // Dotted frame
             
-            // Additional variants
-            'squircle': 'extra-rounded',  // Superellipse-like (very rounded)
-            'pill': 'classy-rounded'      // Capsule/pill shape
+            // Eye ball shapes inherit from body/frame shapes
+            // All shapes map to QRCodeStyling's closest native type
         };
         
         const qrOptions = {
