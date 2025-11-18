@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Test - Enable Google Auth</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 10px 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Authentication Test</h1>
+    <div id="status"></div>
+    
+    <h2>Quick Setup:</h2>
+    <ol>
+        <li>Go to <a href="https://console.firebase.google.com/project/innovitech-tools/authentication/providers" target="_blank">Firebase Console - Authentication</a></li>
+        <li>Click on <strong>"Google"</strong> provider</li>
+        <li>Toggle <strong>"Enable"</strong></li>
+        <li>Add support email: <strong>innovitech0@gmail.com</strong></li>
+        <li>Click <strong>"Save"</strong></li>
+        <li>Come back and click "Test Google Login" below</li>
+    </ol>
+
+    <button onclick="testFirebaseConnection()">Test Firebase Connection</button>
+    <button onclick="testGoogleLogin()">Test Google Login</button>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYHmMD0BQHxxPR4Anzx4ZmZpFTgcs6RBQ",
+            authDomain: "innovitech-tools.firebaseapp.com",
+            databaseURL: "https://innovitech-tools-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "innovitech-tools",
+            storageBucket: "innovitech-tools.firebasestorage.app",
+            messagingSenderId: "229701728021",
+            appId: "1:229701728021:web:614906807f7ee0dcf1db1c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        window.testFirebaseConnection = function() {
+            showStatus('✅ Firebase initialized successfully!<br>Project ID: innovitech-tools<br>Auth Domain: innovitech-tools.firebaseapp.com', 'success');
+        };
+
+        window.testGoogleLogin = async function() {
+            try {
+                showStatus('Opening Google sign-in popup...', 'info');
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                showStatus(`
+                    ✅ <strong>Login Successful!</strong><br>
+                    Email: ${user.email}<br>
+                    Name: ${user.displayName}<br>
+                    UID: ${user.uid}<br><br>
+                    <strong>Google Authentication is working! 🎉</strong><br>
+                    You can now use the QR Menu Studio app.
+                `, 'success');
+                
+                // Test Firestore write
+                try {
+                    await addDoc(collection(db, 'test'), {
+                        testUser: user.email,
+                        timestamp: new Date()
+                    });
+                    showStatus(`
+                        ✅ <strong>Login Successful!</strong><br>
+                        Email: ${user.email}<br>
+                        UID: ${user.uid}<br><br>
+                        ✅ <strong>Firestore is also working!</strong><br>
+                        Everything is ready! 🎉
+                    `, 'success');
+                } catch (firestoreError) {
+                    showStatus(`
+                        ✅ <strong>Login Successful!</strong><br>
+                        Email: ${user.email}<br><br>
+                        ⚠️ Firestore test failed: ${firestoreError.message}<br>
+                        You may need to enable Firestore in Firebase Console.
+                    `, 'info');
+                }
+            } catch (error) {
+                showStatus(`
+                    ❌ <strong>Login Failed</strong><br>
+                    Error: ${error.code}<br>
+                    Message: ${error.message}<br><br>
+                    ${error.code === 'auth/popup-blocked' ? 
+                        'Please allow popups for this site.' : 
+                        error.code === 'auth/operation-not-allowed' ?
+                        '⚠️ Google authentication is not enabled yet. Follow the steps above!' :
+                        'Please check the Firebase Console.'}
+                `, 'error');
+            }
+        };
+
+        // Auto test connection on load
+        window.onload = () => {
+            testFirebaseConnection();
+        };
+    </script>
+</body>
+</html>
