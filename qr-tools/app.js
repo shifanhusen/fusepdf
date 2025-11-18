@@ -868,9 +868,9 @@ class QRGenerator {
      */
     validateShape(shape, category) {
         const validShapes = {
-            body: ['square', 'circle', 'dot', 'rounded', 'squircle', 'diamond', 'star', 'blob1', 'blob2', 'liquid', 'corner-round', 'diagonal-cut', 'pill-horizontal', 'pill-vertical', 'nine-dots'],
-            eyeFrame: ['square', 'circle', 'rounded', 'diamond', 'star', 'dotted'],
-            eyeBall: ['square', 'circle', 'dot', 'rounded', 'diamond', 'star']
+            body: ['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded'],
+            eyeFrame: ['square', 'extra-rounded', 'dot'],
+            eyeBall: ['square', 'dot', 'rounded']
         };
         
         const categoryShapes = validShapes[category] || validShapes.body;
@@ -883,21 +883,12 @@ class QRGenerator {
     getShapeDescription(shape) {
         const descriptions = {
             'square': 'Classic pixel style with sharp corners',
-            'circle': 'Full circular dots for smooth appearance',
-            'dot': 'Small circular dots for minimal look',
+            'dots': 'Full circular dots for smooth appearance',
             'rounded': 'Soft-corner squares for balanced look',
-            'squircle': 'Superellipse shape for modern organic feel',
-            'diamond': 'Diamond shaped modules',
-            'star': 'Star shaped modules',
-            'blob1': 'Organic blob shape variant 1',
-            'blob2': 'Organic blob shape variant 2',
-            'liquid': 'Fluid liquid-like appearance',
-            'corner-round': 'Rounded corners style',
-            'diagonal-cut': 'Diagonal cut geometric style',
-            'pill-horizontal': 'Horizontal capsule/pill shape',
-            'pill-vertical': 'Vertical capsule/pill shape',
-            'nine-dots': 'Nine dots cluster pattern',
-            'dotted': 'Dotted frame style'
+            'extra-rounded': 'Very rounded for organic feel',
+            'classy': 'Connected horizontal flow style',
+            'classy-rounded': 'Connected rounded flow style',
+            'dot': 'Small centered circle for eyes'
         };
         return descriptions[shape] || 'Custom shape style';
     }
@@ -1130,29 +1121,21 @@ class QRGenerator {
            
            Reference implementation pattern available in generateCustomAdvancedQR()
            ==================================================================== */
+        /* QRCodeStyling Native Shape Support:
+           Body: square, dots, rounded, extra-rounded, classy, classy-rounded
+           Eyes: square, dot, extra-rounded
+        */
         const shapeMapping = {
-            // Body shapes - data module styling (from assets/shapes/body/)
-            'square': 'square',              // Classic pixel style
-            'circle': 'dots',                // Full circles
-            'dot': 'dots',                   // Small dots
-            'rounded': 'rounded',            // Soft-corner squares
-            'squircle': 'extra-rounded',     // Superellipse/squircle
-            'diamond': 'square',             // Diamond rotated style
-            'star': 'square',                // Star shape
-            'blob1': 'extra-rounded',        // Organic blob 1
-            'blob2': 'extra-rounded',        // Organic blob 2
-            'liquid': 'extra-rounded',       // Liquid/fluid shape
-            'corner-round': 'rounded',       // Corner rounded
-            'diagonal-cut': 'square',        // Diagonal cut
-            'pill-horizontal': 'classy',     // Horizontal pill/capsule
-            'pill-vertical': 'classy',       // Vertical pill/capsule
-            'nine-dots': 'dots',             // Nine dots pattern
+            // Body shapes - must use exact QRCodeStyling types
+            'square': 'square',
+            'dots': 'dots',
+            'rounded': 'rounded',
+            'extra-rounded': 'extra-rounded',
+            'classy': 'classy',
+            'classy-rounded': 'classy-rounded',
             
-            // Eye frame shapes - finder pattern outer ring (from assets/shapes/eye-frame/)
-            'dotted': 'dot',                 // Dotted frame
-            
-            // Eye ball shapes inherit from body/frame shapes
-            // All shapes map to QRCodeStyling's closest native type
+            // Eye shapes - must use exact QRCodeStyling types
+            'dot': 'dot'
         };
         
         const qrOptions = {

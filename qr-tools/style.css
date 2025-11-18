@@ -658,9 +658,7 @@ body {
 }
 
 .body-shapes-grid {
-    grid-template-columns: repeat(5, 1fr);
-    max-height: 200px;
-    overflow-y: auto;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .eye-frame-grid {
