@@ -14,3 +14,36 @@ body {
   margin: 0;
   min-height: 100vh;
 }
+
+/* Custom styles for template selector */
+.border-3 {
+  border-width: 3px;
+}
+
+/* Smooth animations for template cards */
+.template-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.template-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  /* Disable hover effects on mobile for better performance */
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1);
+  }
+  
+  /* Improve touch targets */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better modal sizing on mobile */
+  .fixed.inset-0 {
+    padding: 8px;
+  }
+}

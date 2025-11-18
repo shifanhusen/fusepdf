@@ -23,11 +23,11 @@ export default function ModernGrid({ menu }: ModernGridProps) {
       >
         <div className="max-w-7xl mx-auto text-center">
           {menu.logoUrl && (
-            <div className="w-32 h-32 mx-auto mb-6 overflow-hidden rounded-full shadow-2xl border-4 border-white bg-white">
+            <div className="w-32 h-32 mx-auto mb-6 rounded-full shadow-2xl border-4 border-white bg-white flex items-center justify-center overflow-hidden">
               <img 
                 src={menu.logoUrl} 
                 alt={menu.restaurantName}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover"
               />
             </div>
           )}

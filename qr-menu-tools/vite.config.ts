@@ -4,9 +4,10 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '/qr-menu/',
   build: {
-    outDir: 'dist',
+    outDir: '../public/qr-menu',
     emptyOutDir: true,
+    assetsInlineLimit: 0, // Force all assets to be separate files
   },
 })

@@ -1,0 +1,49 @@
+<!-- Classic List Template Thumbnail -->
+<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="300" height="200" fill="#fef7ed"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="300" height="40" fill="#fdba74"/>
+  <text x="150" y="25" text-anchor="middle" font-family="serif" font-size="14" font-weight="bold" fill="#7c2d12">CLASSIC MENU</text>
+  
+  <!-- Menu Content -->
+  <g transform="translate(25, 60)">
+    <!-- Section Title -->
+    <text x="0" y="15" font-family="serif" font-size="12" font-weight="bold" fill="#7c2d12" text-decoration="underline">APPETIZERS</text>
+    
+    <!-- Item 1 -->
+    <g transform="translate(0, 30)">
+      <text x="0" y="0" font-family="serif" font-size="10" font-weight="600" fill="#333">Traditional Starter...............................</text>
+      <text x="220" y="0" font-family="serif" font-size="10" font-weight="600" fill="#7c2d12">$8.50</text>
+      <text x="0" y="12" font-family="serif" font-size="8" fill="#666" font-style="italic">Classic preparation with herbs and spices</text>
+    </g>
+    
+    <!-- Item 2 -->
+    <g transform="translate(0, 50)">
+      <text x="0" y="0" font-family="serif" font-size="10" font-weight="600" fill="#333">House Special Soup.............................</text>
+      <text x="220" y="0" font-family="serif" font-size="10" font-weight="600" fill="#7c2d12">$6.75</text>
+      <text x="0" y="12" font-family="serif" font-size="8" fill="#666" font-style="italic">Daily selection of seasonal ingredients</text>
+    </g>
+    
+    <!-- Section Title -->
+    <text x="0" y="85" font-family="serif" font-size="12" font-weight="bold" fill="#7c2d12" text-decoration="underline">MAIN COURSES</text>
+    
+    <!-- Item 3 -->
+    <g transform="translate(0, 100)">
+      <text x="0" y="0" font-family="serif" font-size="10" font-weight="600" fill="#333">Signature Dish......................................</text>
+      <text x="220" y="0" font-family="serif" font-size="10" font-weight="600" fill="#7c2d12">$18.95</text>
+      <text x="0" y="12" font-family="serif" font-size="8" fill="#666" font-style="italic">Our most popular dish, served traditionally</text>
+    </g>
+    
+    <!-- Item 4 -->
+    <g transform="translate(0, 120)">
+      <text x="0" y="0" font-family="serif" font-size="10" font-weight="600" fill="#333">Chef's Recommendation........................</text>
+      <text x="220" y="0" font-family="serif" font-size="10" font-weight="600" fill="#7c2d12">$22.50</text>
+      <text x="0" y="12" font-family="serif" font-size="8" fill="#666" font-style="italic">Premium ingredients, expertly prepared</text>
+    </g>
+  </g>
+  
+  <!-- Decorative border -->
+  <rect x="5" y="5" width="290" height="190" fill="none" stroke="#7c2d12" stroke-width="2" stroke-dasharray="5,5"/>
+</svg>

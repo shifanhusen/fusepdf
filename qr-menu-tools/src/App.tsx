@@ -28,7 +28,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/qr-menu">
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={

@@ -19,11 +19,11 @@ export default function ElegantMinimal({ menu }: ElegantMinimalProps) {
       {/* Header */}
       <div className="max-w-4xl mx-auto px-6 py-12 text-center border-b border-gray-200">
         {menu.logoUrl && (
-          <div className="w-24 h-24 mx-auto mb-6 overflow-hidden rounded-full bg-gray-100">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
             <img 
               src={menu.logoUrl} 
               alt={menu.restaurantName}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover"
             />
           </div>
         )}

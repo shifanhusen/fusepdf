@@ -11,11 +11,11 @@ export default function CompactCards({ menu }: CompactCardsProps) {
       <div className="sticky top-0 z-50 backdrop-blur-xl bg-gray-900/80 border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
           {menu.logoUrl && (
-            <div className="w-12 h-12 overflow-hidden rounded-full bg-gray-700 flex-shrink-0">
+            <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
               <img 
                 src={menu.logoUrl} 
                 alt={menu.restaurantName}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover"
               />
             </div>
           )}

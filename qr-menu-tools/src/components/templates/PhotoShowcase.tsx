@@ -11,11 +11,11 @@ export default function PhotoShowcase({ menu }: PhotoShowcaseProps) {
       <div className="relative h-96 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black z-10"></div>
         {menu.logoUrl ? (
-          <div className="w-full h-full overflow-hidden">
+          <div className="w-full h-full flex items-center justify-center">
             <img 
               src={menu.logoUrl} 
               alt={menu.restaurantName}
-              className="w-full h-full object-cover object-center opacity-40"
+              className="w-full h-full object-cover opacity-30"
             />
           </div>
         ) : (
