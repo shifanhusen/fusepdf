@@ -21,7 +21,8 @@ export type MenuTemplate =
   | 'modern-grid'
   | 'classic-list'
   | 'photo-showcase'
-  | 'compact-cards';
+  | 'compact-cards'
+  | 'image-showcase';
 
 export interface MenuDoc {
   id: string;

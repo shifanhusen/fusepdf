@@ -16,6 +16,7 @@ export default function PhotoShowcase({ menu }: PhotoShowcaseProps) {
               src={menu.logoUrl} 
               alt={menu.restaurantName}
               className="w-full h-full object-cover opacity-30"
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
             />
           </div>
         ) : (

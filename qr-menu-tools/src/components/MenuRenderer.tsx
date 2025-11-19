@@ -4,6 +4,7 @@ import ModernGrid from './templates/ModernGrid';
 import ClassicList from './templates/ClassicList';
 import PhotoShowcase from './templates/PhotoShowcase';
 import CompactCards from './templates/CompactCards';
+import ImageShowcase from './templates/ImageShowcase';
 
 interface MenuRendererProps {
   menu: MenuDoc;
@@ -21,6 +22,8 @@ export default function MenuRenderer({ menu }: MenuRendererProps) {
       return <PhotoShowcase menu={menu} />;
     case 'compact-cards':
       return <CompactCards menu={menu} />;
+    case 'image-showcase':
+      return <ImageShowcase menu={menu} />;
     default:
       return <ElegantMinimal menu={menu} />;
   }

@@ -27,7 +27,8 @@ export default function ModernGrid({ menu }: ModernGridProps) {
               <img 
                 src={menu.logoUrl} 
                 alt={menu.restaurantName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
               />
             </div>
           )}

@@ -23,7 +23,8 @@ export default function ElegantMinimal({ menu }: ElegantMinimalProps) {
             <img 
               src={menu.logoUrl} 
               alt={menu.restaurantName}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
+              style={{ objectFit: 'contain', objectPosition: 'center' }}
             />
           </div>
         )}

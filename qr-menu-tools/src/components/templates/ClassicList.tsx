@@ -11,11 +11,12 @@ export default function ClassicList({ menu }: ClassicListProps) {
       <div className="bg-amber-900 text-amber-50 py-12 px-6 border-b-4 border-amber-700">
         <div className="max-w-4xl mx-auto text-center">
           {menu.logoUrl && (
-            <div className="w-28 h-28 rounded-full border-4 border-amber-300 shadow-lg bg-white flex items-center justify-center overflow-hidden">
+            <div className="w-28 h-28 rounded-full border-4 border-amber-300 shadow-lg bg-white flex items-center justify-center overflow-hidden mx-auto mb-4">
               <img 
                 src={menu.logoUrl} 
                 alt={menu.restaurantName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
               />
             </div>
           )}

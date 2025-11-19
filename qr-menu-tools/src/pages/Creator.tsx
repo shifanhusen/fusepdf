@@ -5,6 +5,7 @@ import { createMenu, updateMenu, getMenu, saveLastEditedMenu, clearLastEditedMen
 import { QrPreview } from '../components/QrPreview';
 import { useAuth } from '../contexts/AuthContext';
 import TemplateSelector from '../components/TemplateSelector';
+import ImageUrlInput from '../components/ImageUrlInput';
 
 const THEME_PRESETS = [
   { name: 'Blue', color: '#0082FF' },
@@ -275,12 +276,10 @@ export const Creator: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm mb-2">Logo URL (optional)</label>
-              <input
-                type="text"
+              <ImageUrlInput
                 value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-800 rounded-lg"
+                onChange={setLogoUrl}
+                label="Restaurant Logo URL (Optional)"
                 placeholder="https://example.com/logo.png"
               />
             </div>
@@ -386,7 +385,7 @@ export const Creator: React.FC = () => {
 
                 <div className="space-y-3">
                   {section.items.map(item => (
-                    <div key={item.id} className="bg-gray-700 rounded-lg p-4">
+                    <div key={item.id} className="bg-gray-700 rounded-lg p-4 space-y-4">
                       <div className="grid md:grid-cols-4 gap-3">
                         <input
                           type="text"
@@ -416,7 +415,17 @@ export const Creator: React.FC = () => {
                           Delete
                         </button>
                       </div>
-                      <div className="flex gap-2 mt-2">
+                      
+                      {/* Image URL Input */}
+                      <ImageUrlInput
+                        value={item.imageUrl || ''}
+                        onChange={(url) => updateItem(section.id, item.id, { imageUrl: url })}
+                        label="Item Image URL (Optional)"
+                        placeholder="https://your-image-host.com/food-image.jpg"
+                      />
+                      
+                      {/* Tags */}
+                      <div className="flex gap-2">
                         {(['veg', 'non_veg', 'spicy', 'new'] as const).map(tag => (
                           <button
                             key={tag}

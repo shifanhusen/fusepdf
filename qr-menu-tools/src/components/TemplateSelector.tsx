@@ -7,6 +7,7 @@ import modernGridSvg from '../assets/modern-grid.svg?url';
 import classicListSvg from '../assets/classic-list.svg?url';
 import photoShowcaseSvg from '../assets/photo-showcase.svg?url';
 import compactCardsSvg from '../assets/compact-cards.svg?url';
+import imageShowcaseSvg from '../assets/image-showcase.svg?url';
 
 interface TemplateSelectorProps {
   selectedTemplate: MenuTemplate;
@@ -54,6 +55,13 @@ const templates: Array<{
     description: 'Space-efficient cards perfect for mobile',
     preview: compactCardsSvg,
     features: ['Mobile optimized', 'Compact design', 'Quick browsing'],
+  },
+  {
+    id: 'image-showcase',
+    name: 'Image Showcase',
+    description: 'Visual gallery layout perfect for showcasing food photos',
+    preview: imageShowcaseSvg,
+    features: ['Photo gallery', 'Visual focus', 'Instagram-style'],
   },
 ];
 
