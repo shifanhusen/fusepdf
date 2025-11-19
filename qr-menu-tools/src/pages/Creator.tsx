@@ -50,6 +50,17 @@ export const Creator: React.FC = () => {
     }
   }, [menuId]);
 
+  // Auto-create "Menu Pages" section for Digital Menu template
+  React.useEffect(() => {
+    if (template === 'elegant-minimal' && step === 2 && sections.length === 0) {
+      setSections([{
+        id: 'menu-pages-section',
+        name: 'Menu Pages',
+        items: []
+      }]);
+    }
+  }, [template, step, sections.length]);
+
   // Save progress
   React.useEffect(() => {
     if (step > 1 && !publishedMenu) {
@@ -380,8 +391,137 @@ export const Creator: React.FC = () => {
           </div>
         )}
 
-        {/* Step 2: Menu Editor */}
-        {step === 2 && (
+        {/* Step 2: Menu Editor - Conditional based on template */}
+        {step === 2 && template === 'elegant-minimal' && (
+          // Digital Menu Pages Editor - Simple image upload interface
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 dark:from-blue-900/20 dark:to-indigo-900/20 dark:border-blue-700">
+              <div className="flex items-start gap-4">
+                <div className="text-4xl">📋</div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    Add Your Menu Pages
+                  </h2>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                    Upload images of your physical menu. Each image will be displayed as a separate page.
+                  </p>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-100 dark:border-blue-900">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Quick Guide:</p>
+                    <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                      <li>• Click "+ Add Menu Page" to add each page of your menu</li>
+                      <li>• Name each page (e.g., "Appetizers", "Main Courses", "Page 1")</li>
+                      <li>• Paste the image URL of your menu page photo</li>
+                      <li>• No need to enter items, prices, or descriptions!</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold">Menu Pages</h3>
+              <button
+                onClick={() => {
+                  // Ensure section exists
+                  if (sections.length === 0) {
+                    const newSection: MenuSection = {
+                      id: 'menu-pages-section',
+                      name: 'Menu Pages',
+                      items: [{
+                        id: `item-${Date.now()}`,
+                        name: '',
+                        description: '',
+                        price: 0,
+                        tags: [],
+                        imageUrl: ''
+                      }]
+                    };
+                    setSections([newSection]);
+                  } else {
+                    // Add item to existing section
+                    addItem(sections[0].id);
+                  }
+                }}
+                className="px-6 py-3 bg-primary-green rounded-lg hover:bg-green-600 flex items-center gap-2"
+              >
+                <span className="text-xl">+</span> Add Menu Page
+              </button>
+            </div>
+
+            {sections.length === 0 || sections[0]?.items.length === 0 ? (
+              <div className="text-center py-16 bg-gray-800 rounded-xl border-2 border-dashed border-gray-600">
+                <div className="text-6xl mb-4">📄</div>
+                <p className="text-gray-400 text-lg mb-2">No menu pages added yet</p>
+                <p className="text-gray-500 text-sm">Click "Add Menu Page" to start uploading your menu images</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {sections[0].items.map((item, index) => (
+                  <div key={item.id} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => updateItem(sections[0].id, item.id, { name: e.target.value })}
+                          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-lg font-semibold placeholder-gray-400"
+                          placeholder={`Menu Page ${index + 1} (e.g., "Main Courses", "Page 1")`}
+                        />
+                      </div>
+                      <button
+                        onClick={() => deleteItem(sections[0].id, item.id)}
+                        className="px-4 py-3 bg-red-500 rounded-lg hover:bg-red-600 text-white font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    {/* Optional description */}
+                    <div className="mb-4">
+                      <input
+                        type="text"
+                        value={item.description || ''}
+                        onChange={(e) => updateItem(sections[0].id, item.id, { description: e.target.value })}
+                        className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
+                        placeholder="Optional description (e.g., 'Vegetarian Options', 'Chef Specials')"
+                      />
+                    </div>
+
+                    {/* Image URL Input */}
+                    <ImageUrlInput
+                      value={item.imageUrl || ''}
+                      onChange={(url) => updateItem(sections[0].id, item.id, { imageUrl: url })}
+                      label="Menu Page Image URL"
+                      placeholder="https://imgur.com/your-menu-page.jpg"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setStep(1)}
+                className="px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700"
+              >
+                Back
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={loading || sections.length === 0 || sections[0]?.items.length === 0}
+                className="flex-1 py-3 bg-primary-green rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Publishing...' : menuId ? 'Update Menu' : 'Publish Digital Menu'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Regular Menu Editor for all other templates */}
+        {step === 2 && template !== 'elegant-minimal' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-3xl font-bold">Build Your Menu</h2>
