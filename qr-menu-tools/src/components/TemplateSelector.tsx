@@ -23,10 +23,10 @@ const templates: Array<{
 }> = [
   {
     id: 'elegant-minimal',
-    name: 'Elegant Minimal',
-    description: 'Clean, sophisticated design with plenty of white space',
+    name: 'Digital Menu Pages',
+    description: 'Display your existing menu as images - perfect for physical menu photos',
     preview: elegantMinimalSvg,
-    features: ['Serif fonts', 'Centered layout', 'Perfect for fine dining'],
+    features: ['Upload menu photos', 'A4 page support', 'No manual entry needed'],
   },
   {
     id: 'modern-grid',

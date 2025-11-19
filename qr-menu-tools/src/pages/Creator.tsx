@@ -250,6 +250,45 @@ export const Creator: React.FC = () => {
               onSelect={(t) => setTemplate(t)} 
             />
             
+            {/* Digital Menu Pages Template Info */}
+            {template === 'elegant-minimal' && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">📋</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      Digital Menu Pages - Quick Setup Guide
+                    </h3>
+                    <p className="text-sm text-gray-700 mb-4">
+                      Perfect for displaying your existing physical menu! Simply upload photos of your menu pages.
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="bg-white rounded-lg p-3 border border-blue-100">
+                        <p className="text-sm font-semibold text-gray-900 mb-2">📸 How it works:</p>
+                        <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                          <li>Take clear photos of each menu page (A4 size recommended)</li>
+                          <li>Upload to Imgur, Google Drive, or any image host</li>
+                          <li>Add each page as a menu item with the image URL</li>
+                          <li>Name each item like "Page 1 - Appetizers", "Page 2 - Main Courses"</li>
+                        </ol>
+                      </div>
+                      
+                      <div className="bg-white rounded-lg p-3 border border-blue-100">
+                        <p className="text-sm font-semibold text-gray-900 mb-2">✨ Tips:</p>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Use landscape orientation for better mobile viewing</li>
+                          <li>• Ensure text is clearly readable in photos</li>
+                          <li>• Keep file sizes under 2MB for fast loading</li>
+                          <li>• No need to manually enter items - your menu image has everything!</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <button
               onClick={() => setStep(1)}
               className="w-full py-3 bg-primary-blue rounded-lg hover:bg-blue-600"
