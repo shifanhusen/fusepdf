@@ -1047,13 +1047,8 @@ elements.createRoomBtn.addEventListener('click', createRoom);
 elements.joinRoomBtn.addEventListener('click', joinRoom);
 elements.leaveRoomBtn.addEventListener('click', leaveRoom);
 elements.startRaceBtn.addEventListener('click', startRaceAsHost);
-elements.typingInput.addEventListener('keydown', (e) => {
-    if (practiceState.isPracticing) {
-        handlePracticeTyping(e);
-    } else {
-        handleTyping(e);
-    }
-});
+// Input event listener for multiplayer mode (default)
+elements.typingInput.addEventListener('input', handleCharacterTyping);
 
 // Practice mode buttons
 elements.practiceBtn.addEventListener('click', startPracticeMode);
