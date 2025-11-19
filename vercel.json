@@ -5,7 +5,10 @@
     { "source": "/typing-rally", "destination": "/typing-rally/index.html" },
     { "source": "/typing-rally/", "destination": "/typing-rally/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/", "destination": "/admin/index.html" }
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/qr-menu", "destination": "/qr-menu/index.html" },
+    { "source": "/qr-menu/", "destination": "/qr-menu/index.html" },
+    { "source": "/qr-menu/(.*)", "destination": "/qr-menu/index.html" }
   ],
   "headers": [
     {

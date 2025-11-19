@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/qr-menu/',
   build: {
-    outDir: '../public/qr-menu',
+    outDir: '../qr-menu',
     emptyOutDir: true,
     assetsInlineLimit: 0, // Force all assets to be separate files
   },
